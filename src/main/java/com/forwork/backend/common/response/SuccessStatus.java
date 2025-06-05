@@ -79,6 +79,7 @@ public enum SuccessStatus {
     MEMBER_WITHDRAW_SUCCESS(HttpStatus.OK, "회원 탈퇴 성공"),
     EMPLOYEE_ELIGIBLE_FOR_APPLICATION(HttpStatus.OK, "공고 지원이 가능한 피고용인입니다."),
     EVALUATION_DELETE_SUCCESS(HttpStatus.OK, "평가 삭제 성공"),
+    RECRUIT_UPDATE_SUCCESS(HttpStatus.OK, "공고 수정이 완료되었습니다."),
 
     /**
      * 201
