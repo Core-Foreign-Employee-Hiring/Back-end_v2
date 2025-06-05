@@ -63,3 +63,5 @@ out/
 
 ### Yml ###
 *.yml
+
+/src/main/generated/

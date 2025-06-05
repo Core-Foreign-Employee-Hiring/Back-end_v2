@@ -91,6 +91,12 @@ public enum ErrorStatus {
     INVALID_USER_EXCEPTION(HttpStatus.UNAUTHORIZED,"해당 시스템에 접근할 권한이 없습니다."),
 
     /**
+     * 403 FORBIDDEN
+     */
+    RECRUIT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 공고에 대한 권한이 없습니다."),
+
+
+    /**
      * 404 NOT_FOUND
      */
     NOT_LOGIN_EXCEPTION(HttpStatus.NOT_FOUND,"로그인이 필요합니다."),
