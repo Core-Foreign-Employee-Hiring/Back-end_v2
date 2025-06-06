@@ -94,6 +94,8 @@ public enum ErrorStatus {
      * 403 FORBIDDEN
      */
     RECRUIT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 공고에 대한 권한이 없습니다."),
+    RECRUIT_REVIEW_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 채용 후기에 대한 권한이 없습니다."),
+    RECRUIT_REVIEW_COMMENT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다."),
 
 
     /**
@@ -107,9 +109,9 @@ public enum ErrorStatus {
     CANCEL_INFO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"해당 취소 정보를 찾을 수 없습니다."),
     PREMIUM_MANAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"프리미엄 관리 정보가 없습니다."),
     RESUME_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 이력서를 찾을 수 없습니다."),
-    ALBAREVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"알바 후기를 찾을 수 없습니다."),
+    RECRUIT_REVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"채용 후기를 찾을 수 없습니다."),
     PARENT_COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"부모 댓글을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"댓글을 찾을 수 없습니다."),
     PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "포트폴리오(스펙 및 경력)를 찾을 수 없습니다."),
     CONTRACT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
 

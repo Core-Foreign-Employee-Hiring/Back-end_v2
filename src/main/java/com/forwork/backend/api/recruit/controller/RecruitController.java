@@ -38,7 +38,7 @@ public class RecruitController {
 
 
     /*
-    *
+    * c
     * */
     @Operation(
             summary = "공고 등록 API (용범)",

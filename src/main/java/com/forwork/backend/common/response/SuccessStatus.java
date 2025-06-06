@@ -53,11 +53,11 @@ public enum SuccessStatus {
     DELETE_MY_RESUME_SUCCESS(HttpStatus.OK, "내 이력서 삭제 성공"),
     UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS(HttpStatus.OK, "찜하기 상태 변경 성공"),
     SEND_BOOKMARKED_RECRUITS_SUCCESS(HttpStatus.OK, "찜한 공고 조회 성공"),
-    ALBA_REVIEW_DETAIL_SUCCESS(HttpStatus.OK,"알바 후기 상세조회 성공"),
-    ALBA_REVIEW_LIST_SUCCESS(HttpStatus.OK,"알바 후기 전체조회 성공"),
-    ALBA_REVIEW_UPDATE_SUCCESS(HttpStatus.OK,"알바 후기 수정 성공"),
-    ALBA_REVIEW_DELETE_SUCCESS(HttpStatus.OK,"알바 후기 삭제 성공"),
-    SEND_ALBA_REVIEW_COMMENT_SUCCESS(HttpStatus.OK,"알바 후기 댓글 조회 성공"),
+    RECRUIT_REVIEW_DETAIL_SUCCESS(HttpStatus.OK,"채용 후기 상세조회 성공"),
+    RECRUIT_REVIEW_LIST_SUCCESS(HttpStatus.OK,"채용 후기 전체조회 성공"),
+    RECRUIT_REVIEW_UPDATE_SUCCESS(HttpStatus.OK,"채용 후기 수정 성공"),
+    RECRUIT_REVIEW_DELETE_SUCCESS(HttpStatus.OK,"채용 후기 삭제 성공"),
+    SEND_RECRUIT_REVIEW_COMMENT_SUCCESS(HttpStatus.OK,"채용 후기 댓글 조회 성공"),
     EVALUATE_EMPLOYEE_SUCCESS(HttpStatus.OK, "평가하기 성공"),
     EVALUATE_VIEW_SUCCESS(HttpStatus.OK, "평가 보기 성공"),
     BASIC_PORTFOLIO_VIEW_SUCCESS(HttpStatus.OK, "기본 포트폴리오 조회 성공"),
@@ -69,17 +69,19 @@ public enum SuccessStatus {
     CONTRACT_TYPE_SELECTION_SUCCESS(HttpStatus.OK, "계약서 형태 선택 성공"),
     CONTRACT_UPLOAD_SUCCESS(HttpStatus.OK, "계약서 업로드 성공"),
     PREVIEW_RECRUIT_SUCCESS(HttpStatus.OK, "공고 미리보기 조회 성공"),
-    ALBA_REVIEW_COMMENT_UPDATE_SUCCESS(HttpStatus.OK,"알바 후기 댓글 수정 성공"),
-    ALBA_REVIEW_COMMENT_DELETE_SUCCESS(HttpStatus.OK,"알바 후기 댓글 삭제 성공"),
+    RECRUIT_REVIEW_COMMENT_UPDATE_SUCCESS(HttpStatus.OK,"채용 후기 댓글 수정 성공"),
+    RECRUIT_REVIEW_COMMENT_DELETE_SUCCESS(HttpStatus.OK,"채용 후기 댓글 삭제 성공"),
     UPDATE_TOP_JUMP_SUCCESS(HttpStatus.OK,"공고 상단 점프 성공"),
     SEND_TOP_JUMP_COUNT_SUCCESS(HttpStatus.OK,"상단 점프 잔여 횟수 조회 성공"),
-    ALBA_REVIEW_SEARCH_SUCCESS(HttpStatus.OK, "알바 후기 검색 성공"),
+    RECRUIT_REVIEW_SEARCH_SUCCESS(HttpStatus.OK, "채용 후기 검색 성공"),
     SEARCH_RECRUIT_SUCESS(HttpStatus.OK,"공고 검색 성공"),
     RESUME_VISIBILITY_UPDATE_SUCCESS(HttpStatus.OK, "이력서 공개 상태 변경 성공"),
     MEMBER_WITHDRAW_SUCCESS(HttpStatus.OK, "회원 탈퇴 성공"),
     EMPLOYEE_ELIGIBLE_FOR_APPLICATION(HttpStatus.OK, "공고 지원이 가능한 피고용인입니다."),
     EVALUATION_DELETE_SUCCESS(HttpStatus.OK, "평가 삭제 성공"),
     RECRUIT_UPDATE_SUCCESS(HttpStatus.OK, "공고 수정이 완료되었습니다."),
+    RECRUIT_REVIEW_TOTAL_COUNT_SUCCESS(HttpStatus.OK, "채용 후기 총 개수 조회 성공"),
+
 
     /**
      * 201
@@ -92,8 +94,8 @@ public enum SuccessStatus {
     UPLOAD_IMAGE_SUCCESS(HttpStatus.CREATED, "이미지 업로드 성공"),
     UPLOAD_FILE_SUCCESS(HttpStatus.CREATED, "파일 업로드 성공"),
     APPLY_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 지원 성공"),
-    ALBA_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED,"알바 후기 작성 성공"),
-    ALBA_REVIEW_COMMENT_CREATE_SUCCESS(HttpStatus.CREATED,"알바 후기 댓글 작성 성공"),
+    RECRUIT_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 작성 성공"),
+    RECRUIT_REVIEW_COMMENT_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 댓글 작성 성공"),
 
     ;
 
