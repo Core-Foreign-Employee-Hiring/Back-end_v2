@@ -72,7 +72,8 @@ public class SecurityConfig {
                                 "/api/v2/member/verification-phone-code", "/api/v2/member/find-user-id", "/api/v2/member/employer/company-validate"
                         ).permitAll() // 회원가입, 로그인, 토큰 재발급, 이메일 인증, 사업자등록 번호 인증 허가
                         .requestMatchers(
-                                HttpMethod.GET, "/api/v2/recruit/{recruit-id}", "/api/v2/recruit/"
+                                HttpMethod.GET, "/api/v2/recruit/{recruit-id}", "/api/v2/recruit/",
+                                "/api/v2/recruit-review/", "/api/v2/recruit-review/{recruit-review-id}", "/api/v2/recruit-review/{recruit-review-id}/comments","/api/v2/recruit-review/total-count"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
