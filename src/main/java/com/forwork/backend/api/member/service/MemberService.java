@@ -201,5 +201,12 @@ public class MemberService {
         );
     }
 
+    // 사용자 ID 중복 체크
+    public void verificationUserId(String userId) {
+        // 사용자 ID 중복 검증
+        if (memberRepository.findByUserId(userId).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
+        }
+    }
 
 }

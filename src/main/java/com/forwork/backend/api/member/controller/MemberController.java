@@ -170,4 +170,22 @@ public class MemberController {
         return ApiResponse.success(SuccessStatus.SEND_COMPANY_VALIDATION_COMPLETED, companyValidate);
     }
 
+    @Operation(
+            summary = "사용자 ID 중복 체크 API (태근)",
+            description = "해당 사용자 ID가 사용가능한지 체크합니다. <br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 ID"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용자 ID 사용 가능"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "이미 등록된 사용자 ID 입니다."),
+    })
+    @GetMapping("/verify-userid")
+    public ResponseEntity<ApiResponse<Void>> getUserIdVerification(@RequestParam("userId") String userId) {
+
+        memberService.verificationUserId(userId);
+        return ApiResponse.success_only(SuccessStatus.SEND_ALLOW_USERID_SUCCESS);
+    }
+
 }
