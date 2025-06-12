@@ -28,6 +28,20 @@ public record RecruitReviewPreviewResponseDTO(
         long commentCount
 
 ) {
+        public static RecruitReviewPreviewResponseDTO of(RecruitReviewPreviewInternalDTO dto, int readCount){
+                return new RecruitReviewPreviewResponseDTO(
+                        dto.recruitReviewId(),
+                        dto.jobCategory(),
+                        dto.title(),
+                        dto.content(),
+                        dto.region1(),
+                        dto.region2(),
+                        dto.createAt(),
+                        (readCount==-1)?dto.readCount():readCount,
+                        dto.commentCount()
+                );
+        }
+
         public static RecruitReviewPreviewResponseDTO of(RecruitReviewPreviewInternalDTO dto){
                 return new RecruitReviewPreviewResponseDTO(
                         dto.recruitReviewId(),

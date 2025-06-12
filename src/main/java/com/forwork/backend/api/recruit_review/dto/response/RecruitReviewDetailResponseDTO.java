@@ -32,13 +32,13 @@ public record RecruitReviewDetailResponseDTO(
         JobCategory jobCategory
 ) {
 
-        public static RecruitReviewDetailResponseDTO of(RecruitReview review, Long commentCount, boolean isMine, Member writer) {
+        public static RecruitReviewDetailResponseDTO of(RecruitReview review, Long commentCount, boolean isMine, Member writer, int readCount) {
                 return new RecruitReviewDetailResponseDTO(
                         review.getId(),
                         review.getRegion1(),
                         review.getRegion2(),
                         review.getTitle(),
-                        review.getReadCount()+1,
+                        (readCount==-1)?review.getReadCount()+1:readCount,
                         commentCount,
                         review.getContent(),
                         writer.getUserId(),
