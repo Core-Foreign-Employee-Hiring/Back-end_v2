@@ -7,7 +7,7 @@ import com.forwork.backend.api.recruit_review.dto.request.RecruitReviewCreateDTO
 import com.forwork.backend.api.recruit_review.dto.request.RecruitReviewUpdateDTO;
 import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewDetailResponseDTO;
 import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewPreviewResponseDTO;
-import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewToTalCountResponseDTO;
+import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewTotalCountResponseDTO;
 import com.forwork.backend.api.recruit_review.entity.RecruitReview;
 import com.forwork.backend.api.recruit_review.enums.RecruitReviewSortType;
 import com.forwork.backend.api.recruit_review.repository.RecruitReviewCommentRepository;
@@ -44,7 +44,7 @@ public class RecruitReviewService {
      * 채용 후기 생성
      *
      */
-    public void createRecruitReview(Long memberId, RecruitReviewCreateDTO dto) {
+    public Long createRecruitReview(Long memberId, RecruitReviewCreateDTO dto) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.warn("[createRecruitReview][member is not found][memberId= {}]", memberId);
@@ -53,8 +53,12 @@ public class RecruitReviewService {
 
         RecruitReview recruitReview = dto.toEntity(member);
 
-        recruitReviewRepository.save(recruitReview);
+        RecruitReview review = recruitReviewRepository.save(recruitReview);
 
+        // readCountTracker 에 등록.
+//        readCountTracker.init(review.getId(), review.getCreatedAt());
+
+        return review.getId();
     }
 
 
@@ -66,13 +70,14 @@ public class RecruitReviewService {
      * @apiNote 채용 후기 단건 조회
      */
     public RecruitReviewDetailResponseDTO getRecruitReview(Long memberId, Long recruitReviewId) {
+        // 조회수 증가 및 조회
+        Integer readCount = incrementReadCount(recruitReviewId);
+
         RecruitReview recruitReview = recruitReviewRepository.findByIdWithWriter(recruitReviewId)
                 .orElseThrow(() -> {
                     log.warn("[getRecruitReview][recruitReview is not found][recruitReviewId= {}]", recruitReviewId);
                     return new NotFoundException(RECRUIT_REVIEW_NOT_FOUND_EXCEPTION.getMessage());
                 });
-
-        recruitReviewRepository.incrementReadCount(recruitReviewId);
 
         Member writer = recruitReview.getWriter();
 
@@ -82,7 +87,7 @@ public class RecruitReviewService {
         // isMine
         boolean isMin= Objects.equals(memberId, writer.getId());
 
-        RecruitReviewDetailResponseDTO response = RecruitReviewDetailResponseDTO.of(recruitReview, commentCount, isMin, writer);
+        RecruitReviewDetailResponseDTO response = RecruitReviewDetailResponseDTO.of(recruitReview, commentCount, isMin, writer, readCount);
 
         return response;
     }
@@ -91,9 +96,18 @@ public class RecruitReviewService {
      * @apiNote 채용 후기 페이징
      */
     public PageResponseDTO<RecruitReviewPreviewResponseDTO> getRecruitPreviews(String keyword, Integer page, Integer size, RecruitReviewSortType sortType) {
+
         Pageable pageable= PageRequest.of(page, size);
 
         Page<RecruitReviewPreviewInternalDTO> recruitPreviews = recruitReviewRepository.getRecruitPreviews(keyword, pageable, sortType);
+
+        /*// tracker 에 존재하는 조회수 갖고 온다.
+        List<Long> ids=recruitPreviews.stream()
+                .map(RecruitReviewPreviewInternalDTO::recruitReviewId)
+                .toList();
+
+        // key: recruitReviewId, readCount
+        Map<Long, Integer> readCounts = readCountTracker.getReadCounts(ids);*/
 
         Page<RecruitReviewPreviewResponseDTO> map = recruitPreviews
                                                     .map(RecruitReviewPreviewResponseDTO::of);
@@ -106,10 +120,10 @@ public class RecruitReviewService {
     /**
      * @apiNote  후기 totalCount 조회
      */
-    public RecruitReviewToTalCountResponseDTO getRecruitReviewTotalCount(){
+    public RecruitReviewTotalCountResponseDTO getRecruitReviewTotalCount(){
         Long l = recruitReviewRepository.fineToTalCount();
 
-        return new RecruitReviewToTalCountResponseDTO(l);
+        return new RecruitReviewTotalCountResponseDTO(l);
     }
 
     /*
@@ -162,6 +176,17 @@ public class RecruitReviewService {
         }
     }
 
+    private Integer incrementReadCount(Long recruitReviewId) {
+        int readCount = -1;
+
+//        readCount = readCountTracker.increment(recruitReviewId);
+
+        if (readCount == -1) {
+            recruitReviewRepository.incrementReadCount(recruitReviewId);
+        }
+
+        return readCount;
+    }
 
 
 }

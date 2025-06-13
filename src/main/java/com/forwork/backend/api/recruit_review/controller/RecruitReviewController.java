@@ -7,7 +7,7 @@ import com.forwork.backend.api.recruit_review.dto.request.RecruitReviewUpdateDTO
 import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewDetailResponseDTO;
 import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewParentCommentResponseDTO;
 import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewPreviewResponseDTO;
-import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewToTalCountResponseDTO;
+import com.forwork.backend.api.recruit_review.dto.response.RecruitReviewTotalCountResponseDTO;
 import com.forwork.backend.api.recruit_review.enums.RecruitReviewSortType;
 import com.forwork.backend.api.recruit_review.service.RecruitReviewCommentService;
 import com.forwork.backend.api.recruit_review.service.RecruitReviewService;
@@ -111,15 +111,15 @@ public class RecruitReviewController {
 
     @Operation(
             summary = "후기 totalCount 조회  API (용범)",
-            description = "출력: RecruitReviewDetailResponseDTO"
+            description = "출력: RecruitReviewTotalCountResponseDTO"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "후기 총 개수 조회 성공"),
     })
     @GetMapping("/total-count")
-    public ResponseEntity<ApiResponse<RecruitReviewToTalCountResponseDTO>> getRecruit() {
+    public ResponseEntity<ApiResponse<RecruitReviewTotalCountResponseDTO>> getRecruit() {
 
-        RecruitReviewToTalCountResponseDTO response = recruitReviewService.getRecruitReviewTotalCount();
+        RecruitReviewTotalCountResponseDTO response = recruitReviewService.getRecruitReviewTotalCount();
 
         return ApiResponse.success(SuccessStatus.RECRUIT_REVIEW_TOTAL_COUNT_SUCCESS, response);
     }

@@ -12,8 +12,9 @@ import java.util.Optional;
 public interface RecruitReviewCommentRepository extends JpaRepository<RecruitReviewComment, Long> {
 
     @Query("select c from RecruitReviewComment c" +
-            " where c.id=:id and c.parent is null")
-    Optional<RecruitReviewComment> findParentCommentIfRoot(@Param("id") Long id);
+            " left join fetch c.parent" +
+            " where c.id=:id and c.isDeleted=false")
+    Optional<RecruitReviewComment> findByIdWithParent(@Param("id") Long id);
 
     @Query("select c from RecruitReviewComment c" +
             " left join fetch c.writer" +

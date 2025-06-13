@@ -26,4 +26,10 @@ public interface RecruitReviewRepository extends JpaRepository<RecruitReview, Lo
     @Transactional
     @Query("update RecruitReview r set r.readCount=r.readCount+1 where r.id=:recruitReviewId")
     void incrementReadCount(@Param("recruitReviewId")Long recruitReviewId);
+
+
+    @Modifying
+    @Transactional
+    @Query("update RecruitReview r set r.readCount=:newReadCount where r.id=:recruitReviewId")
+    void updateViewCount(@Param("recruitReviewId")Long recruitReviewId, @Param("newReadCount")Integer newReadCount);
 }

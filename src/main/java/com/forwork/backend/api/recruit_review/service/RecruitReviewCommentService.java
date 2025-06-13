@@ -170,13 +170,19 @@ public class RecruitReviewCommentService {
             return null;
         }
 
-        // 자식인 경우 -> parent
-        RecruitReviewComment parentComment = reviewCommentRepository.findParentCommentIfRoot(parentId)
+        RecruitReviewComment parentComment = reviewCommentRepository.findByIdWithParent(parentId)
                 .orElseThrow(() -> {
                     log.warn("[getParentComment][parent comment is not found][parentId= {}]", parentId);
                     return new NotFoundException(PARENT_COMMENT_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        return parentComment;
+
+        // parentId 가 진짜 부모
+        if(parentComment.getParent()==null){
+            return parentComment;
+        }
+        else{ // 사실 형제 Id
+            return parentComment.getParent();
+        }
     }
 }
