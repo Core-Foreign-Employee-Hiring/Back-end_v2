@@ -49,7 +49,7 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 등록 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "해당 사용자를 찾을 수 없습니다."),
     })
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<ApiResponse<Void>> save(@AuthenticationPrincipal SecurityMember securityMember,
                                                   @RequestBody RecruitRequestDTO recruitRequestDTO) {
         Long recruitId = recruitService.save(securityMember.getId(), recruitRequestDTO);
@@ -103,7 +103,7 @@ public class RecruitController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 조회 성공"),
     })
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<ApiResponse<PageResponseDTO<RecruitPreviewResponseDTO>>> getRecruits(
             @Parameter(description = "검색 키워드", in = ParameterIn.QUERY)
             @RequestParam(value = "keyword", required = false) String keyword,
