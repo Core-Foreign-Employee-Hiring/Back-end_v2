@@ -2,7 +2,6 @@ package com.forwork.backend.api.recruit.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forwork.backend.api.member.entity.CompanyType;
-import com.forwork.backend.api.member.entity.Employer;
 import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.enums.*;
@@ -91,10 +90,8 @@ public record RecruitDetailResponseDTO(
 ) {
 
         public static RecruitDetailResponseDTO fromEntity(Recruit recruit, List<JobCategory> jobCategories, RecruitBookmarkStatus recruitBookmarkStatus) {
-                Employer employer = recruit.getEmployer();
 
-                String companyName = (employer != null) ? employer.getCompanyName() : null;
-                CompanyType companyType = (employer != null) ? employer.getCompanyType() : null;
+
 
                 return new RecruitDetailResponseDTO(
                         recruit.getId(),
@@ -132,12 +129,12 @@ public record RecruitDetailResponseDTO(
                         recruit.getApplicationMethod(),
                         recruit.getDirectInputApplicationMethod(),
 
-                        companyName,
-                        companyType,
+                        recruit.getCompanyName(),
+                        recruit.getCompanyType(),
 
-                        employer != null ? employer.getAddress().getZipcode() : null,
-                        employer != null ? employer.getAddress().getAddress1() : null,
-                        employer != null ? employer.getAddress().getAddress2() : null,
+                        recruit.getCompanyAddress().getZipcode(),
+                        recruit.getCompanyAddress().getAddress1(),
+                        recruit.getCompanyAddress().getAddress2(),
 
                         recruitBookmarkStatus
                 );

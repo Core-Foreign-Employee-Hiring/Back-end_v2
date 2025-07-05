@@ -2,8 +2,7 @@ package com.forwork.backend.api.recruit.service;
 
 import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.recruit.entity.Recruit;
-import com.forwork.backend.api.recruit.enums.SalaryType;
-import com.forwork.backend.api.recruit.enums.WorkDayType;
+import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.api.recruit.repository.RecruitRepository;
 import com.forwork.backend.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +42,8 @@ public class RecruitReader {
     }
 
 
-    public Page<Recruit> getRecruits(String keyword, List<JobCategory> jobCategories, List<WorkDayType> workDayType,
-                                     String workStartTime, String workEndTime, List<SalaryType> salaryType,
-                                     Pageable pageable) {
-        Page<Recruit> recruits = recruitRepository.getRecruits(keyword, jobCategories, workDayType, workStartTime, workEndTime, salaryType, pageable);
+    public Page<Recruit> getRecruits(String keyword, List<JobCategory> jobCategories, List<ContractType> contractTypes, Pageable pageable) {
+        Page<Recruit> recruits = recruitRepository.getRecruits(keyword, jobCategories, contractTypes, pageable);
 
         return recruits;
     }

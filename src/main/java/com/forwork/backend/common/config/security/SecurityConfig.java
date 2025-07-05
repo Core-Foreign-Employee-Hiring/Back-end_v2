@@ -75,6 +75,8 @@ public class SecurityConfig {
                                 HttpMethod.GET, "/api/v2/recruit/{recruit-id}", "/api/v2/recruit",
                                 "/api/v2/recruit-review", "/api/v2/recruit-review/{recruit-review-id}", "/api/v2/recruit-review/{recruit-review-id}/comments","/api/v2/recruit-review/total-count"
                         ).permitAll()
+                        .requestMatchers("/api/v2/recruit/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->

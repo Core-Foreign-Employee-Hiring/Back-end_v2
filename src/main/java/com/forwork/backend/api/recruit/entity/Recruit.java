@@ -1,6 +1,7 @@
 package com.forwork.backend.api.recruit.entity;
 
-import com.forwork.backend.api.member.entity.Employer;
+import com.forwork.backend.api.member.entity.Address;
+import com.forwork.backend.api.member.entity.CompanyType;
 import com.forwork.backend.api.recruit.dto.request.RecruitUpdateRequestDTO;
 import com.forwork.backend.api.recruit.enums.*;
 import com.forwork.backend.common.entity.BaseTimeEntity;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -31,6 +31,14 @@ public class Recruit extends BaseTimeEntity {
     private Long id;
 
     private String title;  // 공고 제목
+
+    private String companyImageUrl;
+    private String companyName;
+    private Address companyAddress;
+    private CompanyType companyType;
+    private String representativeName;
+    private LocalDate establishedDate;
+    private String businessType;
 
     private boolean isAlwaysRecruiting;  //
     private LocalDate recruitStartDate;       // 모집 시작일
@@ -70,14 +78,9 @@ public class Recruit extends BaseTimeEntity {
     @Enumerated(STRING)
     private RecruitPublishStatus recruitPublishStatus;
 
-    @ManyToOne(fetch=LAZY)
-    @JoinColumn(name="employer_id")
-    private Employer employer;
-
     @Builder.Default
     @OneToMany(mappedBy = "recruit", fetch = FetchType.LAZY)
     private List<RecruitJobCategory> recruitJobCategories = new ArrayList<>();
-
 
     public String getFormattedWorkStartTime() {
         return formatTime(workStartTime);
