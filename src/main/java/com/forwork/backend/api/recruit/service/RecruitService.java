@@ -1,9 +1,7 @@
 package com.forwork.backend.api.recruit.service;
 
-import com.forwork.backend.api.member.entity.Employer;
 import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.member.entity.Member;
-import com.forwork.backend.api.member.repository.EmployerRepository;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.recruit.dto.request.RecruitRequestDTO;
 import com.forwork.backend.api.recruit.dto.request.RecruitUpdateRequestDTO;
@@ -14,15 +12,13 @@ import com.forwork.backend.api.recruit.entity.JobCategoryEntity;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.entity.RecruitBookmark;
 import com.forwork.backend.api.recruit.entity.RecruitJobCategory;
+import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.api.recruit.enums.RecruitBookmarkStatus;
-import com.forwork.backend.api.recruit.enums.SalaryType;
-import com.forwork.backend.api.recruit.enums.WorkDayType;
-import com.forwork.backend.api.recruit.repository.RecruitBookmarkRepository;
-import com.forwork.backend.api.recruit.repository.RecruitRepository;
 import com.forwork.backend.api.recruit.repository.JobCategoryEntityRepository;
+import com.forwork.backend.api.recruit.repository.RecruitBookmarkRepository;
 import com.forwork.backend.api.recruit.repository.RecruitJobCategoryRepository;
+import com.forwork.backend.api.recruit.repository.RecruitRepository;
 import com.forwork.backend.common.dto.PageResponseDTO;
-import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forwork.backend.common.response.ErrorStatus.*;
+import static com.forwork.backend.common.response.ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +41,6 @@ public class RecruitService {
     private final RecruitRepository recruitRepository;
     private final JobCategoryEntityRepository jobCategoryEntityJpaRepository;
     private final RecruitJobCategoryRepository recruitJobCategoryJpaRepository;
-    private final EmployerRepository employerRepository;
     private final RecruitReader recruitReader;
     private final RecruitUpdater recruitUpdater;
     private final RecruitBookmarkRepository recruitBookmarkRepository;
@@ -57,21 +52,15 @@ public class RecruitService {
     * */
 
     @Transactional
-    public Long save(Long employerId, RecruitRequestDTO recruitRequestDTO) {
-        Employer employer = employerRepository.findById(employerId)
-                .orElseThrow(() -> {
-                    log.warn("[save][고용인 없음.][employerId= {}]", employerId);
-                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
-                });
+    public Long save(RecruitRequestDTO recruitRequestDTO) {
 
         // 공고 저장
-        Recruit toRecruit = recruitRequestDTO.toEntity(employer);
+        Recruit toRecruit = recruitRequestDTO.toEntity();
         Recruit recruit  = recruitRepository.save(toRecruit);
 
         // 직종 처리.
         List<JobCategory> jobCategories = recruitRequestDTO.jobCategories();
         List<JobCategoryEntity> allByJobCategories = jobCategoryEntityJpaRepository.findAllByJobCategories(jobCategories);
-
 
         List<RecruitJobCategory> recruitJobCategories=new ArrayList<>();
 
@@ -114,11 +103,10 @@ public class RecruitService {
         return response;
     }
 
-    public PageResponseDTO<RecruitPreviewResponseDTO> getRecruits(String keyword, List<JobCategory> jobCategories, List<WorkDayType> workDayType,
-                                                                  String workStartTime, String workEndTime, List<SalaryType> salaryType,
+    public PageResponseDTO<RecruitPreviewResponseDTO> getRecruits(String keyword, List<JobCategory> jobCategories, List<ContractType> contractTypes,
                                                                   Integer page, Integer size) {
         Pageable pageable= PageRequest.of(page, size);
-        Page<Recruit> recruits = recruitReader.getRecruits(keyword, jobCategories, workDayType, workStartTime, workEndTime, salaryType, pageable);
+        Page<Recruit> recruits = recruitReader.getRecruits(keyword, jobCategories, contractTypes, pageable);
 
         Page<RecruitPreviewResponseDTO> dtos = recruits.map(RecruitPreviewResponseDTO::fromEntity);
 
@@ -132,11 +120,8 @@ public class RecruitService {
      * u
      * */
     @Transactional
-    public void updateRecruit(Long employerId, Long recruitId, RecruitUpdateRequestDTO dto){
+    public void updateRecruit(Long recruitId, RecruitUpdateRequestDTO dto){
         Recruit recruit = recruitReader.getRecruit(recruitId);
-
-        // 공고 소유자 검사
-        validateRecruitOwnership(employerId, recruit);
 
         // 공고 수정
         recruitUpdater.update(recruit, dto);
@@ -168,12 +153,7 @@ public class RecruitService {
 
 
 
-    private void validateRecruitOwnership(Long employerId, Recruit recruit) {
-        if (!recruit.getEmployer().getId().equals(employerId)) {
-            log.warn("[validateRecruitOwnership][공고 소유자가 아님.][소유자= {}, 지금 사용자= {}]", recruit.getEmployer().getId(), employerId);
-            throw new BadRequestException(RECRUIT_OWNER_FORBIDDEN_EXCEPTION.getMessage());
-        }
-    }
+
 
     private RecruitBookmarkStatus getRecruitBookmarkStatus(Long memberId, Long recruitId) {
         if(memberId ==null){

@@ -7,9 +7,8 @@ import com.forwork.backend.api.recruit.dto.response.RecruitBookmarkStatusRespons
 import com.forwork.backend.api.recruit.dto.response.RecruitDetailResponseDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitDraftResponseDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitPreviewResponseDTO;
+import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.api.recruit.enums.RecruitBookmarkStatus;
-import com.forwork.backend.api.recruit.enums.SalaryType;
-import com.forwork.backend.api.recruit.enums.WorkDayType;
 import com.forwork.backend.api.recruit.service.RecruitService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.dto.PageResponseDTO;
@@ -50,9 +49,8 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "해당 사용자를 찾을 수 없습니다."),
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> save(@AuthenticationPrincipal SecurityMember securityMember,
-                                                  @RequestBody RecruitRequestDTO recruitRequestDTO) {
-        Long recruitId = recruitService.save(securityMember.getId(), recruitRequestDTO);
+    public ResponseEntity<ApiResponse<Void>> save(@RequestBody RecruitRequestDTO recruitRequestDTO) {
+        Long recruitId = recruitService.save(recruitRequestDTO);
 
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
     }
@@ -111,17 +109,8 @@ public class RecruitController {
             @Parameter(description = "직종 목록", in = ParameterIn.QUERY)
             @RequestParam(value = "jobCategories", required = false) List<JobCategory> jobCategories,
 
-            @Parameter(description = "근무 요일 목록", in = ParameterIn.QUERY)
-            @RequestParam(value = "workDayType", required = false) List<WorkDayType> workDayType,
-
-            @Parameter(description = "근무 시작 시간 (HH:mm)", in = ParameterIn.QUERY)
-            @RequestParam(value = "workStartTime", required = false) String workStartTime,
-
-            @Parameter(description = "근무 종료 시간 (HH:mm)", in = ParameterIn.QUERY)
-            @RequestParam(value = "workEndTime", required = false) String workEndTime,
-
-            @Parameter(description = "급여 형태 목록", in = ParameterIn.QUERY)
-            @RequestParam(value = "salaryType", required = false) List<SalaryType> salaryType,
+            @Parameter(description = "계약 형태 목록", in = ParameterIn.QUERY)
+            @RequestParam(value = "contractTypes", required = false) List<ContractType> contractTypes,
 
             @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
             @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -130,7 +119,7 @@ public class RecruitController {
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
 
-        PageResponseDTO<RecruitPreviewResponseDTO> response = recruitService.getRecruits(keyword, jobCategories, workDayType, workStartTime,workEndTime, salaryType, page, size);
+        PageResponseDTO<RecruitPreviewResponseDTO> response = recruitService.getRecruits(keyword, jobCategories, contractTypes, page, size);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 
@@ -147,10 +136,9 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "해당 공고에 대한 권한이 없습니다.")
     })
     @PatchMapping("/{recruit-id}")
-    public ResponseEntity<ApiResponse<Void>> getRecruits(@AuthenticationPrincipal SecurityMember securityMember,
-                                                         @RequestBody RecruitUpdateRequestDTO recruitUpdateRequestDTO,
+    public ResponseEntity<ApiResponse<Void>> getRecruits(@RequestBody RecruitUpdateRequestDTO recruitUpdateRequestDTO,
                                                          @PathVariable("recruit-id") Long recruitId) {
-        recruitService.updateRecruit(securityMember.getId(), recruitId, recruitUpdateRequestDTO);
+        recruitService.updateRecruit(recruitId, recruitUpdateRequestDTO);
         return ApiResponse.success_only(SuccessStatus.RECRUIT_UPDATE_SUCCESS);
     }
 

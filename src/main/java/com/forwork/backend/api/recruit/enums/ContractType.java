@@ -1,12 +1,11 @@
 package com.forwork.backend.api.recruit.enums;
 
 public enum ContractType {
-    REGULAR("정규직"),
-    CONTRACT("계약직"),
     INTERN("인턴"),
-    PART_TIME("아르바이트"),
-    FREELANCER("프리랜서"),
-    ETC("기타");
+    REGULAR("정규직"),
+    NEWCOMER("신입"),
+    EXPERIENCED("경력"),
+    CONTRACT("계약직");
 
     private final String displayName;
 
@@ -18,3 +17,4 @@ public enum ContractType {
         return displayName;
     }
 }
+

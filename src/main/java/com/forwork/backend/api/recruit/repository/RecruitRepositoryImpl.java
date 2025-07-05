@@ -2,9 +2,8 @@ package com.forwork.backend.api.recruit.repository;
 
 import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.recruit.entity.Recruit;
+import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.api.recruit.enums.RecruitPublishStatus;
-import com.forwork.backend.api.recruit.enums.SalaryType;
-import com.forwork.backend.api.recruit.enums.WorkDayType;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,7 +16,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.Collections;
 import java.util.List;
 
-import static com.forwork.backend.api.member.entity.QEmployer.employer;
 import static com.forwork.backend.api.recruit.entity.QJobCategoryEntity.jobCategoryEntity;
 import static com.forwork.backend.api.recruit.entity.QRecruit.recruit;
 import static com.forwork.backend.api.recruit.entity.QRecruitJobCategory.recruitJobCategory;
@@ -30,20 +28,16 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
     }
 
     @Override
-    public Page<Recruit> getRecruits(String keyword, List<JobCategory> jobCategories, List<WorkDayType> workDayType,
-                                     String workStartTime, String workEndTime, List<SalaryType> salaryType,
-                                     Pageable pageable) {
+    public Page<Recruit> getRecruits(String keyword, List<JobCategory> jobCategories, List<ContractType> contractTypes, Pageable pageable) {
         List<Long> ids=queryFactory.
                 selectDistinct(recruit.id)
-                .from(recruit, recruitJobCategory, employer)
+                .from(recruit)
+                .leftJoin(recruit.recruitJobCategories, recruitJobCategory)
                 .where(
                         recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
                         keywordEq(keyword),
                         jobCategoryEq(jobCategories),
-                        workDayEq(workDayType),
-                        workStartTimeEq(workStartTime),
-                        workEndTimeEq(workEndTime),
-                        salaryTypeEq(salaryType)
+                        contractTypeEq(contractTypes)
                 )
                 .orderBy(recruit.id.desc())
                 .offset(pageable.getOffset())
@@ -56,7 +50,8 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
         List<Recruit> content=queryFactory
                 .selectFrom(recruit)
-                .innerJoin(recruit.employer).fetchJoin()
+                .leftJoin(recruit.recruitJobCategories, recruitJobCategory).fetchJoin()
+                .leftJoin(recruitJobCategory.jobCategoryEntity, jobCategoryEntity).fetchJoin()
                 .where(recruit.id.in(ids))
                 .orderBy(recruit.id.desc())
                 .fetch();
@@ -65,12 +60,10 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                 .select(recruit.count())
                 .from(recruit)
                 .where(
+                        recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
                         keywordEq(keyword),
                         jobCategoryEq(jobCategories),
-                        workDayEq(workDayType),
-                        workStartTimeEq(workStartTime),
-                        workEndTimeEq(workEndTime),
-                        salaryTypeEq(salaryType)
+                        contractTypeEq(contractTypes)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
@@ -80,7 +73,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
     private BooleanExpression keywordEq(String keyword){
         return (keyword == null || keyword.isEmpty())?null
-                : employer.id.eq(recruit.employer.id).and(employer.companyName.contains(keyword).or(recruit.title.contains(keyword)));
+                : recruit.companyName.contains(keyword);
     }
 
     private BooleanExpression jobCategoryEq(List<JobCategory> jobCategories) {
@@ -95,21 +88,10 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
         return recruitJobCategory.recruit.id.eq(recruit.id).and(recruitJobCategory.jobCategoryEntity.id.in(jobCategoryIds));
     }
 
-    private BooleanExpression workDayEq(List<WorkDayType> workDayType) {
-        return (workDayType == null || workDayType.isEmpty())?null
-                :recruit.workDayType.in(workDayType);
-    }
-    private BooleanExpression workStartTimeEq(String workStartTime) {
-        return (workStartTime==null)?null:recruit.workStartTime.eq(Recruit.parseTimeStringToInt(workStartTime));
-    }
+    private BooleanExpression contractTypeEq(List<ContractType> contractTypes){
+        if(contractTypes==null || contractTypes.isEmpty()){return null;}
 
-    private BooleanExpression workEndTimeEq(String workEndTime) {
-        return (workEndTime==null)?null:recruit.workEndTime.eq(Recruit.parseTimeStringToInt(workEndTime));
-    }
-
-    private BooleanExpression salaryTypeEq(List<SalaryType> salaryType){
-        return (salaryType==null || salaryType.isEmpty())?null
-                :recruit.salaryType.in(salaryType);
+        return recruit.contractType.in(contractTypes);
     }
 
 }

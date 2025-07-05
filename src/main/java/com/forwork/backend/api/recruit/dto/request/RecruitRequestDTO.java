@@ -1,7 +1,8 @@
 package com.forwork.backend.api.recruit.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forwork.backend.api.member.entity.Employer;
+import com.forwork.backend.api.member.entity.Address;
+import com.forwork.backend.api.member.entity.CompanyType;
 import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.enums.*;
@@ -13,6 +14,25 @@ import java.util.List;
 public record RecruitRequestDTO(
         @Schema(description = "공고 제목")
         String title,
+
+        @Schema(description = "로고 사진")
+        String companyImageUrl,
+        @Schema(description = "회사 이름")
+        String companyName,
+        @Schema(description = "우편번호")
+        String zipcode,
+        @Schema(description = "주소")
+        String address1,
+        @Schema(description = "상세 주소")
+        String address2,
+        @Schema(description = "기업 형태")
+        CompanyType companyType,
+        @Schema(description = "대표자명")
+        String representativeName,
+        @Schema(description = "설립일")
+        LocalDate establishedDate,
+        @Schema(description = "업종")
+        String businessType,
 
         @JsonProperty("isAlwaysRecruiting")
         @Schema(description = "상시 모집 기간 여부")
@@ -73,9 +93,16 @@ public record RecruitRequestDTO(
         @Schema(description = "PUBLISHED: 최종 등록, DRAFT: 임시 저장 ")
         RecruitPublishStatus recruitPublishStatus
 ) {
-    public Recruit toEntity(Employer employer) {
+    public Recruit toEntity() {
         return Recruit.builder()
                 .title(title)
+                .companyImageUrl(companyImageUrl)
+                .companyName(companyName)
+                .companyAddress(new Address(zipcode, address1, address2))
+                .companyType(companyType)
+                .representativeName(representativeName)
+                .establishedDate(establishedDate)
+                .businessType(businessType)
                 .isAlwaysRecruiting(isAlwaysRecruiting)
                 .recruitStartDate(recruitStartDate)
                 .recruitEndDate(recruitEndDate)
@@ -98,7 +125,6 @@ public record RecruitRequestDTO(
                 .others(others)
                 .applicationMethod(applicationMethod)
                 .directInputApplicationMethod(directInputApplicationMethod)
-                .employer(employer)
                 .recruitPublishStatus(recruitPublishStatus)
                 .build();
     }
