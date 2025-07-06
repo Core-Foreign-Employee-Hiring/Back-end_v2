@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,12 +30,16 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
     @Override
     public Page<Recruit> getRecruits(String keyword, List<JobCategory> jobCategories, List<ContractType> contractTypes, Pageable pageable) {
+
+        LocalDate now = LocalDate.now();
+
         List<Long> ids=queryFactory.
                 selectDistinct(recruit.id)
                 .from(recruit)
                 .leftJoin(recruit.recruitJobCategories, recruitJobCategory)
                 .where(
                         recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
+                        recruit.recruitEndDate.goe(now),
                         keywordEq(keyword),
                         jobCategoryEq(jobCategories),
                         contractTypeEq(contractTypes)
@@ -61,6 +66,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                 .from(recruit)
                 .where(
                         recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
+                        recruit.recruitEndDate.goe(now),
                         keywordEq(keyword),
                         jobCategoryEq(jobCategories),
                         contractTypeEq(contractTypes)
