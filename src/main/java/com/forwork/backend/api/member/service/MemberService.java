@@ -9,23 +9,15 @@ import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.repository.*;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
-import com.forwork.backend.common.exception.UnauthorizedException;
 import com.forwork.backend.common.response.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -194,6 +186,7 @@ public class MemberService {
         // DTO를 사용하여 응답 데이터 구성
         return new MemberLoginResponseDTO(
                 member.getName(),
+                member.getEmail(),
                 member.getUserId(),
                 tokens.get("accessToken"),
                 tokens.get("refreshToken"),
