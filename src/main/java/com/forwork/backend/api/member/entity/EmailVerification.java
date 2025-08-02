@@ -40,7 +40,7 @@ public class EmailVerification extends BaseTimeEntity {
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return String.format(
                 """
-                        [ForWork 이메일 인증]
+                        [Korfit 이메일 인증]
                         인증 코드: %s
                         
                         위의 인증코드로 이메일 인증을 진행해주세요.
