@@ -26,15 +26,18 @@ import java.util.stream.Collectors;
 public class PassArchiveService {
 
     private final FileService fileService;
+    private final PassArchiveSaveService passArchiveSaveService;
     private final MemberRepository memberRepository;
     private final PassArchiveRepository passArchiveRepository;
 
-    @Transactional
+    // 합격 아카이브 생성(파일 업로드 후 저장 메소드 전달)
     public Long createArchive(PassArchiveCreateRequestDTO passArchiveCreateRequestDTO, MultipartFile thumbnail, List<MultipartFile> images, List<MultipartFile> products, Long memberId) {
 
         // 작성자 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()
+                ));
 
         // 썸네일 저장
         UploadFile thumbFile = fileService.uploadAndSave(thumbnail, FileDirAndName.File);
@@ -46,30 +49,17 @@ public class PassArchiveService {
                 .map(f -> fileService.uploadAndSave(f, FileDirAndName.File))
                 .collect(Collectors.toList());
 
-        //  상품 파일 저장
+        // 상품 파일 저장
         List<UploadFile> productFiles = Optional.ofNullable(products)
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(f -> fileService.uploadAndSave(f, FileDirAndName.File))
                 .collect(Collectors.toList());
 
-        PassArchive passArchive = PassArchive.builder()
-                .title(passArchiveCreateRequestDTO.getTitle())
-                .oneLineReview(passArchiveCreateRequestDTO.getOneLineReview())
-                .description(passArchiveCreateRequestDTO.getDescription())
-                .price(passArchiveCreateRequestDTO.getPrice())
-                .thumbnail(thumbFile)
-                .images(imageFiles)
-                .products(productFiles)
-                .star(0)
-                .starCount(0)
-                .member(member)
-                .build();
-
-        passArchiveRepository.save(passArchive);
-        return passArchive.getPassArchiveId();
+        return passArchiveSaveService.saveArchive(passArchiveCreateRequestDTO, member, thumbFile, imageFiles, productFiles);
     }
 
+    // 합격 아카이브 상세 조회
     @Transactional(readOnly = true)
     public PassArchiveDetailResponseDTO getDetailArchive(Long passArchiveId) {
 

@@ -35,12 +35,12 @@ public class PassArchive extends BaseTimeEntity {
     private Member member;
 
     // 썸네일
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     @JoinColumn(name = "thumbnail_file_id")
     private UploadFile thumbnail;
 
     // 본문 이미지
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     @JoinTable(
             name = "pass_archive_images",
             joinColumns = @JoinColumn(name = "pass_archive_id"),
@@ -50,7 +50,7 @@ public class PassArchive extends BaseTimeEntity {
     private List<UploadFile> images = new ArrayList<>();
 
     // 상품 파일
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     @JoinTable(
             name = "pass_archive_products",
             joinColumns = @JoinColumn(name = "pass_archive_id"),
