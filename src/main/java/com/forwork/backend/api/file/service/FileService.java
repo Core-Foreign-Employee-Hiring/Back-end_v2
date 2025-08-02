@@ -46,4 +46,19 @@ public class FileService {
         return url;
     }
 
+    public UploadFile uploadAndSave(MultipartFile file, FileDirAndName dirAndName) {
+        try {
+            // S3에 업로드
+            String url = s3Service.uploadFile(file, dirAndName);
+
+            // UploadFile 엔티티 생성 & 저장
+            UploadFile uf = new UploadFile(url, file.getOriginalFilename());
+            return uploadFileRepository.save(uf);
+
+        } catch (IOException e) {
+            log.error("파일 업로드 또는 저장 중 에러", e);
+            throw new InternalServerException(ErrorStatus.FAIL_UPLOAD_EXCEPTION.getMessage());
+        }
+    }
+
 }
