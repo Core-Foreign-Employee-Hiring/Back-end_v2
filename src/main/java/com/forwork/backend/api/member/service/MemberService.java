@@ -1,7 +1,7 @@
 package com.forwork.backend.api.member.service;
 
-import com.forwork.backend.api.member.dto.EmployeeRegisterRequestDTO;
-import com.forwork.backend.api.member.dto.EmployerRegisterRequestDTO;
+import com.forwork.backend.api.member.dto.MemberModifyIdRequestDTO;
+import com.forwork.backend.api.member.dto.MemberRegisterRequestDTO;
 import com.forwork.backend.api.member.dto.MemberLoginRequestDTO;
 import com.forwork.backend.api.member.dto.MemberLoginResponseDTO;
 import com.forwork.backend.api.member.entity.*;
@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,140 +32,66 @@ public class MemberService {
     private final CompanyValidationRepository companyValidationRepository;
     private final PasswordResetRepository passwordResetRepository;
 
-    // 고용인 회원가입
+    // 회원가입
     @Transactional
-    public void registerEmployee(EmployeeRegisterRequestDTO employeeRegisterRequestDTO) {
+    public void registerMember(MemberRegisterRequestDTO memberRegisterRequestDTO) {
 
         // 사용자ID 중복 검증
-        if (memberRepository.findByUserId(employeeRegisterRequestDTO.getUserId()).isPresent()) {
+        if (memberRepository.findByUserId(memberRegisterRequestDTO.getUserId()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
         }
         // 이메일 중복 검증
-        if (memberRepository.findByEmail(employeeRegisterRequestDTO.getEmail()).isPresent()) {
+        if (memberRepository.findByEmail(memberRegisterRequestDTO.getEmail()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
         // 핸드폰번호 중복 검증
-        if (memberRepository.findByPhoneNumber(employeeRegisterRequestDTO.getPhoneNumber()).isPresent()) {
+        if (memberRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
         // 이메일 인증 여부 체크
-        EmailVerification emailVerification = emailVerificationRepository.findByEmail(employeeRegisterRequestDTO.getEmail())
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(memberRegisterRequestDTO.getEmail())
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
         if (!emailVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
         }
 
         // 핸드폰번호 인증 여부 체크
-        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(employeeRegisterRequestDTO.getPhoneNumber())
+        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber())
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
         }
 
         Address address = new Address(
-                employeeRegisterRequestDTO.getZipcode(),
-                employeeRegisterRequestDTO.getAddress1(),
-                employeeRegisterRequestDTO.getAddress2()
+                memberRegisterRequestDTO.getZipcode(),
+                memberRegisterRequestDTO.getAddress1(),
+                memberRegisterRequestDTO.getAddress2()
         );
 
         // Employee 엔티티 생성
-        Employee employee = new Employee(
-                employeeRegisterRequestDTO.getUserId(),
-                passwordEncoder.encode(employeeRegisterRequestDTO.getPassword()), // 비밀번호 암호화
-                employeeRegisterRequestDTO.getName(),
-                employeeRegisterRequestDTO.getEmail(),
-                employeeRegisterRequestDTO.getPhoneNumber(),
-                address,
-                employeeRegisterRequestDTO.getNationality(),
-                employeeRegisterRequestDTO.getEducation(),
-                employeeRegisterRequestDTO.getVisa(),
-                employeeRegisterRequestDTO.getBirthDate(),
-                employeeRegisterRequestDTO.getGender(),
-                employeeRegisterRequestDTO.isTermsOfServiceAgreement(),
-                employeeRegisterRequestDTO.isOver15(),
-                employeeRegisterRequestDTO.isPersonalInfoAgreement(),
-                employeeRegisterRequestDTO.isAdInfoAgreementSmsMms(),
-                employeeRegisterRequestDTO.isAdInfoAgreementEmail()
-        );
+        Member member = Member.builder()
+                .userId(memberRegisterRequestDTO.getUserId())
+                .password(passwordEncoder.encode(memberRegisterRequestDTO.getPassword()))
+                .name(memberRegisterRequestDTO.getName())
+                .email(memberRegisterRequestDTO.getEmail())
+                .phoneNumber(memberRegisterRequestDTO.getPhoneNumber())
+                .address(address)
+                .birthday(memberRegisterRequestDTO.getBirthDate())
+                .gender(memberRegisterRequestDTO.getGender())
+                .nationality(memberRegisterRequestDTO.getNationality())
+                .education(memberRegisterRequestDTO.getEducation())
+                .visa(memberRegisterRequestDTO.getVisa())
+                .termsOfServiceAgreement(memberRegisterRequestDTO.isTermsOfServiceAgreement())
+                .isOver15(memberRegisterRequestDTO.isOver15())
+                .personalInfoAgreement(memberRegisterRequestDTO.isPersonalInfoAgreement())
+                .adInfoAgreementSmsMms(memberRegisterRequestDTO.isAdInfoAgreementSmsMms())
+                .adInfoAgreementEmail(memberRegisterRequestDTO.isAdInfoAgreementEmail())
+                .role(Role.USER)
+                .profileImage(null)
+                .build();
 
-        memberRepository.save(employee);
-    }
-
-    // 고용주 회원가입
-    @Transactional
-    public void registerEmployer(EmployerRegisterRequestDTO employerRegisterRequestDTO) {
-
-        // 사용자ID 중복 검증
-        if (memberRepository.findByUserId(employerRegisterRequestDTO.getUserId()).isPresent()) {
-            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
-        }
-        // 이메일 중복 검증
-        if (memberRepository.findByEmail(employerRegisterRequestDTO.getEmail()).isPresent()) {
-            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
-        }
-        // 핸드폰번호 중복 검증
-        if (memberRepository.findByPhoneNumber(employerRegisterRequestDTO.getPhoneNumber()).isPresent()) {
-            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
-        }
-
-        // 이메일 인증 여부 체크
-        EmailVerification emailVerification = emailVerificationRepository.findByEmail(employerRegisterRequestDTO.getEmail())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
-        if (!emailVerification.isVerified()) {
-            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
-        }
-
-        // 핸드폰번호 인증 여부 체크
-        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(employerRegisterRequestDTO.getPhoneNumber())
-                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
-        if (!phoneNumberVerification.isVerified()) {
-            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
-        }
-
-        // 사업자등록번호인증 확인
-
-        String startDate = employerRegisterRequestDTO.getEstablishedDate().toString().replace("-", ""); // "yyyy-MM-dd" -> "yyyyMMdd"
-
-        Optional<CompanyValidation> cv = companyValidationRepository.findByBusinessNoAndStartDateAndRepresentativeName(employerRegisterRequestDTO.getBusinessRegistrationNumber(), startDate, employerRegisterRequestDTO.getName());
-        if(cv.isEmpty()){
-            log.error("사업자 인증 안 됨.");
-            log.info("사업자 등록 번호= {}", employerRegisterRequestDTO.getBusinessRegistrationNumber());
-            log.info("startDate= {}", startDate);
-            log.info("대표자명= {}", employerRegisterRequestDTO.getName());
-            throw new BadRequestException(ErrorStatus.MISSING_BUSINESS_REGISTRATION_VERIFICATION_EXCEPTION.getMessage());
-        }
-
-        companyValidationRepository.delete(cv.get());
-        Address address = new Address(
-                employerRegisterRequestDTO.getZipcode(),
-                employerRegisterRequestDTO.getAddress1(),
-                employerRegisterRequestDTO.getAddress2()
-        );
-
-        // Employer 엔티티 생성
-        Employer employer = new Employer(
-                employerRegisterRequestDTO.getUserId(),
-                passwordEncoder.encode(employerRegisterRequestDTO.getPassword()), // 비밀번호 암호화
-                employerRegisterRequestDTO.getName(),
-                employerRegisterRequestDTO.getEmail(),
-                employerRegisterRequestDTO.getPhoneNumber(),
-                address,
-                employerRegisterRequestDTO.getBusinessRegistrationNumber(),
-                employerRegisterRequestDTO.getCompanyName(),
-                employerRegisterRequestDTO.getEstablishedDate(),
-                employerRegisterRequestDTO.getBirthDate(),
-                employerRegisterRequestDTO.getGender(),
-                employerRegisterRequestDTO.getCompanyType(),
-                employerRegisterRequestDTO.getJobCategory(),
-                employerRegisterRequestDTO.isTermsOfServiceAgreement(),
-                employerRegisterRequestDTO.isOver15(),
-                employerRegisterRequestDTO.isPersonalInfoAgreement(),
-                employerRegisterRequestDTO.isAdInfoAgreementSmsMms(),
-                employerRegisterRequestDTO.isAdInfoAgreementEmail()
-        );
-
-        memberRepository.save(employer);
+        memberRepository.save(member);
     }
 
     // 로그인
@@ -200,6 +125,57 @@ public class MemberService {
         if (memberRepository.findByUserId(userId).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
         }
+    }
+
+    // 사용자 ID 검증
+    public void verifyMyUserId(String userId, Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        if (!member.getUserId().equals(userId)) {
+            throw new BadRequestException(ErrorStatus.NOT_MATCH_USERID_EXCEPTION.getMessage());
+        }
+    }
+
+    // 사용자 ID 변경
+    @Transactional
+    public void modifyUserId(MemberModifyIdRequestDTO memberModifyIdRequestDTO, Long memberId) {
+
+        String newUserId = memberModifyIdRequestDTO.getUserId();
+
+        // 이미 사용 중인 ID인지 확인
+        if (memberRepository.findByUserId(newUserId).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
+        }
+
+        // 실제 회원이 존재하는지 체크
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+        
+        memberRepository.updateUserId(memberId, newUserId);
+    }
+
+    // 사용자 비밀번호 검증
+    public void verifyMyPassword(String rawPassword, Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        if (!passwordEncoder.matches(rawPassword, member.getPassword())) {
+            throw new BadRequestException(ErrorStatus.WRONG_PASSWORD_EXCEPTION.getMessage());
+        }
+    }
+
+    // 사용자 비밀번호 변경
+    @Transactional
+    public void modifyPassword(String newRawPassword, Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        String encoded = passwordEncoder.encode(newRawPassword);
+        member.updatePassword(encoded);
     }
 
 }

@@ -81,7 +81,11 @@ public enum SuccessStatus {
     EVALUATION_DELETE_SUCCESS(HttpStatus.OK, "평가 삭제 성공"),
     RECRUIT_UPDATE_SUCCESS(HttpStatus.OK, "공고 수정이 완료되었습니다."),
     RECRUIT_REVIEW_TOTAL_COUNT_SUCCESS(HttpStatus.OK, "채용 후기 총 개수 조회 성공"),
-
+    SEND_VERIFY_MY_USERID_SUCCESS(HttpStatus.OK,"현재 ID 검증 성공"),
+    SEND_MODIFY_USERID_SUCCESS(HttpStatus.OK,"ID 변경 성공"),
+    SEND_VERIFY_MY_PASSWORD_SUCCESS(HttpStatus.OK,"현재 비밀번호 검증 성공"),
+    SEND_MODIFY_PASSWORD_SUCCESS(HttpStatus.OK,"비밀번호 변경 성공"),
+    SEND_PASS_ARCHIVE_DETAIL_SUCCESS(HttpStatus.OK,"합격 아카이브 조회 성공"),
 
     /**
      * 201
@@ -96,6 +100,7 @@ public enum SuccessStatus {
     APPLY_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 지원 성공"),
     RECRUIT_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 작성 성공"),
     RECRUIT_REVIEW_COMMENT_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 댓글 작성 성공"),
+    CREATE_PASS_ARCHIVE_SUCCESS(HttpStatus.CREATED,"합격 아카이브 등록 성공"),
 
     ;
 

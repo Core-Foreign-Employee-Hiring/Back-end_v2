@@ -66,8 +66,7 @@ public class SecurityConfig {
                                 "/h2-console/**"
                         ).permitAll() // 스웨거, H2, healthCheck 허가
                         .requestMatchers(
-                                "/api/v2/member/employee-register", "/api/v2/member/employer-register",
-                                "/api/v2/member/login","/api/v2/member/token-reissue","/api/v2/member/verify-email",
+                                "/api/v2/member/register", "/api/v2/member/login","/api/v2/member/token-reissue","/api/v2/member/verify-email",
                                 "/api/v2/member/verification-email-code","/api/v2/member/verify-userid","/api/v2/member/verify-phone",
                                 "/api/v2/member/verification-phone-code", "/api/v2/member/find-user-id", "/api/v2/member/employer/company-validate"
                         ).permitAll() // 회원가입, 로그인, 토큰 재발급, 이메일 인증, 사업자등록 번호 인증 허가
@@ -75,8 +74,8 @@ public class SecurityConfig {
                                 HttpMethod.GET, "/api/v2/recruit/{recruit-id}", "/api/v2/recruit",
                                 "/api/v2/recruit-review", "/api/v2/recruit-review/{recruit-review-id}", "/api/v2/recruit-review/{recruit-review-id}/comments","/api/v2/recruit-review/total-count"
                         ).permitAll()
-                        .requestMatchers("/api/v2/recruit/**")
-                        .permitAll()
+                        .requestMatchers("/api/v2/recruit/**").permitAll()
+                        .requestMatchers("/api/v1/pass-archives/detail").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->

@@ -79,6 +79,7 @@ public enum ErrorStatus {
     CONTRACT_VERSION_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "계약서가 변경되었습니다. 다시 확인하세요."),
     CONTRACT_REVIEW_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "먼저 계약서를 확인하세요."),
     INVALID_APPLY_METHOD_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 지원 방법입니다. 올바른 방법으로 다시 시도하세요."),
+    NOT_MATCH_USERID_EXCEPTION(HttpStatus.BAD_REQUEST,"현재 아이디와 일치하지 않습니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -114,6 +115,7 @@ public enum ErrorStatus {
     COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"댓글을 찾을 수 없습니다."),
     PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "포트폴리오(스펙 및 경력)를 찾을 수 없습니다."),
     CONTRACT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
+    PASS_ARCHIVE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"합격 아카이브를 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR

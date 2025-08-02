@@ -54,9 +54,9 @@ public class EmailService {
         emailVerificationRepository.save(verification);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(String.format("ForWork <%s>", serviceEmail));
+        mailMessage.setFrom(String.format("Korfit <%s>", serviceEmail));
         mailMessage.setTo(email);
-        mailMessage.setSubject("ForWork 회원가입 인증코드 입니다.");
+        mailMessage.setSubject("Korfit 회원가입 인증코드 입니다.");
         mailMessage.setText(verification.generateCodeMessage());
         mailSender.send(mailMessage);
     }
@@ -78,11 +78,11 @@ public class EmailService {
         passwordResetRepository.save(passwordReset);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(String.format("ForWork <%s>", serviceEmail));
+        mailMessage.setFrom(String.format("Korfit <%s>", serviceEmail));
         mailMessage.setTo(passwordResetRequestDTO.getEmail());
-        mailMessage.setSubject("ForWork 비밀번호 초기화 링크");
+        mailMessage.setSubject("Korfit 비밀번호 초기화 링크");
         mailMessage.setText("비밀번호를 재설정하려면 아래 링크를 클릭하세요:\n\n"
-                + "https://www.forwork.co.kr/password?code=" + resetCode + "\n\n"
+                + "https://www.Korfit.co.kr/password?code=" + resetCode + "\n\n"
                 + "이 링크는 5분간 유효합니다.");
 
         mailSender.send(mailMessage);
@@ -140,9 +140,9 @@ public class EmailService {
         emailVerificationRepository.save(verification);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(String.format("ForWork <%s>", serviceEmail));
+        mailMessage.setFrom(String.format("Korfit <%s>", serviceEmail));
         mailMessage.setTo(email);
-        mailMessage.setSubject("ForWork 회원가입 인증코드 입니다.");
+        mailMessage.setSubject("Korfit 회원가입 인증코드 입니다.");
         mailMessage.setText(verification.generateCodeMessage());
         mailSender.send(mailMessage);
     }

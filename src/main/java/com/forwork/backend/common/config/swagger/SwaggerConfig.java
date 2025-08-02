@@ -41,12 +41,12 @@ public class SwaggerConfig {
 
         Server server = new Server();
         //server.setUrl("http://localhost:8080");
-        server.setUrl("https://api.forwork.co.kr");
+        server.setUrl("https://api.korfit.co.kr");
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("ForWork")
-                        .description("외국인 고용 프로젝트 REST API Document - Backend Developer : 태근, 용범")
+                        .title("Korfit")
+                        .description("외국인 취업 프로젝트 REST API Document - Backend Developer : 태근, 용범")
                         .version("2.0.0"))
                 .components(new Components()
                         .addSecuritySchemes(accessTokenHeader, accessTokenScheme)

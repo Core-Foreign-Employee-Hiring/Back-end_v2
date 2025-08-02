@@ -70,7 +70,7 @@ public class SmsService {
         Message message = new Message();
         message.setFrom(senderPhoneNumber);
         message.setTo(phoneNumber);
-        message.setText(String.format("[ForWork 인증코드] %s\n인증코드는 5분 후 만료됩니다.", code));
+        message.setText(String.format("[Korfit 인증코드] %s\n인증코드는 5분 후 만료됩니다.", code));
 
         try {
             SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));

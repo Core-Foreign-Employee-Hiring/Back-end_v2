@@ -22,6 +22,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberIdAndRole(@Param("memberId")Long memberId, @Param("role") Role role );
 
     @Modifying
-    @Query("update Member m set m.userId=:userId where m.id=:memberId")
+    @Query("update Member m set m.userId = :userId where m.id = :memberId")
     void updateUserId(@Param("memberId") Long memberId, @Param("userId") String userId);
 }
