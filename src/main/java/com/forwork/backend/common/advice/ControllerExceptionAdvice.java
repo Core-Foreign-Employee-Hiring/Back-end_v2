@@ -1,8 +1,7 @@
 package com.forwork.backend.common.advice;
 
-import com.forwork.backend.common.exception.BadRequestException;
+import com.forwork.backend.api.pay.exception.PaymentException;
 import com.forwork.backend.common.exception.BaseException;
-import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.ErrorStatus;
 import org.springframework.http.HttpStatus;
@@ -44,4 +43,9 @@ public class ControllerExceptionAdvice {
                 .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(),String.format("%s. (%s)", fieldError.getDefaultMessage(), fieldError.getField())));
     }
 
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<ApiResponse> handleGlobalException(PaymentException ex) {
+        return ResponseEntity.status(ex.getHttpStatus().value())
+                .body(ApiResponse.fail(ex.getHttpStatus().value(), ex.getMessage()));
+    }
 }

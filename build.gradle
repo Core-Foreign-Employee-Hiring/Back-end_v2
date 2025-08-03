@@ -72,6 +72,11 @@ dependencies {
 
 	// 로그에 쿼리 표시.
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+
+	// spring retry
+	implementation 'org.springframework.retry:spring-retry'
+	implementation 'org.springframework:spring-aspects'
+
 }
 
 tasks.named('test') {

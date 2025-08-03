@@ -101,6 +101,7 @@ public enum SuccessStatus {
     RECRUIT_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 작성 성공"),
     RECRUIT_REVIEW_COMMENT_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 댓글 작성 성공"),
     CREATE_PASS_ARCHIVE_SUCCESS(HttpStatus.CREATED,"합격 아카이브 등록 성공"),
+    ORDER_CREATE_SUCCESS(HttpStatus.CREATED, "주문 생성 성공"),
 
     ;
 
