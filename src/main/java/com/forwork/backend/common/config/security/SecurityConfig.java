@@ -44,10 +44,10 @@ public class SecurityConfig {
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(Arrays.asList(
-                            "https://www.forwork.co.kr",
-                            "https://api.forwork.co.kr",
+                            "https://www.korfit.co.kr",
+                            "https://api.korfit.co.kr",
                             "http://localhost:3000",
-                            "https://forwork-xi.vercel.app"
+                            "https://korfit-xi.vercel.app"
                     ));
                     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS"));
                     config.setAllowCredentials(true);
