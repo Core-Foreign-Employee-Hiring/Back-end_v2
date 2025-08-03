@@ -80,6 +80,15 @@ public enum ErrorStatus {
     CONTRACT_REVIEW_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "먼저 계약서를 확인하세요."),
     INVALID_APPLY_METHOD_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 지원 방법입니다. 올바른 방법으로 다시 시도하세요."),
     NOT_MATCH_USERID_EXCEPTION(HttpStatus.BAD_REQUEST,"현재 아이디와 일치하지 않습니다."),
+    ALREADY_REGISTERED_MERCHANT_ORDER_ID_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 등록된 주문번호입니다."),
+    ALREADY_DONE_PAYMENT_BEFORE_ORDER_EXCEPTION(HttpStatus.BAD_REQUEST, "결제를 진행하기 전에 주문을 먼저 생성해야 합니다."),
+    PAYMENT_IN_PROGRESS_EXCEPTION(HttpStatus.BAD_REQUEST, "결제가 진행 중이어서 처리할 수 없습니다."),
+    PAYMENT_ALREADY_DONE_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 결제가 승인되었습니다."),
+    PAYMENT_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "결제 세션이 만료되었습니다."),
+    PAYMENT_ABORTED_EXCEPTION(HttpStatus.BAD_REQUEST, "결제가 중단된 상태입니다."),
+    UNSUPPORTED_PAYMENT_STATUS_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "지원하지 않는 결제 상태입니다."),
+    TIMEOUT_PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"결제를 처음부터 다시 진행해주세요."),
+
 
     /**
      * 401 UNAUTHORIZED
