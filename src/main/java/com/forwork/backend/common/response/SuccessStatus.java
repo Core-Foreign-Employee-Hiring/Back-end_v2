@@ -86,6 +86,9 @@ public enum SuccessStatus {
     SEND_VERIFY_MY_PASSWORD_SUCCESS(HttpStatus.OK,"현재 비밀번호 검증 성공"),
     SEND_MODIFY_PASSWORD_SUCCESS(HttpStatus.OK,"비밀번호 변경 성공"),
     SEND_PASS_ARCHIVE_DETAIL_SUCCESS(HttpStatus.OK,"합격 아카이브 조회 성공"),
+    SEND_PURCHASED_ARCHIVES_SUCCESS(HttpStatus.OK, "구매한 아카이브 조회 성공"),
+    DOWNLOAD_PASS_ARCHIVE_SUCCESS(HttpStatus.OK, "아카이브 다운로드 성공"),
+
 
     /**
      * 201

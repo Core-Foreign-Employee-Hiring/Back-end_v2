@@ -106,6 +106,8 @@ public enum ErrorStatus {
     RECRUIT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 공고에 대한 권한이 없습니다."),
     RECRUIT_REVIEW_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 채용 후기에 대한 권한이 없습니다."),
     RECRUIT_REVIEW_COMMENT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다."),
+    ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 대한 구매 내역이 없습니다."),
+
 
 
     /**

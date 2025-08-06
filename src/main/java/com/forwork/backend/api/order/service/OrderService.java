@@ -31,6 +31,10 @@ public class OrderService {
     private final PassArchiveRepository passArchiveRepository;
     private final OrderPassArchiveRepository orderPassArchiveRepository;
 
+    /*
+    * c
+    * */
+
     @Transactional
     public void createOrder(Long buyerId, OrderRequestDTO orderRequestDTO) {
         Member buyer = memberRepository.findById(buyerId)
