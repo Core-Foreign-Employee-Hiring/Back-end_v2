@@ -2,6 +2,7 @@ package com.forwork.backend.api.pass_archive.controller;
 
 import com.forwork.backend.api.pass_archive.dto.PassArchiveCreateRequestDTO;
 import com.forwork.backend.api.pass_archive.dto.PassArchiveDetailResponseDTO;
+import com.forwork.backend.api.pass_archive.dto.PassArchiveFileResponseDTO;
 import com.forwork.backend.api.pass_archive.service.PassArchiveService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.response.ApiResponse;
@@ -56,5 +57,21 @@ public class PassArchiveController {
 
         PassArchiveDetailResponseDTO passArchiveDetailResponseDTO = passArchiveService.getDetailArchive(id);
         return ApiResponse.success(SuccessStatus.SEND_PASS_ARCHIVE_DETAIL_SUCCESS, passArchiveDetailResponseDTO);
+    }
+
+    @Operation(summary = "아카이브 다운 (용범)", description = "구매한 아카이브 다운.<b>" +
+            "출력: PassArchiveFileResponseDTO")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 다운로드 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "해당 아카이브에 대한 구매 내역이 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다.")
+    })
+    @GetMapping("/{archive-id}/download")
+    public ResponseEntity<ApiResponse<List<PassArchiveFileResponseDTO>>> downloadArchive(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                         @PathVariable("archive-id") Long archiveId) {
+
+        List<PassArchiveFileResponseDTO> response = passArchiveService.downloadArchive(securityMember.getId(), archiveId);
+
+        return ApiResponse.success(SuccessStatus.DOWNLOAD_PASS_ARCHIVE_SUCCESS, response);
     }
 }

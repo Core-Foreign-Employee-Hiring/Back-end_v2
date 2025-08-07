@@ -29,4 +29,14 @@ public class PageResponseDTO<T> {
                 .totalPages(page.getTotalPages())
                 .build();
     }
+
+    public static <T> PageResponseDTO<T> of(List<T> content, int page, int size, long totalElements, int totalPages) {
+        return PageResponseDTO.<T>builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .build();
+    }
 }
