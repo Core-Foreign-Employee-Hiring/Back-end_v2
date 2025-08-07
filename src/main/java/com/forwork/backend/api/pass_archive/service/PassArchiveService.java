@@ -82,8 +82,8 @@ public class PassArchiveService {
         // 구매했는지
         boolean b = orderRepository.existsPurchasedArchive(memberId, passArchiveId);
 
+        // 구매 안 했으면 예외
         if(!b){throw new BadRequestException(ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION.getMessage());}
-
 
         PassArchive passArchive = passArchiveRepository.findArchiveByArchiveIdWithProducts(passArchiveId)
                 .orElseThrow(() -> {
