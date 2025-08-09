@@ -1,5 +1,6 @@
 package com.forwork.backend.api.mypage.controller;
 
+import com.forwork.backend.api.mypage.dto.response.ArchiveInquiryResponseDTO;
 import com.forwork.backend.api.mypage.dto.response.PurchasedArchivesPreviewResponseDTO;
 import com.forwork.backend.api.mypage.service.EmployeeMyPageService;
 import com.forwork.backend.common.config.security.SecurityMember;
@@ -47,5 +48,45 @@ public class EmployeeMyPageController {
 
         PageResponseDTO<PurchasedArchivesPreviewResponseDTO> response = employeeMyPageService.getPurchasedArchives(securityMember.getId(), page, size);
         return ApiResponse.success(SuccessStatus.SEND_PURCHASED_ARCHIVES_SUCCESS, response);
+    }
+
+    @Operation(summary = "내가 보낸 문의 조회 (용범)", description = "출력: ArchiveInquiryResponseDTO")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내가 보낸 문의 조회 성공"),
+    })
+    @GetMapping("/inquiries/sent")
+    public ResponseEntity<ApiResponse<PageResponseDTO<ArchiveInquiryResponseDTO>>> getSentInquiries(
+            @AuthenticationPrincipal SecurityMember securityMember,
+
+            @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+
+            @Parameter(description = "페이지 크기", in = ParameterIn.QUERY)
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+
+        PageResponseDTO<ArchiveInquiryResponseDTO> response = employeeMyPageService.getSentInquiries(securityMember.getId(), page, size);
+
+        return ApiResponse.success(SuccessStatus.SEND_SENT_INQUIRIES_SUCCESS, response);
+    }
+
+    @Operation(summary = "내가 받은 문의 조회 (용범)", description = "출력: ArchiveInquiryResponseDTO")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내가 받은 문의 조회 성공"),
+    })
+    @GetMapping("/inquiries/received")
+    public ResponseEntity<ApiResponse<PageResponseDTO<ArchiveInquiryResponseDTO>>> getReceivedInquiries(
+            @AuthenticationPrincipal SecurityMember securityMember,
+
+            @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+
+            @Parameter(description = "페이지 크기", in = ParameterIn.QUERY)
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+
+        PageResponseDTO<ArchiveInquiryResponseDTO> response = employeeMyPageService.getReceivedInquiries(securityMember.getId(), page, size);
+
+        return ApiResponse.success(SuccessStatus.SEND_RECEIVED_INQUIRIES_SUCCESS, response);
     }
 }

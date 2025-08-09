@@ -88,6 +88,13 @@ public enum SuccessStatus {
     SEND_PASS_ARCHIVE_DETAIL_SUCCESS(HttpStatus.OK,"합격 아카이브 조회 성공"),
     SEND_PURCHASED_ARCHIVES_SUCCESS(HttpStatus.OK, "구매한 아카이브 조회 성공"),
     DOWNLOAD_PASS_ARCHIVE_SUCCESS(HttpStatus.OK, "아카이브 다운로드 성공"),
+    SEND_ARCHIVE_REVIEW_SUCCESS(HttpStatus.OK, "아카이브 리뷰 조회 성공"),
+    SEND_SENT_INQUIRIES_SUCCESS(HttpStatus.OK, "내가 보낸 문의 조회 성공"),
+    SEND_RECEIVED_INQUIRIES_SUCCESS(HttpStatus.OK, "내가 받은 문의 조회 성공"),
+    SEND_ARCHIVE_INQUIRY_NOTIFICATIONS_SUCCESS(HttpStatus.OK, "아카이브 문의 알람 조회 성공"),
+    READ_NOTIFICATIONS_SUCCESS(HttpStatus.OK, "알림 읽음 처리 성공"),
+    SEND_ANSWER_SUCCESS(HttpStatus.OK, "답변 보기 성공"),
+
 
 
     /**
@@ -105,6 +112,10 @@ public enum SuccessStatus {
     RECRUIT_REVIEW_COMMENT_CREATE_SUCCESS(HttpStatus.CREATED,"채용 후기 댓글 작성 성공"),
     CREATE_PASS_ARCHIVE_SUCCESS(HttpStatus.CREATED,"합격 아카이브 등록 성공"),
     ORDER_CREATE_SUCCESS(HttpStatus.CREATED, "주문 생성 성공"),
+    ARCHIVE_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "아카이브 리뷰 등록 성공"),
+    INQUIRY_CREATE_SUCCESS(HttpStatus.CREATED, "문의하기 성공"),
+    ANSWER_CREATE_SUCCESS(HttpStatus.CREATED, "답변하기 성공"),
+
 
     ;
 

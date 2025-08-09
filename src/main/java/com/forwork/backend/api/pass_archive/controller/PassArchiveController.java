@@ -1,12 +1,16 @@
 package com.forwork.backend.api.pass_archive.controller;
 
-import com.forwork.backend.api.pass_archive.dto.PassArchiveCreateRequestDTO;
-import com.forwork.backend.api.pass_archive.dto.PassArchiveDetailResponseDTO;
-import com.forwork.backend.api.pass_archive.dto.PassArchiveFileResponseDTO;
+import com.forwork.backend.api.pass_archive.dto.*;
+import com.forwork.backend.api.pass_archive.service.ArchiveInquiryService;
+import com.forwork.backend.api.pass_archive.service.ArchiveReviewService;
 import com.forwork.backend.api.pass_archive.service.PassArchiveService;
 import com.forwork.backend.common.config.security.SecurityMember;
+import com.forwork.backend.common.dto.PageResponseDTO;
 import com.forwork.backend.common.response.ApiResponse;
+import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.forwork.backend.common.response.SuccessStatus;
 
 import java.util.List;
 
@@ -24,8 +27,9 @@ import java.util.List;
 @RequestMapping("/api/v1/pass-archives")
 @RequiredArgsConstructor
 public class PassArchiveController {
-
     private final PassArchiveService passArchiveService;
+    private final ArchiveReviewService archiveReviewService;
+    private final ArchiveInquiryService archiveInquiryService;
 
     @Operation(summary = "합격아카이브 등록 (태근)", description = "무료일 경우 price를 0으로 넘겨주세요 / thumbnail : 썸네일 , images : 본문 이미지들, products : 판매할 상품들")
     @ApiResponses({
@@ -73,5 +77,98 @@ public class PassArchiveController {
         List<PassArchiveFileResponseDTO> response = passArchiveService.downloadArchive(securityMember.getId(), archiveId);
 
         return ApiResponse.success(SuccessStatus.DOWNLOAD_PASS_ARCHIVE_SUCCESS, response);
+    }
+
+
+    @Operation(
+            summary = "아카이브 리뷰 등록 API (용범)", description = "입력: ArchiveReviewRequestDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 리뷰 등록 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "이미 리뷰를 작성하셨습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+    })
+    @PostMapping("/{pass-archive-id}/reviews")
+    public ResponseEntity<ApiResponse<Void>> save(@AuthenticationPrincipal SecurityMember securityMember,
+                                                  @PathVariable("pass-archive-id")Long archiveId,
+                                                  @RequestBody ArchiveReviewRequestDTO dto) {
+        archiveReviewService.createArchiveReview(securityMember.getId(), archiveId, dto);
+
+        return ApiResponse.success_only(SuccessStatus.ARCHIVE_REVIEW_CREATE_SUCCESS);
+    }
+
+
+    @Operation(
+            summary = "아카이브 리뷰 조회 API (용범)", description = "출력: ArchiveReviewResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 리뷰 조회 성공"),
+    })
+    @GetMapping("/{pass-archive-id}/reviews")
+    public ResponseEntity<ApiResponse<PageResponseDTO<ArchiveReviewResponseDTO>>> getArchiveReviews(
+            @AuthenticationPrincipal SecurityMember securityMember,
+            @PathVariable("pass-archive-id") Long archiveId,
+
+            @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+
+            @Parameter(description = "페이지 크기", in = ParameterIn.QUERY)
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageResponseDTO<ArchiveReviewResponseDTO> response = archiveReviewService.getArchiveReviews(archiveId, page, size);
+
+        return ApiResponse.success(SuccessStatus.SEND_ARCHIVE_REVIEW_SUCCESS, response);
+    }
+
+
+    @Operation(
+            summary = "아카이브 문의하기 API (용범)", description = "입력: ArchiveInquiryRequestDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "문의하기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+    })
+    @PostMapping("/{pass-archive-id}/inquiries")
+    public ResponseEntity<ApiResponse<Void>> inquiry(@AuthenticationPrincipal SecurityMember securityMember, @PathVariable("pass-archive-id") Long archiveId,
+                                                     @RequestBody ArchiveInquiryRequestDTO dto) {
+
+        archiveInquiryService.inquiry(securityMember.getId(), archiveId, dto.inquiry());
+
+        return ApiResponse.success_only(SuccessStatus.INQUIRY_CREATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "아카이브 문의 답변하기 API (용범)", description = "입력: ArchiveInquiryAnswerRequestDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "답변하기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "다른 사람 아카이브 문의에는 답변할 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "이미 답변이 등록되어 있습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "다른 사람 아카이브 문의에는 답변할 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의글을 찾을 수 없습니다."),
+    })
+    @PostMapping("/inquiries/{inquiry-id}/answers")
+    public ResponseEntity<ApiResponse<Void>> answer(@AuthenticationPrincipal SecurityMember securityMember, @PathVariable("inquiry-id") Long inquiryId,
+                                                    @RequestBody ArchiveInquiryAnswerRequestDTO dto) {
+        archiveInquiryService.answer(securityMember.getId(), inquiryId, dto.answer());
+
+        return ApiResponse.success_only(SuccessStatus.ANSWER_CREATE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "아카이브 문의 답변보기 API (용범)", description = "출력: ArchiveInquiryAnswerResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "답변 보기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의글을 찾을 수 없습니다."),
+    })
+    @GetMapping("/inquiries/{inquiry-id}/answers")
+    public ResponseEntity<ApiResponse<ArchiveInquiryAnswerResponseDTO>> getAnswer(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                  @PathVariable("inquiry-id") Long inquiryId) {
+        ArchiveInquiryAnswerResponseDTO response = archiveInquiryService.getAnswer(inquiryId);
+
+        return ApiResponse.success(SuccessStatus.SEND_ANSWER_SUCCESS, response);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -16,11 +17,11 @@ public class OrderPassArchive {
     @Column(name="order_pass_archive_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name="order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name="pass_archive_id")
     private PassArchive passArchive;
 
