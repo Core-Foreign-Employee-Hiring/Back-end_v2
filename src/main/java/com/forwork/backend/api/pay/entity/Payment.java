@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Table(
@@ -46,7 +47,7 @@ public class Payment extends ExtendedBaseTimeEntity {
     private String method;                       // 결제 수단 (예: CARD, TRANSFER, MOBILE_PHONE 등)
     private OffsetDateTime approvedAt;           // 결제 승인 시각 (승인 완료 시점)
 
-    @OneToOne
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 

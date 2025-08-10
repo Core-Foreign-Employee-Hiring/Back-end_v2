@@ -1,10 +1,14 @@
 package com.forwork.backend.api.mypage.service;
 
+import com.forwork.backend.api.mypage.dto.response.ArchiveInquiryResponseDTO;
 import com.forwork.backend.api.mypage.dto.response.PurchasedArchivesPreviewResponseDTO;
 import com.forwork.backend.api.order.dto.query.PassArchivePreviewIdAndPaymentApprovedAtQueryDTO;
 import com.forwork.backend.api.order.repository.OrderRepository;
+import com.forwork.backend.api.pass_archive.entity.ArchiveReview;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
+import com.forwork.backend.api.pass_archive.repository.ArchiveReviewRepository;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
+import com.forwork.backend.api.pass_archive.service.ArchiveInquiryReader;
 import com.forwork.backend.common.dto.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +29,12 @@ import java.util.Map;
 public class EmployeeMyPageService {
     private final OrderRepository orderRepository;
     private final PassArchiveRepository passArchiveRepository;
+    private final ArchiveReviewRepository archiveReviewRepository;
+    private final ArchiveInquiryReader archiveInquiryReader;
+
+    /*
+    * r
+    * */
 
     /**
      * 구매한 아카이브 목록 조회
@@ -55,6 +65,17 @@ public class EmployeeMyPageService {
             passArchiveMap.put(passArchive.getPassArchiveId(), passArchive);
         }
 
+        // 리뷰 조회
+        List<ArchiveReview> archiveReviews = archiveReviewRepository.findAllByArchiveIds(ids);
+
+        // key:  아카이브 id, value: ArchiveReview
+        Map<Long, ArchiveReview> archiveReviewMap = new HashMap<>();
+        for (ArchiveReview archiveReview : archiveReviews) {
+            Long passArchiveId = archiveReview.getPassArchive().getPassArchiveId();
+
+            archiveReviewMap.put(passArchiveId, archiveReview);
+        }
+
         List<PurchasedArchivesPreviewResponseDTO> content = new ArrayList<>();
 
         /*
@@ -67,12 +88,35 @@ public class EmployeeMyPageService {
             // id에 맞는 PassArchive 찾아옴.
             PassArchive matchedPassArchive = passArchiveMap.get(passArchiveId);
 
-            PurchasedArchivesPreviewResponseDTO purchasedArchivesPreviewResponseDTO = PurchasedArchivesPreviewResponseDTO.of(matchedPassArchive, approvedAt);
+            // id에 맞는 ArchiveReview 찾아옴.
+            ArchiveReview archiveReview = archiveReviewMap.get(passArchiveId);
+
+            PurchasedArchivesPreviewResponseDTO purchasedArchivesPreviewResponseDTO = PurchasedArchivesPreviewResponseDTO.of(matchedPassArchive, archiveReview, approvedAt);
 
             content.add(purchasedArchivesPreviewResponseDTO);
         });
 
         PageResponseDTO<PurchasedArchivesPreviewResponseDTO> response = PageResponseDTO.of(content, dtos.getNumber(), dtos.getSize(), dtos.getTotalElements(), dtos.getTotalPages());
+        return response;
+    }
+
+    /**
+     * 내가 보낸 문의 조희
+     */
+    public PageResponseDTO<ArchiveInquiryResponseDTO> getSentInquiries(Long inquirerId, Integer page, Integer size) {
+        Pageable pageable= PageRequest.of(page, size);
+        Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getSentInquiries(inquirerId, pageable).map(ArchiveInquiryResponseDTO::of);
+        PageResponseDTO<ArchiveInquiryResponseDTO> response = PageResponseDTO.of(archiveInquiries);
+        return response;
+    }
+
+    /**
+     * 내가 받은 문의 조희
+     */
+    public PageResponseDTO<ArchiveInquiryResponseDTO> getReceivedInquiries(Long receiverId, Integer page, Integer size) {
+        Pageable pageable= PageRequest.of(page, size);
+        Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getReceivedInquiries(receiverId, pageable).map(ArchiveInquiryResponseDTO::of);
+        PageResponseDTO<ArchiveInquiryResponseDTO> response = PageResponseDTO.of(archiveInquiries);
         return response;
     }
 }

@@ -88,6 +88,11 @@ public enum ErrorStatus {
     PAYMENT_ABORTED_EXCEPTION(HttpStatus.BAD_REQUEST, "결제가 중단된 상태입니다."),
     UNSUPPORTED_PAYMENT_STATUS_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "지원하지 않는 결제 상태입니다."),
     TIMEOUT_PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"결제를 처음부터 다시 진행해주세요."),
+    REVIEW_ALREADY_WRITTEN_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하셨습니다."),
+    ANSWER_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 답변이 등록되어 있습니다."),
+
+
+
 
 
     /**
@@ -107,6 +112,7 @@ public enum ErrorStatus {
     RECRUIT_REVIEW_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 채용 후기에 대한 권한이 없습니다."),
     RECRUIT_REVIEW_COMMENT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다."),
     ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 대한 구매 내역이 없습니다."),
+    UNAUTHORIZED_INQUIRY_ANSWER_EXCEPTION(HttpStatus.FORBIDDEN, "다른 사람 아카이브 문의에는 답변할 수 없습니다."),
 
 
 
@@ -127,6 +133,7 @@ public enum ErrorStatus {
     PORTFOLIO_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "포트폴리오(스펙 및 경력)를 찾을 수 없습니다."),
     CONTRACT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
     PASS_ARCHIVE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"합격 아카이브를 찾을 수 없습니다."),
+    INQUIRY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "문의글을 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR

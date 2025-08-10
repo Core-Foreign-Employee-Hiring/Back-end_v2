@@ -3,6 +3,7 @@ package com.forwork.backend.api.pass_archive.repository;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,4 +25,18 @@ public interface PassArchiveRepository extends JpaRepository<PassArchive, Long> 
             " join fetch pa.products" +
             " where pa.passArchiveId=:archiveId")
     Optional<PassArchive>findArchiveByArchiveIdWithProducts(@Param("archiveId")Long archiveId);
+
+    @Query("select pa from PassArchive pa" +
+            " join fetch pa.member" +
+            " where pa.passArchiveId=:archiveId")
+    Optional<PassArchive> findArchiveByArchiveIdWithMember(@Param("archiveId") Long archiveId);
+
+
+    @Modifying
+    @Query("update PassArchive pa set pa.star=pa.star+:star where pa.passArchiveId=:passArchiveId")
+    void updateStarByPassArchiveId(@Param("passArchiveId")Long passArchiveId, @Param("star")double star);
+
+    @Modifying
+    @Query("update PassArchive pa set pa.starCount=pa.starCount+1 where pa.passArchiveId=:passArchiveId")
+    void updateStarCountByPassArchiveId(@Param("passArchiveId")Long passArchiveId);
 }
