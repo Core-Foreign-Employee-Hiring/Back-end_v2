@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface PassArchiveRepository extends JpaRepository<PassArchive, Long> {
+public interface PassArchiveRepository extends JpaRepository<PassArchive, Long>, PassArchiveQueryDSL {
 
     @EntityGraph(attributePaths = {"thumbnail", "images", "member"})
     Optional<PassArchive> findWithThumbnailImagesMemberByPassArchiveId(Long passArchiveId);

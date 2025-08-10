@@ -94,6 +94,7 @@ public enum SuccessStatus {
     SEND_ARCHIVE_INQUIRY_NOTIFICATIONS_SUCCESS(HttpStatus.OK, "아카이브 문의 알람 조회 성공"),
     READ_NOTIFICATIONS_SUCCESS(HttpStatus.OK, "알림 읽음 처리 성공"),
     SEND_ANSWER_SUCCESS(HttpStatus.OK, "답변 보기 성공"),
+    SEND_PASS_ARCHIVE_ALL_SUCCESS(HttpStatus.OK, "합격 아카이브 전체 조회 성공"),
 
 
 

@@ -171,4 +171,26 @@ public class PassArchiveController {
 
         return ApiResponse.success(SuccessStatus.SEND_ANSWER_SUCCESS, response);
     }
+
+    @Operation(
+            summary = "아카이브 전체 조회  API (용범)",
+            description = "출력: PassArchivePreviewResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "합격 아카이브 전체 조회 성공"),
+    })
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponseDTO<PassArchivePreviewResponseDTO>>> getPassArchives(
+            @Parameter(description = "검색 키워드", in = ParameterIn.QUERY)
+            @RequestParam(value = "keyword", required = false) String keyword,
+
+            @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+
+            @Parameter(description = "페이지 크기", in = ParameterIn.QUERY)
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageResponseDTO<PassArchivePreviewResponseDTO> response = passArchiveService.getPassArchives(keyword, page, size);
+        return ApiResponse.success(SuccessStatus.SEND_PASS_ARCHIVE_ALL_SUCCESS, response);
+    }
 }

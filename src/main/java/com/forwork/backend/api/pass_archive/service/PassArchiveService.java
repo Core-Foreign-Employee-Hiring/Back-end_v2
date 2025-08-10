@@ -9,13 +9,18 @@ import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.dto.PassArchiveCreateRequestDTO;
 import com.forwork.backend.api.pass_archive.dto.PassArchiveDetailResponseDTO;
 import com.forwork.backend.api.pass_archive.dto.PassArchiveFileResponseDTO;
+import com.forwork.backend.api.pass_archive.dto.PassArchivePreviewResponseDTO;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
+import com.forwork.backend.common.dto.PageResponseDTO;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,6 +99,18 @@ public class PassArchiveService {
         List<PassArchiveFileResponseDTO> response = passArchive.getProducts().stream()
                 .map(PassArchiveFileResponseDTO::of)
                 .toList();
+
+        return response;
+    }
+
+    // 합격 아카이브 리스트 조회 및 검색
+    public PageResponseDTO<PassArchivePreviewResponseDTO> getPassArchives(String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<PassArchivePreviewResponseDTO> passArchives = passArchiveRepository.getPassArchives(keyword, pageable)
+                .map(PassArchivePreviewResponseDTO::of);
+
+        PageResponseDTO<PassArchivePreviewResponseDTO> response = PageResponseDTO.of(passArchives);
 
         return response;
     }
