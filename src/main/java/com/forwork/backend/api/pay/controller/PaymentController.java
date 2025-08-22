@@ -2,6 +2,7 @@ package com.forwork.backend.api.pay.controller;
 
 import com.forwork.backend.api.pay.dto.request.PaymentConfirmRequestDTO;
 import com.forwork.backend.api.pay.service.PaymentService;
+import com.forwork.backend.api.pay.service.PaymentTestService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.SuccessStatus;
@@ -11,10 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Payment", description =
         "결제 관련 API 입니다." +
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
+    private final PaymentTestService paymentTestService;
 
     @Operation(
             summary = "결제 승인 요청 API (용범)",
@@ -51,4 +50,20 @@ public class PaymentController {
         return ApiResponse.success_only(SuccessStatus.SEND_PAY_SUCCESS);
     }
 
+    /*
+    * 테스트
+    * */
+
+    @Operation(
+            summary = "테스트: 결제 없이 아카이브 구매 API (용범)", description = "")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 승인 성공"),
+    })
+    @PostMapping("/test/confirm")
+    public ResponseEntity<ApiResponse<Void>> test_confirmPayment(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                 @RequestParam("archiveId")Long archiveId) {
+        paymentTestService.requestConfirm(securityMember.getId(), archiveId);
+
+        return ApiResponse.success_only(SuccessStatus.SEND_PAY_SUCCESS);
+    }
 }
