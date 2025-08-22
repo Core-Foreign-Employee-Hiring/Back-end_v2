@@ -3,6 +3,7 @@ package com.forwork.backend.api.pass_archive.controller;
 import com.forwork.backend.api.pass_archive.dto.*;
 import com.forwork.backend.api.pass_archive.service.ArchiveInquiryService;
 import com.forwork.backend.api.pass_archive.service.ArchiveReviewService;
+import com.forwork.backend.api.pass_archive.service.ArchiveTestService;
 import com.forwork.backend.api.pass_archive.service.PassArchiveService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.dto.PageResponseDTO;
@@ -30,6 +31,7 @@ public class PassArchiveController {
     private final PassArchiveService passArchiveService;
     private final ArchiveReviewService archiveReviewService;
     private final ArchiveInquiryService archiveInquiryService;
+    private final ArchiveTestService archiveTestService;
 
     @Operation(summary = "합격아카이브 등록 (태근)", description = "무료일 경우 price를 0으로 넘겨주세요 / thumbnail : 썸네일 , images : 본문 이미지들, products : 판매할 상품들")
     @ApiResponses({
@@ -192,5 +194,27 @@ public class PassArchiveController {
     ) {
         PageResponseDTO<PassArchivePreviewResponseDTO> response = passArchiveService.getPassArchives(keyword, page, size);
         return ApiResponse.success(SuccessStatus.SEND_PASS_ARCHIVE_ALL_SUCCESS, response);
+    }
+
+    /*
+    * 테스트
+    * */
+
+    @Operation(
+            summary = "테스트: 결제 없이 아카이브 리뷰 등록 API (용범)", description = "입력: ArchiveReviewRequestDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 리뷰 등록 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "이미 리뷰를 작성하셨습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+    })
+    @PostMapping("/test/{pass-archive-id}/reviews")
+    public ResponseEntity<ApiResponse<Void>> test_save(@AuthenticationPrincipal SecurityMember securityMember,
+                                                       @PathVariable("pass-archive-id") Long archiveId,
+                                                       @RequestBody ArchiveReviewRequestDTO dto) {
+        archiveTestService.createArchiveReview(securityMember.getId(), archiveId, dto);
+
+        return ApiResponse.success_only(SuccessStatus.ARCHIVE_REVIEW_CREATE_SUCCESS);
     }
 }
