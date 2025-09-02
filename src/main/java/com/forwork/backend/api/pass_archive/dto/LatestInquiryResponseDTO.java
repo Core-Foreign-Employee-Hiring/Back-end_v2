@@ -6,6 +6,10 @@ import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record LatestInquiryResponseDTO(
+        @Schema(description = "id")
+        Long archiveInquiryId,
+        @Schema(description = "")
+        String profileImage,
         @Schema(description = "유저명")
         String name,
         @Schema(description = "제목")
@@ -26,6 +30,8 @@ public record LatestInquiryResponseDTO(
         Member archiveOwner = archive.getMember();
 
         return new LatestInquiryResponseDTO(
+                archiveInquiry.getId(),
+                archiveOwner.getProfileImage(),
                 archiveOwner.getName(),
                 archive.getTitle(),
                 archive.getOneLineReview(),
