@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record LatestInquiryResponseDTO(
         @Schema(description = "id")
         Long archiveInquiryId,
-        @Schema(description = "")
+        @Schema(description = "프로필 이미지")
         String profileImage,
         @Schema(description = "유저명")
         String name,
