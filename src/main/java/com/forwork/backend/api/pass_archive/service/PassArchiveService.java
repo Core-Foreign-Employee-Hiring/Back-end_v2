@@ -74,12 +74,16 @@ public class PassArchiveService {
 
     // 합격 아카이브 상세 조회
     @Transactional(readOnly = true)
-    public PassArchiveDetailResponseDTO getDetailArchive(Long passArchiveId) {
+    public PassArchiveDetailResponseDTO getDetailArchive(Long memberId, Long passArchiveId) {
 
         PassArchive passArchive = passArchiveRepository.findWithThumbnailImagesMemberByPassArchiveId(passArchiveId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage()));
 
-        return PassArchiveDetailResponseDTO.from(passArchive);
+        // 작성자인지 판단
+        Member writer = passArchive.getMember();
+        boolean isWriter= writer.getId().equals(memberId);
+
+        return PassArchiveDetailResponseDTO.from(passArchive, isWriter);
     }
 
     // 아카이브 다운

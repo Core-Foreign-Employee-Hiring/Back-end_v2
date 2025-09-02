@@ -25,6 +25,9 @@ public class ArchiveInquiry extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String answer;
 
+    private boolean isReadByArchiveWriter;
+    private boolean isAnswered;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "inquirer _id")
     private Member inquirer ;
@@ -36,5 +39,7 @@ public class ArchiveInquiry extends BaseTimeEntity {
 
     public void answer(String answer) {
         this.answer = answer;
+        this.isAnswered = true;
+        this.isReadByArchiveWriter = true;
     }
 }

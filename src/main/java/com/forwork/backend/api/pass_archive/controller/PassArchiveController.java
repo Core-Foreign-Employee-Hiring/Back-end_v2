@@ -59,9 +59,12 @@ public class PassArchiveController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다.")
     })
     @GetMapping("/detail")
-    public ResponseEntity<ApiResponse<PassArchiveDetailResponseDTO>> getDetail(@RequestParam("id") Long id) {
+    public ResponseEntity<ApiResponse<PassArchiveDetailResponseDTO>> getDetail(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                               @RequestParam("id") Long id) {
 
-        PassArchiveDetailResponseDTO passArchiveDetailResponseDTO = passArchiveService.getDetailArchive(id);
+        Long memberId = (securityMember==null)?null: securityMember.getId();
+
+        PassArchiveDetailResponseDTO passArchiveDetailResponseDTO = passArchiveService.getDetailArchive(memberId, id);
         return ApiResponse.success(SuccessStatus.SEND_PASS_ARCHIVE_DETAIL_SUCCESS, passArchiveDetailResponseDTO);
     }
 
@@ -194,6 +197,49 @@ public class PassArchiveController {
     ) {
         PageResponseDTO<PassArchivePreviewResponseDTO> response = passArchiveService.getPassArchives(keyword, page, size);
         return ApiResponse.success(SuccessStatus.SEND_PASS_ARCHIVE_ALL_SUCCESS, response);
+    }
+
+    @Operation(
+            summary = "문의하기 답변 달렸는지 확인. API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "문의 답변 유무 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의글을 찾을 수 없습니다."),
+    })
+    @GetMapping("/inquiries/{inquiry-id}/is-answered")
+    public ResponseEntity<ApiResponse<Boolean>> isAnswered(@AuthenticationPrincipal SecurityMember securityMember,
+                                                           @PathVariable("inquiry-id") Long inquiryId) {
+        boolean answered = archiveInquiryService.isAnswered(inquiryId);
+
+        return ApiResponse.success(SuccessStatus.CHECK_INQUIRY_ANSWERED_SUCCESS, answered);
+    }
+
+    @Operation(
+            summary = "내가 보낸 문의 중 가장 최근 거 조회. API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내가 보낸 최근 문의 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의글을 찾을 수 없습니다."),
+    })
+    @GetMapping("/latest-inquiry")
+    public ResponseEntity<ApiResponse<LatestInquiryResponseDTO>> getLatestInquiry(@AuthenticationPrincipal SecurityMember securityMember) {
+        LatestInquiryResponseDTO response = archiveInquiryService.getLatestInquiry(securityMember.getId());
+
+        return ApiResponse.success(SuccessStatus.GET_LATEST_MY_INQUIRY_SUCCESS, response);
+    }
+
+    @Operation(
+            summary = "새로운 문의가 있나?. API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "특정 아카이브 읽지 않은 문의 조회 성공"),
+    })
+    @GetMapping("/{pass-archive-id}/inquiries/unread")
+    public ResponseEntity<ApiResponse<Boolean>> hasUnreadInquiryForArchive(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                           @PathVariable("pass-archive-id") Long archiveId) {
+        boolean response = archiveInquiryService.hasUnreadInquiryForArchive(archiveId);
+
+        return ApiResponse.success(SuccessStatus.CHECK_UNREAD_INQUIRY_SUCCESS, response);
     }
 
     /*
