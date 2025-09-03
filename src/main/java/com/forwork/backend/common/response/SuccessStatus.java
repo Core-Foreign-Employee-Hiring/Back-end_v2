@@ -93,11 +93,16 @@ public enum SuccessStatus {
     SEND_RECEIVED_INQUIRIES_SUCCESS(HttpStatus.OK, "내가 받은 문의 조회 성공"),
     SEND_ARCHIVE_INQUIRY_NOTIFICATIONS_SUCCESS(HttpStatus.OK, "아카이브 문의 알람 조회 성공"),
     READ_NOTIFICATIONS_SUCCESS(HttpStatus.OK, "알림 읽음 처리 성공"),
-    SEND_ANSWER_SUCCESS(HttpStatus.OK, "답변 보기 성공"),
+    SEND_INQUIRY_SUCCESS(HttpStatus.OK, "문의 조회 성공"),
     SEND_PASS_ARCHIVE_ALL_SUCCESS(HttpStatus.OK, "합격 아카이브 전체 조회 성공"),
     CHECK_INQUIRY_ANSWERED_SUCCESS(HttpStatus.OK, "문의 답변 유무 조회 성공"),
     GET_LATEST_MY_INQUIRY_SUCCESS(HttpStatus.OK, "내가 보낸 최근 문의 조회 성공"),
     CHECK_UNREAD_INQUIRY_SUCCESS(HttpStatus.OK, "특정 아카이브 읽지 않은 문의 조회 성공"),
+    GET_WRITTEN_ARCHIVE_SUCCESS(HttpStatus.OK, "작성한 아카이브 조회 성공"),
+    GET_SOLD_ARCHIVE_SUCCESS(HttpStatus.OK, "판매한 아카이브 조회 성공"),
+    GET_TOTAL_SALES_REVENUE_SUCCESS(HttpStatus.OK, "판매한 아카이브 총 수익 조회 성공"),
+
+
 
 
 

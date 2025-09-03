@@ -5,7 +5,7 @@ import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.notification.entity.ArchiveInquiryNotification;
 import com.forwork.backend.api.notification.enums.ArchiveInquiryNotificationType;
 import com.forwork.backend.api.notification.repository.ArchiveInquiryNotificationRepository;
-import com.forwork.backend.api.pass_archive.dto.ArchiveInquiryAnswerResponseDTO;
+import com.forwork.backend.api.pass_archive.dto.ArchiveInquiryResponseDTO;
 import com.forwork.backend.api.pass_archive.dto.LatestInquiryResponseDTO;
 import com.forwork.backend.api.pass_archive.entity.ArchiveInquiry;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
@@ -63,6 +63,7 @@ public class ArchiveInquiryService {
                 .inquirer(inquirer)
                 .isAnswered(false)
                 .isReadByArchiveWriter(false)
+                .isReadByInquirer(false)
                 .build();
 
         archiveInquiryRepository.save(archiveInquiry);
@@ -114,16 +115,12 @@ public class ArchiveInquiryService {
     * */
 
     /**
-     * 답변보기
+     * 문의하기 조회
      */
-    public ArchiveInquiryAnswerResponseDTO getAnswer(Long inquiryId) {
-        ArchiveInquiry archiveInquiry = archiveInquiryRepository.findByIdWithArchive(inquiryId)
-                .orElseThrow(() -> {
-                    log.warn("[getAnswer][문의 없음.][inquiryId={}]", inquiryId);
-                    return new NotFoundException(INQUIRY_NOT_FOUND_EXCEPTION.getMessage());
-                });
+    public ArchiveInquiryResponseDTO getInquiry(Long memberId, Long inquiryId) {
+        ArchiveInquiry archiveInquiry = archiveInquiryReader.getInquiry(memberId, inquiryId);
 
-        return ArchiveInquiryAnswerResponseDTO.of(archiveInquiry);
+        return ArchiveInquiryResponseDTO.of(archiveInquiry);
     }
 
     /**

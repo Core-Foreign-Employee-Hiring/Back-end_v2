@@ -1,23 +1,35 @@
 package com.forwork.backend.api.mypage.service;
 
+import com.forwork.backend.api.mypage.dto.query.ArchiveSalesCountQueryDTO;
 import com.forwork.backend.api.mypage.dto.response.ArchiveInquiryResponseDTO;
 import com.forwork.backend.api.mypage.dto.response.PurchasedArchivesPreviewResponseDTO;
+import com.forwork.backend.api.mypage.dto.response.SoldArchiveResponseDTO;
+import com.forwork.backend.api.mypage.dto.response.WrittenArchiveResponseDTO;
 import com.forwork.backend.api.order.dto.query.PassArchivePreviewIdAndPaymentApprovedAtQueryDTO;
+import com.forwork.backend.api.order.entity.OrderPassArchive;
+import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
+import com.forwork.backend.api.pass_archive.entity.ArchiveInquiry;
 import com.forwork.backend.api.pass_archive.entity.ArchiveReview;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.ArchiveInquiryRepository;
 import com.forwork.backend.api.pass_archive.repository.ArchiveReviewRepository;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.api.pass_archive.service.ArchiveInquiryReader;
+import com.forwork.backend.api.pay.entity.Payment;
+import com.forwork.backend.api.pay.repository.PaymentRepository;
+import com.forwork.backend.api.pay.service.PaymentReader;
 import com.forwork.backend.common.dto.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +44,8 @@ public class EmployeeMyPageService {
     private final PassArchiveRepository passArchiveRepository;
     private final ArchiveReviewRepository archiveReviewRepository;
     private final ArchiveInquiryReader archiveInquiryReader;
-    private final ArchiveInquiryRepository archiveInquiryRepository;
+    private final OrderPassArchiveRepository orderPassArchiveRepository;
+    private final PaymentReader paymentReader;
 
     /*
     * r
@@ -107,7 +120,8 @@ public class EmployeeMyPageService {
      */
     public PageResponseDTO<ArchiveInquiryResponseDTO> getSentInquiries(Long inquirerId, Integer page, Integer size) {
         Pageable pageable= PageRequest.of(page, size);
-        Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getSentInquiries(inquirerId, pageable).map(ArchiveInquiryResponseDTO::of);
+        Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getSentInquiries(inquirerId, pageable)
+                .map((ArchiveInquiry) -> ArchiveInquiryResponseDTO.of(inquirerId, ArchiveInquiry));
         PageResponseDTO<ArchiveInquiryResponseDTO> response = PageResponseDTO.of(archiveInquiries);
         return response;
     }
@@ -117,16 +131,84 @@ public class EmployeeMyPageService {
      */
     public PageResponseDTO<ArchiveInquiryResponseDTO> getReceivedInquiries(Long receiverId, Integer page, Integer size) {
         Pageable pageable= PageRequest.of(page, size);
-        Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getReceivedInquiries(receiverId, pageable).map(ArchiveInquiryResponseDTO::of);
-
-        // 문의 읽음 처리
-        List<Long> inquiryIds = archiveInquiries.getContent().stream()
-                .map(ArchiveInquiryResponseDTO::archiveInquiryId)
-                .toList();
-
-        archiveInquiryRepository.markAsRead(inquiryIds);
+        Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getReceivedInquiries(receiverId, pageable)
+                .map((ArchiveInquiry) -> ArchiveInquiryResponseDTO.of(receiverId, ArchiveInquiry));
 
         PageResponseDTO<ArchiveInquiryResponseDTO> response = PageResponseDTO.of(archiveInquiries);
+        return response;
+    }
+
+    /**
+     * 작성한 아키이브 조회
+     */
+    public PageResponseDTO<WrittenArchiveResponseDTO> getWrittenArchives(Long writerId, Integer page, Integer size) {
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "passArchiveId"));
+
+        // 작성한 아카이브 조회
+        Page<PassArchive> allByWriterId = passArchiveRepository.findAllByWriterId(writerId, pageable);
+
+        List<Long> ids = allByWriterId.getContent().stream()
+                .map(PassArchive::getPassArchiveId)
+                .toList();
+
+        // 몇 개 판매되었는지.
+        List<ArchiveSalesCountQueryDTO> salesCountsByArchiveIds = orderPassArchiveRepository.findSalesCountsByArchiveIds(ids);
+
+        // key: archiveId value: salesCount
+        Map<Long, Long> archiveIdToSalesCountMap = new HashMap<>();
+        salesCountsByArchiveIds
+                .forEach((archiveSalesCountQueryDTO -> archiveIdToSalesCountMap.put(archiveSalesCountQueryDTO.passArchiveId(), archiveSalesCountQueryDTO.salesCount())));
+
+        // response 타입으로 변경
+        Page<WrittenArchiveResponseDTO> dtos = allByWriterId
+                .map((passArchive -> WrittenArchiveResponseDTO.of(passArchive, archiveIdToSalesCountMap.get(passArchive.getPassArchiveId()))));
+
+        PageResponseDTO<WrittenArchiveResponseDTO> response = PageResponseDTO.of(dtos);
+
+        return response;
+    }
+
+    /**
+     * 판매한 아카이브 조회
+     */
+    public PageResponseDTO<SoldArchiveResponseDTO> getSoldArchives(Long memberId, Integer page, Integer size){
+        Pageable pageable= PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // 판매 내역(Payment) 조회
+        Page<Payment> soldPayments = paymentReader.getSoldPayments(memberId, pageable);
+
+        List<Long> orderIds = soldPayments.getContent().stream()
+                .map(payment -> payment.getOrder().getId())
+                .toList();
+
+        // 주문_아카이브 조회
+        List<OrderPassArchive> orderPassArchives = orderPassArchiveRepository.findAllByOrderIds(orderIds);
+
+        // key: orderId value: archive
+        Map<Long, PassArchive> passArchiveMap = new HashMap<>();
+        orderPassArchives
+                .forEach((orderPassArchive) -> passArchiveMap.put(orderPassArchive.getOrder().getId(), orderPassArchive.getPassArchive()));
+
+        // 타입 변경
+        Page<SoldArchiveResponseDTO> dtos = soldPayments
+                .map(payment -> {
+                    Long orderId = payment.getOrder().getId();
+                    PassArchive passArchive = passArchiveMap.get(orderId);
+
+                    return SoldArchiveResponseDTO.of(payment, passArchive);
+                });
+
+        PageResponseDTO<SoldArchiveResponseDTO> response = PageResponseDTO.of(dtos);
+
+        return response;
+    }
+
+    /**
+     * 판매한 총 수익 조회
+     */
+    public String getTotalSalesRevenue(Long memberId) {
+        BigDecimal totalSalesRevenue = paymentReader.getTotalSalesRevenue(memberId);
+        String response = totalSalesRevenue.setScale(2, RoundingMode.HALF_UP).toString();
         return response;
     }
 }

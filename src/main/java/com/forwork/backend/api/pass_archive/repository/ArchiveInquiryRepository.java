@@ -4,12 +4,9 @@ import com.forwork.backend.api.pass_archive.entity.ArchiveInquiry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ArchiveInquiryRepository extends JpaRepository<ArchiveInquiry, Long> {
@@ -23,9 +20,11 @@ public interface ArchiveInquiryRepository extends JpaRepository<ArchiveInquiry, 
 
 
     @Query("select ai from ArchiveInquiry ai" +
+            " join fetch ai.inquirer" +
             " join fetch ai.archive a" +
+            " join fetch a.member" +
             " where ai.id=:archiveInquiryId")
-    Optional<ArchiveInquiry> findByIdWithArchive (@Param("archiveInquiryId")Long archiveInquiryId);
+    Optional<ArchiveInquiry> findByIdWithArchiveAndArchiveWriterAndInquirer (@Param("archiveInquiryId")Long archiveInquiryId);
 
 
     @Query("select ai from ArchiveInquiry ai" +
@@ -42,20 +41,20 @@ public interface ArchiveInquiryRepository extends JpaRepository<ArchiveInquiry, 
 
 
     @Query("select ai from ArchiveInquiry ai" +
-            " join fetch ai.archive" +
+            " join fetch ai.archive a" +
+            " join fetch a.member" +
+            " join fetch ai.inquirer" +
             " where ai.inquirer.id=:inquirerId" +
             " order by ai.id desc")
-    Page<ArchiveInquiry>findSentInquiriesByInquirerId(@Param("inquirerId") Long inquirerId, Pageable pageable  );
+    Page<ArchiveInquiry>findSentInquiriesByInquirerId(@Param("inquirerId") Long inquirerId, Pageable pageable);
 
 
     @Query("select ai from ArchiveInquiry ai" +
             " join fetch ai.archive a" +
+            " join fetch a.member" +
+            " join fetch ai.inquirer" +
             " where a.member.id=:receiverId" +
             " order by ai.id desc")
     Page<ArchiveInquiry>findReceivedInquiriesByReceiverId(@Param("receiverId") Long receiverId, Pageable pageable);
 
-
-    @Modifying @Transactional
-    @Query("update ArchiveInquiry ai set ai.isReadByArchiveWriter=true where ai.id in :inquiryIds")
-    void markAsRead(@Param("inquiryIds") List<Long> inquiryIds);
 }
