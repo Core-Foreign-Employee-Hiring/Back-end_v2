@@ -1,5 +1,6 @@
 package com.forwork.backend.api.pass_archive.service;
 
+import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.pass_archive.entity.ArchiveInquiry;
 import com.forwork.backend.api.pass_archive.repository.ArchiveInquiryRepository;
 import com.forwork.backend.common.exception.NotFoundException;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.forwork.backend.common.response.ErrorStatus.INQUIRY_NOT_FOUND_EXCEPTION;
 
@@ -65,5 +67,30 @@ public class ArchiveInquiryReader {
      */
     public boolean hasUnreadInquiryForArchive(Long archiveId) {
         return archiveInquiryRepository.existsUnreadInquiryForArchive(archiveId);
+    }
+
+    /**
+     * 문의하기 조회
+     */
+    @Transactional
+    public ArchiveInquiry getInquiry(Long memberId, Long inquiryId) {
+        ArchiveInquiry archiveInquiry = archiveInquiryRepository.findByIdWithArchiveAndArchiveWriterAndInquirer(inquiryId)
+                .orElseThrow(() -> {
+                    log.warn("[getAnswer][문의 없음.][inquiryId={}]", inquiryId);
+                    return new NotFoundException(INQUIRY_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        // 읽음 처리.
+        Member inquirer = archiveInquiry.getInquirer();
+        Member archiveWriter = archiveInquiry.getArchive().getMember();
+
+        if(inquirer.getId().equals(memberId)){
+            archiveInquiry.readByInquirer();
+        }
+        else if(archiveWriter.getId().equals(memberId)){
+            archiveInquiry.readByArchiveWriter();
+        }
+
+        return archiveInquiry;
     }
 }

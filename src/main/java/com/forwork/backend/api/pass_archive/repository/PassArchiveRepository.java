@@ -1,6 +1,8 @@
 package com.forwork.backend.api.pass_archive.repository;
 
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,6 +33,9 @@ public interface PassArchiveRepository extends JpaRepository<PassArchive, Long>,
             " where pa.passArchiveId=:archiveId")
     Optional<PassArchive> findArchiveByArchiveIdWithMember(@Param("archiveId") Long archiveId);
 
+    @Query("select pa from PassArchive pa" +
+            " where pa.member.id=:writerId")
+    Page<PassArchive> findAllByWriterId(@Param("writerId") Long writerId, Pageable pageable);
 
     @Modifying
     @Query("update PassArchive pa set pa.star=pa.star+:star where pa.passArchiveId=:passArchiveId")

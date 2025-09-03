@@ -13,12 +13,14 @@ public record PurchasedArchivesPreviewResponseDTO(
         String thumbnailUrl,
         @Schema(description = "제목")
         String title,
-        @Schema(description = "한 줄설명")
+        @Schema(description = "한줄설명")
         String oneLineReview,
         @Schema(description = "가격")
         long price,
         @Schema(description = "결제날짜")
         LocalDate approvedAt,
+        @Schema(description = "리뷰 작성 유무")
+        boolean isReviewed,
         @Schema(description = "리뷰 id")
         Long archiveReviewId,
         @Schema(description = "별점")
@@ -27,6 +29,7 @@ public record PurchasedArchivesPreviewResponseDTO(
 
     public static PurchasedArchivesPreviewResponseDTO of(PassArchive passArchive, ArchiveReview archiveReview, LocalDate approvedAt){
         String thumbnailUrl=(passArchive.getThumbnail()==null)?null:passArchive.getThumbnail().getFileUrl();
+        boolean isReviewed= archiveReview != null;
         Long archiveReviewId=(archiveReview==null)?null:archiveReview.getId();
         double start=(archiveReview==null)?0.0:archiveReview.getStar();
 
@@ -37,6 +40,7 @@ public record PurchasedArchivesPreviewResponseDTO(
                 passArchive.getOneLineReview(),
                 passArchive.getPrice(),
                 approvedAt,
+                isReviewed,
                 archiveReviewId,
                 start
         );

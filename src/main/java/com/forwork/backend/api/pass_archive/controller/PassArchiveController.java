@@ -163,18 +163,18 @@ public class PassArchiveController {
     }
 
     @Operation(
-            summary = "아카이브 문의 답변보기 API (용범)", description = "출력: ArchiveInquiryAnswerResponseDTO"
+            summary = "아카이브 문의 조회 API (용범)", description = "출력: ArchiveInquiryResponseDTO"
     )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "답변 보기 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "문의 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의글을 찾을 수 없습니다."),
     })
-    @GetMapping("/inquiries/{inquiry-id}/answers")
-    public ResponseEntity<ApiResponse<ArchiveInquiryAnswerResponseDTO>> getAnswer(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                  @PathVariable("inquiry-id") Long inquiryId) {
-        ArchiveInquiryAnswerResponseDTO response = archiveInquiryService.getAnswer(inquiryId);
+    @GetMapping("/inquiries/{inquiry-id}")
+    public ResponseEntity<ApiResponse<ArchiveInquiryResponseDTO>> getInquiry(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                             @PathVariable("inquiry-id") Long inquiryId) {
+        ArchiveInquiryResponseDTO response = archiveInquiryService.getInquiry(securityMember.getId(), inquiryId);
 
-        return ApiResponse.success(SuccessStatus.SEND_ANSWER_SUCCESS, response);
+        return ApiResponse.success(SuccessStatus.SEND_INQUIRY_SUCCESS, response);
     }
 
     @Operation(
