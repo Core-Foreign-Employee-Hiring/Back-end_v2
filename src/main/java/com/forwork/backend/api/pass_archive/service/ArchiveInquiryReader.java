@@ -52,8 +52,8 @@ public class ArchiveInquiryReader {
     /**
      * 내가 보낸 문의 중 가장 최근 거 조회
      */
-    public ArchiveInquiry getLatestInquiry(Long inquirerId) {
-        ArchiveInquiry archiveInquiry = archiveInquiryRepository.findLatestInquiryByArchiveInquiryIdAndInquirerId(inquirerId)
+    public ArchiveInquiry getLatestInquiry(Long inquirerId, Long archiveId) {
+        ArchiveInquiry archiveInquiry = archiveInquiryRepository.findLatestInquiryByArchiveInquiryIdAndInquirerId(inquirerId, archiveId)
                 .orElseThrow(() -> {
                     log.warn("[getLatestInquiry][문의 없음.][inquirerId={}]", inquirerId);
                     return new NotFoundException(INQUIRY_NOT_FOUND_EXCEPTION.getMessage());

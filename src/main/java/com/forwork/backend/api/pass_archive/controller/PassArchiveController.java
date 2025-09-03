@@ -221,9 +221,10 @@ public class PassArchiveController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내가 보낸 최근 문의 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의글을 찾을 수 없습니다."),
     })
-    @GetMapping("/latest-inquiry")
-    public ResponseEntity<ApiResponse<LatestInquiryResponseDTO>> getLatestInquiry(@AuthenticationPrincipal SecurityMember securityMember) {
-        LatestInquiryResponseDTO response = archiveInquiryService.getLatestInquiry(securityMember.getId());
+    @GetMapping("/{pass-archive-id}/latest-inquiry")
+    public ResponseEntity<ApiResponse<LatestInquiryResponseDTO>> getLatestInquiry(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                  @PathVariable("pass-archive-id") Long archiveId) {
+        LatestInquiryResponseDTO response = archiveInquiryService.getLatestInquiry(securityMember.getId(), archiveId);
 
         return ApiResponse.success(SuccessStatus.GET_LATEST_MY_INQUIRY_SUCCESS, response);
     }

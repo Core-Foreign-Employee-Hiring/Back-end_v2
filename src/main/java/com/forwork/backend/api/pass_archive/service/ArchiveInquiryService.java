@@ -133,8 +133,9 @@ public class ArchiveInquiryService {
     /**
      * 내가 보낸 문의 중 가장 최근 거 조회
      */
-    public LatestInquiryResponseDTO getLatestInquiry(Long inquirerId) {
-        ArchiveInquiry latestInquiry = archiveInquiryReader.getLatestInquiry(inquirerId);
+    public LatestInquiryResponseDTO getLatestInquiry(Long inquirerId, Long archiveId) {
+
+        ArchiveInquiry latestInquiry = archiveInquiryReader.getLatestInquiry(inquirerId, archiveId);
 
         LatestInquiryResponseDTO response = LatestInquiryResponseDTO.of(latestInquiry);
 
