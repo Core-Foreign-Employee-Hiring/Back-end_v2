@@ -215,7 +215,7 @@ public class PassArchiveController {
     }
 
     @Operation(
-            summary = "내가 보낸 문의 중 가장 최근 거 조회. API (용범)"
+            summary = "내가 보낸 문의 중 가장 최근 거 조회. API (용범)", description = "출력: LatestInquiryResponseDTO"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내가 보낸 최근 문의 조회 성공"),
@@ -241,6 +241,20 @@ public class PassArchiveController {
         boolean response = archiveInquiryService.hasUnreadInquiryForArchive(archiveId);
 
         return ApiResponse.success(SuccessStatus.CHECK_UNREAD_INQUIRY_SUCCESS, response);
+    }
+
+    @Operation(
+            summary = "리뷰 상세조회 API (용범)", description = "출력: ArchiveReviewDetailResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "리뷰 조회 성공"),
+    })
+    @GetMapping("/reviews/{review-id}")
+    public ResponseEntity<ApiResponse<ArchiveReviewDetailResponseDTO>> getArchiveReview(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                        @PathVariable("review-id") Long reviewId) {
+        ArchiveReviewDetailResponseDTO response = archiveReviewService.getArchiveReview(reviewId);
+
+        return ApiResponse.success(SuccessStatus.GET_REVIEW_SUCCESS, response);
     }
 
     /*

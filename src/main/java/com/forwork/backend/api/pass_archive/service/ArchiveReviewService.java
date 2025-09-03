@@ -3,6 +3,7 @@ package com.forwork.backend.api.pass_archive.service;
 import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
+import com.forwork.backend.api.pass_archive.dto.ArchiveReviewDetailResponseDTO;
 import com.forwork.backend.api.pass_archive.dto.ArchiveReviewRequestDTO;
 import com.forwork.backend.api.pass_archive.dto.ArchiveReviewResponseDTO;
 import com.forwork.backend.api.pass_archive.entity.ArchiveReview;
@@ -47,9 +48,9 @@ public class ArchiveReviewService {
         boolean purchased = orderRepository.existsPurchasedArchive(writerId, archiveId);
         if(!purchased){throw new BadRequestException(ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION.getMessage());}
 
-      /*  // 이전에 작성했는지 확인 리뷰 단위 구매? 주문? 아카이브?
+        // 이전에 작성했는지 확인 리뷰 단위 구매? 주문? 아카이브?
         boolean written = archiveReviewRepository.existsByWriterIdAndArchiveId(writerId, archiveId);
-        if(written){throw new BadRequestException(REVIEW_ALREADY_WRITTEN_EXCEPTION.getMessage());}*/
+        if(written){throw new BadRequestException(REVIEW_ALREADY_WRITTEN_EXCEPTION.getMessage());}
 
         Member writer = memberRepository.findById(writerId)
                 .orElseThrow(() -> {
@@ -98,4 +99,19 @@ public class ArchiveReviewService {
         return response;
     }
 
+
+    /**
+     * 리뷰 상세 조회
+     */
+    public ArchiveReviewDetailResponseDTO getArchiveReview(Long reviewId){
+        ArchiveReview archiveReview = archiveReviewRepository.findById(reviewId)
+                .orElseThrow(() -> {
+                    log.warn("[getArchiveReview][리뷰 없음.][reviewId={}]", reviewId);
+                    return new NotFoundException(REVIEW_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        ArchiveReviewDetailResponseDTO response = ArchiveReviewDetailResponseDTO.of(archiveReview);
+
+        return response;
+    }
 }
