@@ -90,6 +90,7 @@ public enum ErrorStatus {
     TIMEOUT_PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"결제를 처음부터 다시 진행해주세요."),
     REVIEW_ALREADY_WRITTEN_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하셨습니다."),
     ANSWER_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 답변이 등록되어 있습니다."),
+    PAYMENT_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 존재하는 결제 정보입니다. 처음부터 다시 진행해주세요."),
 
 
 
