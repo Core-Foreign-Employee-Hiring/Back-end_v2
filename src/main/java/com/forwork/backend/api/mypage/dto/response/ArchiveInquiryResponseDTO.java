@@ -10,7 +10,9 @@ public record ArchiveInquiryResponseDTO(
         String title,
         @Schema(description = "문의")
         String inquiry,
-        @Schema(description = "답변. null 이면 답변 x")
+        @Schema(description = "답변 유무")
+        boolean isAnswered,
+        @Schema(description = "답변.")
         String answer
 ) {
 
@@ -19,6 +21,7 @@ public record ArchiveInquiryResponseDTO(
                 archiveInquiry.getId(),
                 archiveInquiry.getArchive().getTitle(),
                 archiveInquiry.getInquiry(),
+                archiveInquiry.isAnswered(),
                 archiveInquiry.getAnswer()
         );
     }

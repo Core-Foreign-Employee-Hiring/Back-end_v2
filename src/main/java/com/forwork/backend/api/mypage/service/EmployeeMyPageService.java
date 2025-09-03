@@ -6,6 +6,7 @@ import com.forwork.backend.api.order.dto.query.PassArchivePreviewIdAndPaymentApp
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.entity.ArchiveReview;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
+import com.forwork.backend.api.pass_archive.repository.ArchiveInquiryRepository;
 import com.forwork.backend.api.pass_archive.repository.ArchiveReviewRepository;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.api.pass_archive.service.ArchiveInquiryReader;
@@ -31,6 +32,7 @@ public class EmployeeMyPageService {
     private final PassArchiveRepository passArchiveRepository;
     private final ArchiveReviewRepository archiveReviewRepository;
     private final ArchiveInquiryReader archiveInquiryReader;
+    private final ArchiveInquiryRepository archiveInquiryRepository;
 
     /*
     * r
@@ -116,6 +118,14 @@ public class EmployeeMyPageService {
     public PageResponseDTO<ArchiveInquiryResponseDTO> getReceivedInquiries(Long receiverId, Integer page, Integer size) {
         Pageable pageable= PageRequest.of(page, size);
         Page<ArchiveInquiryResponseDTO> archiveInquiries = archiveInquiryReader.getReceivedInquiries(receiverId, pageable).map(ArchiveInquiryResponseDTO::of);
+
+        // 문의 읽음 처리
+        List<Long> inquiryIds = archiveInquiries.getContent().stream()
+                .map(ArchiveInquiryResponseDTO::archiveInquiryId)
+                .toList();
+
+        archiveInquiryRepository.markAsRead(inquiryIds);
+
         PageResponseDTO<ArchiveInquiryResponseDTO> response = PageResponseDTO.of(archiveInquiries);
         return response;
     }

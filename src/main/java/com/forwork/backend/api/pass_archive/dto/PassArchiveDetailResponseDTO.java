@@ -21,8 +21,9 @@ public class PassArchiveDetailResponseDTO {
     private List<String> imageUrls;
     private String authorNickname;
     private String authorProfileImage;
+    private boolean isWriter;
 
-    public static PassArchiveDetailResponseDTO from(PassArchive pa) {
+    public static PassArchiveDetailResponseDTO from(PassArchive pa, boolean isWriter) {
         return new PassArchiveDetailResponseDTO(
                 pa.getTitle(),
                 pa.getOneLineReview(),
@@ -35,7 +36,8 @@ public class PassArchiveDetailResponseDTO {
                         .map(UploadFile::getFileUrl)
                         .collect(Collectors.toList()),
                 pa.getMember().getName(),            // name을 닉네임으로 사용
-                pa.getMember().getProfileImage()     // Member.profileImage
+                pa.getMember().getProfileImage(),     // Member.profileImage
+                isWriter
         );
     }
 }

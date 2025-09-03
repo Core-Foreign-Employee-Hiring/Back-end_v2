@@ -6,6 +6,7 @@ import com.forwork.backend.api.notification.entity.ArchiveInquiryNotification;
 import com.forwork.backend.api.notification.enums.ArchiveInquiryNotificationType;
 import com.forwork.backend.api.notification.repository.ArchiveInquiryNotificationRepository;
 import com.forwork.backend.api.pass_archive.dto.ArchiveInquiryAnswerResponseDTO;
+import com.forwork.backend.api.pass_archive.dto.LatestInquiryResponseDTO;
 import com.forwork.backend.api.pass_archive.entity.ArchiveInquiry;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.ArchiveInquiryRepository;
@@ -29,6 +30,7 @@ public class ArchiveInquiryService {
     private final MemberRepository memberRepository;
     private final PassArchiveRepository passArchiveRepository;
     private final ArchiveInquiryNotificationRepository archiveInquiryNotificationRepository;
+    private final ArchiveInquiryReader archiveInquiryReader;
 
 
 
@@ -59,6 +61,8 @@ public class ArchiveInquiryService {
                 .archive(passArchive)
                 .inquiry(content)
                 .inquirer(inquirer)
+                .isAnswered(false)
+                .isReadByArchiveWriter(false)
                 .build();
 
         archiveInquiryRepository.save(archiveInquiry);
@@ -91,7 +95,7 @@ public class ArchiveInquiryService {
             throw new BadRequestException(UNAUTHORIZED_INQUIRY_ANSWER_EXCEPTION.getMessage());
         }
 
-        if(archiveInquiry.getAnswer()!= null){
+        if(archiveInquiry.isAnswered()){
             log.warn("[answer][이미 답변했음][archiveInquiryId= {}]", archiveInquiryId);
             throw new BadRequestException(ANSWER_ALREADY_EXISTS_EXCEPTION.getMessage());
         }
@@ -122,4 +126,28 @@ public class ArchiveInquiryService {
         return ArchiveInquiryAnswerResponseDTO.of(archiveInquiry);
     }
 
+    /**
+     * 문의 답변 유무 조회
+     */
+    public boolean isAnswered(Long archiveInquiryId){
+        return archiveInquiryReader.isAnswered(archiveInquiryId);
+    }
+
+    /**
+     * 내가 보낸 문의 중 가장 최근 거 조회
+     */
+    public LatestInquiryResponseDTO getLatestInquiry(Long inquirerId) {
+        ArchiveInquiry latestInquiry = archiveInquiryReader.getLatestInquiry(inquirerId);
+
+        LatestInquiryResponseDTO response = LatestInquiryResponseDTO.of(latestInquiry);
+
+        return response;
+    }
+
+    /**
+     * 특정 아카이브에 대해 읽지 않은 문의가 있어?
+     */
+    public boolean hasUnreadInquiryForArchive(Long archiveId) {
+        return archiveInquiryReader.hasUnreadInquiryForArchive(archiveId);
+    }
 }
