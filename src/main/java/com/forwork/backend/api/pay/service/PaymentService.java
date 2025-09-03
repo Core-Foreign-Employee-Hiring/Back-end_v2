@@ -9,17 +9,16 @@ import com.forwork.backend.api.pay.exception.PaymentTimeoutException;
 import com.forwork.backend.api.pay.exception.confirm.PaymentAbortedException;
 import com.forwork.backend.api.pay.exception.confirm.PaymentAlreadyDoneException;
 import com.forwork.backend.api.pay.exception.confirm.PaymentExpiredException;
-import com.forwork.backend.api.pay.exception.confirm.PaymentRetryableException;
 import com.forwork.backend.api.pay.repository.PaymentRepository;
 import com.forwork.backend.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.EnumSet;
 import java.util.Optional;
 
-import static com.forwork.backend.common.response.ErrorStatus.*;
+import static com.forwork.backend.common.response.ErrorStatus.ALREADY_DONE_PAYMENT_BEFORE_ORDER_EXCEPTION;
+import static com.forwork.backend.common.response.ErrorStatus.PAYMENT_ALREADY_EXISTS_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +29,9 @@ public class PaymentService {
     private final PaymentCreator paymentCreator;
     private final TossPaymentClient tossPaymentClient;
     private final PaymentProcessor paymentProcessor;
-    private final EnumSet<PaymentStatus> allowedStatuses = EnumSet.of(PaymentStatus.RETRY);
 
     /**
-     * 결제 상태는 반드시 IN_PROGRESS 로 시작하여 성공(DONE), 실패(ABORTED, RETRY, EXPIRED), 타임아웃(TIMEOUT) 중 하나로 끝나야 한다.
+     * 결제 상태는 반드시 IN_PROGRESS 로 시작하여 성공(DONE), 실패(ABORTED, EXPIRED), 타임아웃(TIMEOUT) 중 하나로 끝나야 한다.
      *
      * 1) 구입할 수 있는지 각종 검증: amount, 최초 요청 등
      * 2) 결제 승인 api 호출
@@ -42,10 +40,10 @@ public class PaymentService {
      *
      * 1)
      * amount 검증.
-     * 최초 요청 || RETRY 만 통과시킨다.
+     * 최초 요청만 통과
      *
      * 2) 결제 승인 api 호출
-     * 결제 승인 결과: 성공(ALREADY_DONE, DONE), 실패(ABORTED, RETRY, EXPIRED), 타임아웃(TIMEOUT)
+     * 결제 승인 결과: 성공(ALREADY_DONE, DONE), 실패(ABORTED, EXPIRED), 타임아웃(TIMEOUT)
      * 실패: 결제 승인 x 확신 -> 상품 관련 만 rollback
      * 타임아웃: 결제 승인 유무 모름 -> 후보정
      *
@@ -69,9 +67,11 @@ public class PaymentService {
 
         Optional<Payment> findPayment=paymentRepository.findByPaymentKey((paymentKey));
 
-        findPayment.ifPresentOrElse(
-                this::validateExistingPaymentStatus,
-                () -> paymentCreator.create(paymentKey, merchantOrderId)
+        findPayment.ifPresent(
+                (p) -> {
+                    log.warn("[requestConfirm][paymentKey 이미 존재][paymentKey= {}]", paymentKey);
+                    throw new BadRequestException(PAYMENT_ALREADY_EXISTS_EXCEPTION.getMessage());
+                }
         );
 
 
@@ -94,10 +94,6 @@ public class PaymentService {
             paymentRepository.updatePaymentStatusByPaymentKey(paymentKey, PaymentStatus.ABORTED);
             throw e;
 
-        }catch (PaymentRetryableException e){
-            paymentRepository.updatePaymentStatusByPaymentKey(paymentKey, PaymentStatus.RETRY);
-            throw e;
-
         }catch(PaymentExpiredException e){
             paymentRepository.updatePaymentStatusByPaymentKey(paymentKey, PaymentStatus.EXPIRED);
             throw e;
@@ -108,22 +104,6 @@ public class PaymentService {
         }catch (Exception e){
             log.error("[requestConfirm][알 수 없는 오류]", e);
             throw e;
-        }
-    }
-
-    private void validateExistingPaymentStatus(Payment payment) {
-
-        PaymentStatus paymentStatus = payment.getPaymentStatus();
-
-        if (!allowedStatuses.contains(paymentStatus)) {
-            switch (paymentStatus) {
-                case IN_PROGRESS -> throw new BadRequestException(PAYMENT_IN_PROGRESS_EXCEPTION.getMessage());
-                case DONE -> throw new BadRequestException(PAYMENT_ALREADY_DONE_EXCEPTION.getMessage());
-                case EXPIRED -> throw new BadRequestException(PAYMENT_EXPIRED_EXCEPTION.getMessage());
-                case ABORTED -> throw new BadRequestException(PAYMENT_ABORTED_EXCEPTION.getMessage());
-                case TIMEOUT -> throw new BadRequestException(TIMEOUT_PAYMENT_EXCEPTION.getMessage());
-                default -> throw new BadRequestException(UNSUPPORTED_PAYMENT_STATUS_EXCEPTION.getMessage());
-            }
         }
     }
 
