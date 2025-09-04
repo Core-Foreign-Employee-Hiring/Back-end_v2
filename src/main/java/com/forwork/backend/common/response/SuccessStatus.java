@@ -101,6 +101,8 @@ public enum SuccessStatus {
     GET_WRITTEN_ARCHIVE_SUCCESS(HttpStatus.OK, "작성한 아카이브 조회 성공"),
     GET_SOLD_ARCHIVE_SUCCESS(HttpStatus.OK, "판매한 아카이브 조회 성공"),
     GET_TOTAL_SALES_REVENUE_SUCCESS(HttpStatus.OK, "판매한 아카이브 총 수익 조회 성공"),
+    GET_REVIEW_SUCCESS(HttpStatus.OK, "리뷰 조회 성공"),
+
 
 
 

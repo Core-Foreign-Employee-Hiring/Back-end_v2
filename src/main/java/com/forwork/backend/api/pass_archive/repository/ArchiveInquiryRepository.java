@@ -30,10 +30,10 @@ public interface ArchiveInquiryRepository extends JpaRepository<ArchiveInquiry, 
     @Query("select ai from ArchiveInquiry ai" +
             " join fetch ai.archive a" +
             " join fetch a.member" +
-            " where ai.inquirer.id=:inquirerId" +
+            " where ai.inquirer.id=:inquirerId and a.passArchiveId=:archiveId" +
             " order by ai.id desc" +
             " limit 1")
-    Optional<ArchiveInquiry> findLatestInquiryByArchiveInquiryIdAndInquirerId(@Param("inquirerId") Long inquirerId);
+    Optional<ArchiveInquiry> findLatestInquiryByArchiveInquiryIdAndInquirerId(@Param("inquirerId") Long inquirerId, @Param("archiveId") Long archiveId);
 
     @Query("select count(*)>0 from ArchiveInquiry ai" +
             " where ai.archive.passArchiveId=:archiveId and ai.isReadByArchiveWriter=false")
