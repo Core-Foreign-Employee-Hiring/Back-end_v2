@@ -34,32 +34,32 @@ public class MemberService {
     @Transactional
     public void registerMember(MemberRegisterRequestDTO memberRegisterRequestDTO) {
 
-//        // 사용자ID 중복 검증
-//        if (memberRepository.findByUserId(memberRegisterRequestDTO.getUserId()).isPresent()) {
-//            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
-//        }
-//        // 이메일 중복 검증
-//        if (memberRepository.findByEmail(memberRegisterRequestDTO.getEmail()).isPresent()) {
-//            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
-//        }
-//        // 핸드폰번호 중복 검증
-//        if (memberRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber()).isPresent()) {
-//            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
-//        }
-//
-//        // 이메일 인증 여부 체크
-//        EmailVerification emailVerification = emailVerificationRepository.findByEmail(memberRegisterRequestDTO.getEmail())
-//                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
-//        if (!emailVerification.isVerified()) {
-//            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
-//        }
-//
-//        // 핸드폰번호 인증 여부 체크
-//        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber())
-//                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
-//        if (!phoneNumberVerification.isVerified()) {
-//            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
-//        }
+        // 사용자ID 중복 검증
+        if (memberRepository.findByUserId(memberRegisterRequestDTO.getUserId()).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_USERID_EXCPETION.getMessage());
+        }
+        // 이메일 중복 검증
+        if (memberRepository.findByEmail(memberRegisterRequestDTO.getEmail()).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
+        }
+        // 핸드폰번호 중복 검증
+        if (memberRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber()).isPresent()) {
+            throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+        }
+
+        // 이메일 인증 여부 체크
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(memberRegisterRequestDTO.getEmail())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
+        if (!emailVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+        }
+
+        // 핸드폰번호 인증 여부 체크
+        PhoneNumberVerification phoneNumberVerification = phoneNumberVerificationRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
+        if (!phoneNumberVerification.isVerified()) {
+            throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
+        }
 
         Address address = new Address(
                 memberRegisterRequestDTO.getZipcode(),
