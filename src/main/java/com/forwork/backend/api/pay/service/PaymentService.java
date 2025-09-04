@@ -65,14 +65,14 @@ public class PaymentService {
 
         amountValidate(amount, merchantOrderId);
 
-        Optional<Payment> findPayment=paymentRepository.findByPaymentKey((paymentKey));
-
-        findPayment.ifPresent(
-                (p) -> {
-                    log.warn("[requestConfirm][paymentKey 이미 존재][paymentKey= {}]", paymentKey);
-                    throw new BadRequestException(PAYMENT_ALREADY_EXISTS_EXCEPTION.getMessage());
-                }
-        );
+        paymentRepository.findByPaymentKey(paymentKey)
+                .ifPresentOrElse(
+                        p -> {
+                            log.warn("[requestConfirm][paymentKey 이미 존재][paymentKey={}]", paymentKey);
+                            throw new BadRequestException(PAYMENT_ALREADY_EXISTS_EXCEPTION.getMessage());
+                        },
+                        () -> paymentCreator.create(paymentKey, merchantOrderId)
+                );
 
 
         /*
