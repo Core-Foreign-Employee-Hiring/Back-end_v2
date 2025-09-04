@@ -61,4 +61,19 @@ public class Member extends BaseTimeEntity {
         return this;
     }
 
+    // 회원 정보 업데이트
+    public Member updateName(String name) { this.name = name; return this; }
+    public Member updateEmail(String email) { this.email = email; return this; }
+    public Member updatePhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; return this; }
+    public Member updateAddress(Address address) { this.address = address; return this; }
+    public Member updateBirthday(LocalDate birthday) { this.birthday = birthday; return this; }
+    public Member updateGender(Gender gender) { this.gender = gender; return this; }
+    public Member updateNationality(String nationality) { this.nationality = nationality; return this; }
+    public Member updateVisa(String visa) { this.visa = visa; return this; }
+    public Member updateEducation(String education) { this.education = education; return this; }
+    public Member updateTermsOfServiceAgreement(boolean v) { this.termsOfServiceAgreement = v; return this; }
+    public Member updatePersonalInfoAgreement(boolean v) { this.personalInfoAgreement = v; return this; }
+    public Member updateAdInfoAgreementSmsMms(boolean v) { this.adInfoAgreementSmsMms = v; return this; }
+    public Member updateAdInfoAgreementEmail(boolean v) { this.adInfoAgreementEmail = v; return this; }
+
 }

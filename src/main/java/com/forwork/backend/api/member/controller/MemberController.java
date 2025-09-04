@@ -11,6 +11,9 @@ import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.ErrorStatus;
 import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -222,6 +225,45 @@ public class MemberController {
     ) {
         memberService.modifyPassword(dto.getPassword(), securityMember.getId());
         return ApiResponse.success_only(SuccessStatus.SEND_MODIFY_PASSWORD_SUCCESS);
+    }
+
+    @Operation(
+            summary = "현재 사용자 마이페이지 정보 조회 API (태근)",
+            description = "현재 로그인된 사용자의 회원정보(개인정보 + 동의 4종)를 반환합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "마이페이지 정보 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.")
+    })
+    @GetMapping("/my-profile")
+    public ResponseEntity<ApiResponse<MemberProfileResponseDTO>> getMyProfile(
+            @AuthenticationPrincipal SecurityMember securityMember
+    ) {
+        MemberProfileResponseDTO memberProfileResponseDTO = memberService.getMyProfile(securityMember.getId());
+        return ApiResponse.success(SuccessStatus.SEND_PROFILE_INFO_SUCCESS, memberProfileResponseDTO);
+    }
+
+    @Operation(
+            summary = "회원정보 수정 API (태근)",
+            description = """
+                    변경 가능한 필드: 이름, 이메일(인증 필요), 연락처(인증 필요),
+                    주소(zipcode/address1/address2), 생년월일, 국적, 비자, 학력, 성별,
+                    그리고 동의 항목 4가지(termsOfServiceAgreement(서비스 이용약관), personalInfoAgreement(개인정보 수집 및 이용), adInfoAgreementSmsMms(광고성 - SNS/MMS), adInfoAgreementEmail(광고성 - 이메일).<br>
+                    - 각 필드는 값이 기존과 동일하면 무시하고, 다를 때만 갱신합니다.<br>
+                    - 이메일/연락처는 변경 시 각각의 인증이 완료되야 합니다.
+                    """
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "프로필 변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 이메일/휴대폰입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.")
+    })
+    @PatchMapping("/modify-profile")
+    public ResponseEntity<ApiResponse<Void>> modifyProfile(@RequestBody MemberUpdateRequestDTO memberUpdateRequestDTO, @AuthenticationPrincipal SecurityMember securityMember) {
+
+        memberService.modifyProfile(securityMember.getId(), memberUpdateRequestDTO);
+        return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
 }
