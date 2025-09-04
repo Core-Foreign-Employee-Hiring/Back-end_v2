@@ -1,21 +1,19 @@
 package com.forwork.backend.api.member.service;
 
-import com.forwork.backend.api.member.dto.MemberModifyIdRequestDTO;
-import com.forwork.backend.api.member.dto.MemberRegisterRequestDTO;
-import com.forwork.backend.api.member.dto.MemberLoginRequestDTO;
-import com.forwork.backend.api.member.dto.MemberLoginResponseDTO;
+import com.forwork.backend.api.member.dto.*;
 import com.forwork.backend.api.member.entity.*;
 import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.repository.*;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.response.ErrorStatus;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -176,6 +174,146 @@ public class MemberService {
 
         String encoded = passwordEncoder.encode(newRawPassword);
         member.updatePassword(encoded);
+    }
+
+    // 내 마이페이지 정보 조회
+    @Transactional(readOnly = true)
+    public MemberProfileResponseDTO getMyProfile(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        return new MemberProfileResponseDTO(
+                member.getName(),
+                member.getEmail(),
+                member.getPhoneNumber(),
+                member.getAddress() != null ? member.getAddress().getZipcode() : null,
+                member.getAddress() != null ? member.getAddress().getAddress1() : null,
+                member.getAddress() != null ? member.getAddress().getAddress2() : null,
+                member.getBirthday(),
+                member.getGender(),
+                member.getNationality(),
+                member.getVisa(),
+                member.getEducation(),
+                member.isTermsOfServiceAgreement(),
+                member.isPersonalInfoAgreement(),
+                member.isAdInfoAgreementSmsMms(),
+                member.isAdInfoAgreementEmail()
+        );
+    }
+
+    // 내 프로필 수정
+    @Transactional
+    public void modifyProfile(Long memberId, MemberUpdateRequestDTO memberUpdateRequestDTO) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 이름
+        if (memberUpdateRequestDTO.getName() != null && !memberUpdateRequestDTO.getName().equals(member.getName())) {
+            member.updateName(memberUpdateRequestDTO.getName());
+        }
+
+        // 이메일 (다를 때만), 중복 + 인증 체크 -> 성공 시 verification delete
+        if (memberUpdateRequestDTO.getEmail() != null && !memberUpdateRequestDTO.getEmail().equals(member.getEmail())) {
+
+            if (memberRepository.findByEmail(memberUpdateRequestDTO.getEmail()).isPresent()) {
+                throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
+            }
+
+            EmailVerification ev = emailVerificationRepository.findByEmail(memberUpdateRequestDTO.getEmail())
+                    .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
+
+            if (!ev.isVerified()) {
+                throw new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage());
+            }
+            if (ev.isExpired(LocalDateTime.now())) {
+                throw new com.forwork.backend.common.exception.UnauthorizedException(
+                        ErrorStatus.UNAUTHORIZED_EMAIL_VERIFICATION_CODE_EXCEPTION.getMessage()
+                );
+            }
+
+            member.updateEmail(memberUpdateRequestDTO.getEmail());
+
+            emailVerificationRepository.delete(ev);
+        }
+
+        // 휴대폰번호 (다를 때만), 중복 + 인증 체크 -> 성공 시 verification delete
+        if (memberUpdateRequestDTO.getPhoneNumber() != null && !memberUpdateRequestDTO.getPhoneNumber().equals(member.getPhoneNumber())) {
+
+            if (memberRepository.findByPhoneNumber(memberUpdateRequestDTO.getPhoneNumber()).isPresent()) {
+                throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
+            }
+
+            PhoneNumberVerification pv = phoneNumberVerificationRepository.findByPhoneNumber(memberUpdateRequestDTO.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
+
+            if (!pv.isVerified()) {
+                throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
+            }
+            if (pv.isExpired(LocalDateTime.now())) {
+                throw new com.forwork.backend.common.exception.UnauthorizedException(
+                        ErrorStatus.UNAUTHORIZED_SMS_VERIFICATION_CODE_EXCEPTION.getMessage()
+                );
+            }
+
+            member.updatePhoneNumber(memberUpdateRequestDTO.getPhoneNumber());
+
+            phoneNumberVerificationRepository.delete(pv);
+        }
+
+        // 주소 (세 필드 중 하나라도 달라지면 갱신)
+        boolean hasAddressChange =
+                (memberUpdateRequestDTO.getZipcode() != null && (member.getAddress() == null || !memberUpdateRequestDTO.getZipcode().equals(member.getAddress().getZipcode()))) ||
+                        (memberUpdateRequestDTO.getAddress1() != null && (member.getAddress() == null || !memberUpdateRequestDTO.getAddress1().equals(member.getAddress().getAddress1()))) ||
+                        (memberUpdateRequestDTO.getAddress2() != null && (member.getAddress() == null || !memberUpdateRequestDTO.getAddress2().equals(member.getAddress().getAddress2())));
+
+        if (hasAddressChange) {
+            Address newAddress = new Address(
+                    memberUpdateRequestDTO.getZipcode() != null ? memberUpdateRequestDTO.getZipcode() : (member.getAddress() != null ? member.getAddress().getZipcode() : null),
+                    memberUpdateRequestDTO.getAddress1() != null ? memberUpdateRequestDTO.getAddress1() : (member.getAddress() != null ? member.getAddress().getAddress1() : null),
+                    memberUpdateRequestDTO.getAddress2() != null ? memberUpdateRequestDTO.getAddress2() : (member.getAddress() != null ? member.getAddress().getAddress2() : null)
+            );
+            member.updateAddress(newAddress);
+        }
+
+        // 생년월일
+        if (memberUpdateRequestDTO.getBirthDate() != null && !memberUpdateRequestDTO.getBirthDate().equals(member.getBirthday())) {
+            member.updateBirthday(memberUpdateRequestDTO.getBirthDate());
+        }
+
+        // 국적/비자/학력/성별
+        if (memberUpdateRequestDTO.getNationality() != null && !memberUpdateRequestDTO.getNationality().equals(member.getNationality())) {
+            member.updateNationality(memberUpdateRequestDTO.getNationality());
+        }
+        if (memberUpdateRequestDTO.getVisa() != null && !memberUpdateRequestDTO.getVisa().equals(member.getVisa())) {
+            member.updateVisa(memberUpdateRequestDTO.getVisa());
+        }
+        if (memberUpdateRequestDTO.getEducation() != null && !memberUpdateRequestDTO.getEducation().equals(member.getEducation())) {
+            member.updateEducation(memberUpdateRequestDTO.getEducation());
+        }
+        if (memberUpdateRequestDTO.getGender() != null && memberUpdateRequestDTO.getGender() != member.getGender()) {
+            member.updateGender(memberUpdateRequestDTO.getGender());
+        }
+
+        // 동의 항목 4가지: null이면 미변경, 값이 있고 기존과 다르면 갱신
+        if (memberUpdateRequestDTO.getTermsOfServiceAgreement() != null
+                && memberUpdateRequestDTO.getTermsOfServiceAgreement() != member.isTermsOfServiceAgreement()) {
+            member.updateTermsOfServiceAgreement(memberUpdateRequestDTO.getTermsOfServiceAgreement());
+        }
+        if (memberUpdateRequestDTO.getPersonalInfoAgreement() != null
+                && memberUpdateRequestDTO.getPersonalInfoAgreement() != member.isPersonalInfoAgreement()) {
+            member.updatePersonalInfoAgreement(memberUpdateRequestDTO.getPersonalInfoAgreement());
+        }
+        if (memberUpdateRequestDTO.getAdInfoAgreementSmsMms() != null
+                && memberUpdateRequestDTO.getAdInfoAgreementSmsMms() != member.isAdInfoAgreementSmsMms()) {
+            member.updateAdInfoAgreementSmsMms(memberUpdateRequestDTO.getAdInfoAgreementSmsMms());
+        }
+        if (memberUpdateRequestDTO.getAdInfoAgreementEmail() != null
+                && memberUpdateRequestDTO.getAdInfoAgreementEmail() != member.isAdInfoAgreementEmail()) {
+            member.updateAdInfoAgreementEmail(memberUpdateRequestDTO.getAdInfoAgreementEmail());
+        }
+
     }
 
 }

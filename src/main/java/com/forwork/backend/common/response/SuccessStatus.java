@@ -102,11 +102,7 @@ public enum SuccessStatus {
     GET_SOLD_ARCHIVE_SUCCESS(HttpStatus.OK, "판매한 아카이브 조회 성공"),
     GET_TOTAL_SALES_REVENUE_SUCCESS(HttpStatus.OK, "판매한 아카이브 총 수익 조회 성공"),
     GET_REVIEW_SUCCESS(HttpStatus.OK, "리뷰 조회 성공"),
-
-
-
-
-
+    SEND_PROFILE_INFO_SUCCESS(HttpStatus.OK,"마이페이지 정보 조회 성공"),
 
     /**
      * 201
