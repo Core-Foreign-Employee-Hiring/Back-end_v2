@@ -6,6 +6,7 @@ import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.repository.*;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
+import com.forwork.backend.common.exception.UnauthorizedException;
 import com.forwork.backend.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
+    private final SmsService smsService;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationRepository emailVerificationRepository;
     private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
@@ -314,6 +317,73 @@ public class MemberService {
             member.updateAdInfoAgreementEmail(memberUpdateRequestDTO.getAdInfoAgreementEmail());
         }
 
+    }
+
+    // 아이디 찾기 1단계: 이름+전화번호로 회원 존재 확인 후, 해당 번호로 인증코드 발송
+    @Transactional
+    public void sendFindIdVerificationCode(FindIdRequestDTO findIdRequestDTO) {
+
+        // 회원 찾기
+        memberRepository.findByNameAndPhoneNumber(findIdRequestDTO.getName(), findIdRequestDTO.getPhoneNumber())
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 해당 번호로 인증코드 발송
+        smsService.sendVerificationSmsForRecovery(findIdRequestDTO.getPhoneNumber());
+    }
+
+    // 아이디 찾기 2단계: 인증코드 검증 후 아이디랑 생성일자 반환
+    @Transactional(readOnly = true)
+    public FindIdResponseDTO verifyFindIdCode(String code) {
+        LocalDateTime requestedAt = LocalDateTime.now();
+
+        String phoneNumber = smsService.verifyCodeAndGetPhone(code, requestedAt);
+
+        Member member = memberRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        return new FindIdResponseDTO(member.getUserId(), member.getCreatedAt());
+    }
+
+    // 비밀번호 재설정: 1) 코드 발송
+    public void sendPasswordResetCode(PasswordResetRequestDTO passwordResetRequestDTO) {
+
+        emailService.sendPasswordResetEmail(passwordResetRequestDTO);
+    }
+
+    //  비밀번호 재설정: 2) 코드 검증
+    @Transactional(readOnly = true)
+    public void verifyPasswordResetCode(String code) {
+        LocalDateTime now = LocalDateTime.now();
+
+        PasswordReset passwordReset = passwordResetRepository.findByCode(code)
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.WRONG_EMAIL_VERIFICATION_CODE_EXCEPTION.getMessage()));
+
+        if (passwordReset.getExpirationTime().isBefore(now)) {
+            throw new UnauthorizedException(ErrorStatus.UNAUTHORIZED_EMAIL_VERIFICATION_CODE_EXCEPTION.getMessage());
+        }
+
+    }
+
+    // 비밀번호 재설정: 3) 비밀번호 변경
+    public void changePasswordByReset(PasswordResetConfirmDTO passwordResetConfirmDTO) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 안전하게 한번 더 코드 유효성 검사
+        PasswordReset pr = passwordResetRepository.findByCode(passwordResetConfirmDTO.getCode())
+                .orElseThrow(() -> new BadRequestException(ErrorStatus.WRONG_EMAIL_VERIFICATION_CODE_EXCEPTION.getMessage()));
+
+        if (pr.getExpirationTime().isBefore(now)) {
+            throw new UnauthorizedException(ErrorStatus.UNAUTHORIZED_EMAIL_VERIFICATION_CODE_EXCEPTION.getMessage());
+        }
+
+        Member member = memberRepository.findByEmail(pr.getEmail())
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
+
+        // 비밀번호 변경
+        String encoded = passwordEncoder.encode(passwordResetConfirmDTO.getNewPassword());
+        member.updatePassword(encoded);
+
+        passwordResetRepository.delete(pr);
     }
 
 }

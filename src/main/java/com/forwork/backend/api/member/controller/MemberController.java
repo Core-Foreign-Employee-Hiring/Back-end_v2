@@ -266,4 +266,102 @@ public class MemberController {
         return ApiResponse.success_only(SuccessStatus.SEND_PROFILE_UPDATE_SUCCESS);
     }
 
+    @Operation(
+            summary = "아이디 찾기 - 인증코드 발송 API (태근)",
+            description = "이름과 휴대폰 번호가 일치하는 회원을 찾은 뒤, 해당 번호로 인증코드를 발송합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "name : 사용자 이름 <br>"
+                    + "phoneNumber : 전화번호 (예시 : 01012345678)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아이디 찾기 인증코드 발송 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 이름/전화번호의 회원을 찾을 수 없습니다.")
+    })
+    @PostMapping("/find-id/send-code")
+    public ResponseEntity<ApiResponse<Void>> sendFindIdCode(@RequestBody FindIdRequestDTO findIdRequestDTO) {
+
+        memberService.sendFindIdVerificationCode(findIdRequestDTO);
+        return ApiResponse.success_only(SuccessStatus.SEND_SMS_VERIFICATION_CODE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "아이디 찾기 - 코드 검증 & 결과 조회 API (태근)",
+            description = "휴대폰으로 발송된 인증코드를 검증하고, 일치하면 해당 회원의 ID와 생성일자를 반환합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "code : 문자로 발송된 인증코드"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아이디 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증코드가 만료되었거나 올바르지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "회원 정보를 찾을 수 없습니다.")
+    })
+    @PostMapping("/find-id/verify-code")
+    public ResponseEntity<ApiResponse<FindIdResponseDTO>> verifyFindIdCode(@RequestBody SmsVerificationCodeRequestDTO smsVerificationCodeReqeustDTO) {
+
+        FindIdResponseDTO findIdResponseDTO = memberService.verifyFindIdCode(smsVerificationCodeReqeustDTO.getCode());
+        return ApiResponse.success(SuccessStatus.SEND_VERIFY_SMS_CODE_SUCCESS, findIdResponseDTO);
+    }
+
+    @Operation(
+            summary = "비밀번호 재설정 - 코드 발송 API (태근)",
+            description = "아이디, 이름, 이메일이 모두 일치하는 계정을 찾은 후 해당 이메일로 비밀번호 재설정 인증코드를 발송합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "userId : 사용자 아이디 <br>"
+                    + "name : 사용자 이름 <br>"
+                    + "email : 사용자 이메일"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 재설정 인증코드 발송 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "계정을 찾을 수 없습니다.")
+    })
+    @PostMapping("/password-reset/send-code")
+    public ResponseEntity<ApiResponse<Void>> sendPasswordResetCode(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
+
+        memberService.sendPasswordResetCode(passwordResetRequestDTO);
+        return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_VERIFICATION_CODE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "비밀번호 재설정 - 코드 검증 API (태근)",
+            description = "이메일로 발송된 인증코드를 검증합니다. 코드가 유효하면 비밀번호 변경을 진행할 수 있습니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "code : 이메일 인증코드"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "인증코드 검증 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증코드가 만료되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "인증코드가 올바르지 않습니다.")
+    })
+    @PostMapping("/password-reset/verify-code")
+    public ResponseEntity<ApiResponse<Void>> verifyPasswordResetCode(@RequestBody EmailVerificationCodeRequestDTO emailVerificationCodeRequestDTO) {
+
+        memberService.verifyPasswordResetCode(emailVerificationCodeRequestDTO.getCode());
+        return ApiResponse.success_only(SuccessStatus.SEND_EMAIL_VERIFICATION_SUCCESS);
+    }
+
+    @Operation(
+            summary = "비밀번호 재설정 - 변경 API (태근)",
+            description = "유효한 인증코드와 새 비밀번호를 전달하면 비밀번호를 변경합니다.<br>"
+                    + "<p>"
+                    + "호출 필드 정보) <br>"
+                    + "code : 이메일 인증코드 <br>"
+                    + "newPassword : 새 비밀번호"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증코드가 만료되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "인증코드가 올바르지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "회원 정보를 찾을 수 없습니다.")
+    })
+    @PatchMapping("/password-reset/modify")
+    public ResponseEntity<ApiResponse<Void>> changePasswordByReset(@RequestBody PasswordResetConfirmDTO passwordResetConfirmDTO) {
+
+        memberService.changePasswordByReset(passwordResetConfirmDTO);
+        return ApiResponse.success_only(SuccessStatus.SEND_MODIFY_PASSWORD_SUCCESS);
+    }
+
 }

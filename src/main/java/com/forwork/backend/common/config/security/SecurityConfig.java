@@ -66,9 +66,9 @@ public class SecurityConfig {
                                 "/h2-console/**"
                         ).permitAll() // 스웨거, H2, healthCheck 허가
                         .requestMatchers(
-                                "/api/v2/member/register", "/api/v2/member/login","/api/v2/member/token-reissue","/api/v2/member/verify-email",
-                                "/api/v2/member/verification-email-code","/api/v2/member/verify-userid","/api/v2/member/verify-phone",
-                                "/api/v2/member/verification-phone-code", "/api/v2/member/find-user-id", "/api/v2/member/employer/company-validate"
+                                "/api/v2/member/register", "/api/v2/member/login","/api/v2/member/token-reissue","/api/v2/member/verify-email", "/api/v2/member/find-id/send-code", "/api/v2/member/password-reset/verify-code",
+                                "/api/v2/member/verification-email-code","/api/v2/member/verify-userid","/api/v2/member/verify-phone", "/api/v2/member/find-id/verify-code", "/api/v2/member/password-reset/modify",
+                                "/api/v2/member/verification-phone-code", "/api/v2/member/find-user-id", "/api/v2/member/employer/company-validate", "/api/v2/member/password-reset/send-code"
                         ).permitAll() // 회원가입, 로그인, 토큰 재발급, 이메일 인증, 사업자등록 번호 인증 허가
                         .requestMatchers(
                                 HttpMethod.GET, "/api/v2/recruit/{recruit-id}", "/api/v2/recruit",
