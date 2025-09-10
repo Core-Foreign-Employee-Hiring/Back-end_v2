@@ -66,12 +66,12 @@ public class EmailService {
         Member member = memberRepository.findByUserIdAndEmailAndName(passwordResetRequestDTO.getUserId(), passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getName())
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
 
-        String resetCode = generateRandomCode();
+        String code = generateSixDigitCode();
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
 
         PasswordReset passwordReset = PasswordReset.builder()
                 .email(passwordResetRequestDTO.getEmail())
-                .code(resetCode)
+                .code(code)
                 .expirationTime(expirationTime)
                 .build();
 
@@ -80,22 +80,12 @@ public class EmailService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(String.format("Korfit <%s>", serviceEmail));
         mailMessage.setTo(passwordResetRequestDTO.getEmail());
-        mailMessage.setSubject("Korfit 비밀번호 초기화 링크");
-        mailMessage.setText("비밀번호를 재설정하려면 아래 링크를 클릭하세요:\n\n"
-                + "https://www.Korfit.co.kr/password?code=" + resetCode + "\n\n"
-                + "이 링크는 5분간 유효합니다.");
+        mailMessage.setSubject("Korfit 비밀번호 초기화 코드");
+        mailMessage.setText("비밀번호를 재설정하려면 아래 코드를 입력하세요:\n\n"
+                + "인증코드 :" + code + "\n\n"
+                + "이 인증 코드는 5분간 유효합니다.");
 
         mailSender.send(mailMessage);
-    }
-
-    private String generateRandomCode() {
-        SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder(10);
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (int i = 0; i < 10; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
-        }
-        return sb.toString();
     }
 
     private String generateSixDigitCode() {
