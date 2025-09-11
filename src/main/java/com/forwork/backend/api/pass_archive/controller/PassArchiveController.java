@@ -257,6 +257,24 @@ public class PassArchiveController {
         return ApiResponse.success(SuccessStatus.GET_REVIEW_SUCCESS, response);
     }
 
+    @Operation(
+            summary = "아카이브 문의하기 링크 조회 API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "문의 링크 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의 링크를 찾을 수 없습니다."),
+
+    })
+    @GetMapping("/{pass-archive-id}/inquiry-url")
+    public ResponseEntity<ApiResponse<String>> getInquiryUrl(@AuthenticationPrincipal SecurityMember securityMember,
+                                                             @PathVariable("pass-archive-id") Long archiveId) {
+
+        String response = passArchiveService.getInquiryUrl(archiveId);
+
+        return ApiResponse.success(SuccessStatus.SEND_INQUIRY_LINK_SUCCESS, response);
+    }
+
     /*
     * 테스트
     * */

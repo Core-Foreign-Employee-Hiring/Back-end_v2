@@ -26,6 +26,7 @@ public class PassArchiveSaveService {
                 .oneLineReview(passArchiveCreateRequestDTO.getOneLineReview())
                 .description(passArchiveCreateRequestDTO.getDescription())
                 .price(passArchiveCreateRequestDTO.getPrice())
+                .inquiryUrl(passArchiveCreateRequestDTO.getInquiryUrl())
                 .star(0)
                 .starCount(0)
                 .member(member)

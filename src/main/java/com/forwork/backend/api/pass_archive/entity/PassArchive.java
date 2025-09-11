@@ -30,6 +30,8 @@ public class PassArchive extends BaseTimeEntity {
     private double star;
     private long starCount;
 
+    private String inquiryUrl;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;

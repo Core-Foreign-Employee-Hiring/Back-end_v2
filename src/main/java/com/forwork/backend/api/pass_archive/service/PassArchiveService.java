@@ -118,4 +118,21 @@ public class PassArchiveService {
 
         return response;
     }
+
+
+    // 문의 url 조회
+    public String getInquiryUrl(Long archiveId){
+        PassArchive passArchive = passArchiveRepository.findWithThumbnailImagesMemberByPassArchiveId(archiveId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage()));
+
+        String inquiryUrl = passArchive.getInquiryUrl();
+
+        if(inquiryUrl == null || inquiryUrl.isEmpty()){
+            log.warn("[getInquiryUrl][문의 링크 없음][archiveId= {}]", archiveId);
+            throw new BadRequestException(ErrorStatus.INQUIRY_LINK_NOT_FOUND.getMessage());
+        }
+
+        return inquiryUrl;
+    }
+
 }
