@@ -103,6 +103,8 @@ public enum SuccessStatus {
     GET_TOTAL_SALES_REVENUE_SUCCESS(HttpStatus.OK, "판매한 아카이브 총 수익 조회 성공"),
     GET_REVIEW_SUCCESS(HttpStatus.OK, "리뷰 조회 성공"),
     SEND_PROFILE_INFO_SUCCESS(HttpStatus.OK,"마이페이지 정보 조회 성공"),
+    SEND_ACCOUNT_INFO_SUCCESS(HttpStatus.OK,"계좌정보 조회 성공"),
+    MODIFY_ACCOUNT_SUCCESS(HttpStatus.OK,"계좌정보 수정 성공"),
 
     /**
      * 201
@@ -122,7 +124,7 @@ public enum SuccessStatus {
     ARCHIVE_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "아카이브 리뷰 등록 성공"),
     INQUIRY_CREATE_SUCCESS(HttpStatus.CREATED, "문의하기 성공"),
     ANSWER_CREATE_SUCCESS(HttpStatus.CREATED, "답변하기 성공"),
-
+    CREATE_ACCOUNT_SUCCESS(HttpStatus.CREATED, "계좌정보 등록 성공"),
 
     ;
 
