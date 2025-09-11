@@ -92,10 +92,6 @@ public enum ErrorStatus {
     ANSWER_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 답변이 등록되어 있습니다."),
     PAYMENT_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 존재하는 결제 정보입니다. 처음부터 다시 진행해주세요."),
 
-
-
-
-
     /**
      * 401 UNAUTHORIZED
      */
@@ -114,8 +110,6 @@ public enum ErrorStatus {
     RECRUIT_REVIEW_COMMENT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다."),
     ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 대한 구매 내역이 없습니다."),
     UNAUTHORIZED_INQUIRY_ANSWER_EXCEPTION(HttpStatus.FORBIDDEN, "다른 사람 아카이브 문의에는 답변할 수 없습니다."),
-
-
 
     /**
      * 404 NOT_FOUND
@@ -136,7 +130,7 @@ public enum ErrorStatus {
     PASS_ARCHIVE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"합격 아카이브를 찾을 수 없습니다."),
     INQUIRY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "문의글을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
-
+    ACCOUT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"등록된 계좌정보를 찾을 수 없습니다."),
 
     /**
      * 500 SERVER_ERROR
