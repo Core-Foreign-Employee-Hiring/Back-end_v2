@@ -134,6 +134,8 @@ public enum ErrorStatus {
     INQUIRY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "문의글을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
     ACCOUT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"등록된 계좌정보를 찾을 수 없습니다."),
+    INQUIRY_LINK_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 링크를 찾을 수 없습니다."),
+
 
     /**
      * 500 SERVER_ERROR

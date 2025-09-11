@@ -12,4 +12,5 @@ public class PassArchiveCreateRequestDTO {
     private String oneLineReview;
     private String description;
     private long price;
+    private String inquiryUrl;
 }
