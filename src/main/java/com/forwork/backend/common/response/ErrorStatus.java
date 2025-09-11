@@ -91,6 +91,7 @@ public enum ErrorStatus {
     REVIEW_ALREADY_WRITTEN_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하셨습니다."),
     ANSWER_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 답변이 등록되어 있습니다."),
     PAYMENT_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 존재하는 결제 정보입니다. 처음부터 다시 진행해주세요."),
+    PAYOUT_ALREADY_REQUESTED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 인출 요청한 결제 내역입니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -110,6 +111,8 @@ public enum ErrorStatus {
     RECRUIT_REVIEW_COMMENT_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다."),
     ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 대한 구매 내역이 없습니다."),
     UNAUTHORIZED_INQUIRY_ANSWER_EXCEPTION(HttpStatus.FORBIDDEN, "다른 사람 아카이브 문의에는 답변할 수 없습니다."),
+    UNAUTHORIZED_PAYOUT_REQUEST_EXCEPTION(HttpStatus.FORBIDDEN, "인출 요청자와 판매자가 일치하지 않습니다."),
+
 
     /**
      * 404 NOT_FOUND

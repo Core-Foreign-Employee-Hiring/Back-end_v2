@@ -29,6 +29,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             " where p.paymentStatus = :status and p.createdDate <= :beforeDate")
     List<Payment> findPaymentCreatedBefore(@Param("status")PaymentStatus status, @Param("beforeDate") LocalDate beforeDate, Pageable pageable);
 
+    @Query("select distinct payment.id from Payout payout" +
+            " join Payment payment on payment.payout.id=payout.id" +
+            " where payout.seller.id=:sellerId")
+    List<Long> findPaymentIdsBySellerId(@Param("sellerId") Long sellerId);
+
     @Query("select distinct p.id from Payment p" +
             " join p.order o" +
             " join OrderPassArchive opa on opa.order.id=o.id" +

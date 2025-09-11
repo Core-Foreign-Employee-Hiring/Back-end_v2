@@ -51,6 +51,10 @@ public class Payment extends ExtendedBaseTimeEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name="payout_id")
+    private Payout payout;
+
     public void updatePayment(PaymentDTO paymentDTO){
         paymentStatus =PaymentStatus.fromTossStatus(paymentDTO.tossPaymentStatus());
         totalAmount= paymentDTO.totalAmount();
@@ -66,5 +70,9 @@ public class Payment extends ExtendedBaseTimeEntity {
 
     public void setCreatedDate(LocalDate createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public void requestPayout(Payout payout){
+        this.payout = payout;
     }
 }

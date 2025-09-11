@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 
 public record SoldArchiveResponseDTO(
+        @Schema(description = "구매 내역 id")
+        Long paymentId,
         @Schema(description = "아카이브 id")
         Long archiveId,
         @Schema(description = "제목")
@@ -25,6 +27,7 @@ public record SoldArchiveResponseDTO(
 
         public static SoldArchiveResponseDTO of(Payment payment, PassArchive passArchive) {
                 return new SoldArchiveResponseDTO(
+                        payment.getId(),
                         passArchive.getPassArchiveId(),
                         passArchive.getTitle(),
                         passArchive.getOneLineReview(),
