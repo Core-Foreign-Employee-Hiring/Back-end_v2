@@ -24,6 +24,11 @@ public interface PassArchiveRepository extends JpaRepository<PassArchive, Long>,
     List<PassArchive> findAllByIds(@Param("ids") List<Long> ids);
 
     @Query("select pa from PassArchive pa" +
+            " join fetch pa.member" +
+            " where pa.passArchiveId in :archiveIds")
+    List<PassArchive> findAllByArchiveIdsWithSeller(@Param("archiveIds") List<Long> archiveIds);
+
+    @Query("select pa from PassArchive pa" +
             " join fetch pa.products" +
             " where pa.passArchiveId=:archiveId")
     Optional<PassArchive>findArchiveByArchiveIdWithProducts(@Param("archiveId")Long archiveId);

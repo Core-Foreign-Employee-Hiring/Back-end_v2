@@ -2,7 +2,6 @@ package com.forwork.backend.api.order.repository;
 
 import com.forwork.backend.api.mypage.dto.query.ArchiveSalesCountQueryDTO;
 import com.forwork.backend.api.order.entity.OrderPassArchive;
-import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +23,8 @@ public interface OrderPassArchiveRepository extends JpaRepository<OrderPassArchi
             " join fetch opa.passArchive a" +
             " where o.id in :orderIds")
     List<OrderPassArchive> findAllByOrderIds(@Param("orderIds") List<Long> orderIds);
+
+    @Query("select distinct opa.passArchive.passArchiveId from OrderPassArchive opa" +
+            " where opa.order.id in :orderIds")
+    List<Long> findArchiveIdsByOrderIds(@Param("orderIds") List<Long> orderIds);
 }
