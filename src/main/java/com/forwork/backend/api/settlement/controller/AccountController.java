@@ -2,6 +2,7 @@ package com.forwork.backend.api.settlement.controller;
 
 import com.forwork.backend.api.settlement.dto.AccountAddRequestDTO;
 import com.forwork.backend.api.settlement.dto.AccountResponseDTO;
+import com.forwork.backend.api.settlement.dto.WithdrawerInfoResponseDTO;
 import com.forwork.backend.api.settlement.service.AccountService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.response.ApiResponse;
@@ -80,5 +81,21 @@ public class AccountController {
 
         accountService.modifyAccount(accountAddRequestDTO, securityMember.getId());
         return ApiResponse.success_only(SuccessStatus.MODIFY_ACCOUNT_SUCCESS);
+    }
+
+    @Operation(
+            summary = "인출자 정보 조회 API (용범)", description = "출력: WithdrawerInfoResponseDTO <br>"
+
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "인출자 정보 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "등록된 계좌정보를 찾을 수 없습니다."),
+    })
+    @GetMapping("/withdrawer")
+    public ResponseEntity<ApiResponse<WithdrawerInfoResponseDTO>> getWithdrawerInfo(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        WithdrawerInfoResponseDTO response = accountService.getWithdrawerInfo(securityMember.getId());
+        return ApiResponse.success(SuccessStatus.SEND_WITHDRAWER_INFO_SUCCESS, response);
     }
 }

@@ -4,15 +4,17 @@ import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.settlement.dto.AccountAddRequestDTO;
 import com.forwork.backend.api.settlement.dto.AccountResponseDTO;
+import com.forwork.backend.api.settlement.dto.WithdrawerInfoResponseDTO;
 import com.forwork.backend.api.settlement.entity.Account;
 import com.forwork.backend.api.settlement.repository.AccountRepository;
-import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.forwork.backend.common.response.ErrorStatus.USER_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -76,4 +78,20 @@ public class AccountService {
         account.updateAccount(accountAddRequestDTO.getAccountName(), accountAddRequestDTO.getAccountNumber(), accountAddRequestDTO.getBankName());
     }
 
+
+    // 인출자 정보
+    public WithdrawerInfoResponseDTO getWithdrawerInfo(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[getWithdrawerInfo][멤버 없음.][memberId={}]", memberId);
+                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Account account = accountRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.ACCOUT_NOT_FOUND_EXCEPTION.getMessage()));
+
+        WithdrawerInfoResponseDTO response = WithdrawerInfoResponseDTO.of(member, account);
+
+        return response;
+    }
 }
