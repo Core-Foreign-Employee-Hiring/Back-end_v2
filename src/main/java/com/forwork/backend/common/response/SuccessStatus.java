@@ -107,6 +107,8 @@ public enum SuccessStatus {
     MODIFY_ACCOUNT_SUCCESS(HttpStatus.OK,"계좌정보 수정 성공"),
     REQUEST_PAYOUT_SUCCESS(HttpStatus.OK, "인출 요청 성공"),
     SEND_INQUIRY_LINK_SUCCESS(HttpStatus.OK, "문의 링크 조회 성공"),
+    SEND_WITHDRAWER_INFO_SUCCESS(HttpStatus.OK, "인출자 정보 조회 성공"),
+
 
 
 
