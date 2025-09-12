@@ -11,6 +11,8 @@ public record WithdrawerInfoResponseDTO(
         String accountNumber,
         @Schema(description = "은행 이름")
         String bankName,
+        @Schema(description = "전화번호")
+        String phoneNumber,
         @Schema(description = "이메일")
         String email
 ) {
@@ -20,6 +22,7 @@ public record WithdrawerInfoResponseDTO(
                         account.getAccountName(),
                         account.getAccountNumber(),
                         account.getBankName(),
+                        member.getPhoneNumber(),
                         member.getEmail()
                 );
         }
