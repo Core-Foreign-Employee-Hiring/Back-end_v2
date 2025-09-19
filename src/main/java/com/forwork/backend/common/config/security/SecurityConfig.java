@@ -48,7 +48,7 @@ public class SecurityConfig {
                             "https://api.korfit.co.kr",
                             "http://localhost:3000",
                             "https://korfit-xi.vercel.app",
-                            "https://korfit.vercel.app/"
+                            "https://korfit.vercel.app"
                     ));
                     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS"));
                     config.setAllowCredentials(true);
