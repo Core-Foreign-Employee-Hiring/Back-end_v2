@@ -84,6 +84,13 @@ public record RecruitDetailResponseDTO(
         @Schema(description = "상세주소")
         String address2,
 
+        @Schema(description = "대표자명")
+        String representativeName,
+        @Schema(description = "설립일")
+        LocalDate establishedDate,
+        @Schema(description = "업종")
+        String businessType,
+
         @Schema(description = "현재 북마크 상태")
         RecruitBookmarkStatus recruitBookmarkStatus
 
@@ -135,6 +142,10 @@ public record RecruitDetailResponseDTO(
                         recruit.getCompanyAddress().getZipcode(),
                         recruit.getCompanyAddress().getAddress1(),
                         recruit.getCompanyAddress().getAddress2(),
+
+                        recruit.getRepresentativeName(),
+                        recruit.getEstablishedDate(),
+                        recruit.getBusinessType(),
 
                         recruitBookmarkStatus
                 );
