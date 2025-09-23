@@ -19,6 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -61,6 +64,31 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
+
+        /*
+         * 로그
+         */
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Map<String, String> headers = new HashMap<>();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            headers.put(name, request.getHeader(name));
+        }
+
+        String queryString = request.getQueryString();
+        String uri = request.getRequestURI() + (queryString != null ? "?" + queryString : "");
+
+        // 쿼리 파라미터 map
+        Map<String, String[]> paramMap = request.getParameterMap();
+        Map<String, String> queryParams = new HashMap<>();
+        paramMap.forEach((k, v) -> queryParams.put(k, String.join(",", v)));
+
+        log.info("[REQUEST] {} {}\nHeaders={}\nQueryParams={}",
+                request.getMethod(), uri, headers, queryParams);
+        /*
+         * 로그
+         */
+
 
         // 리프레시 토큰 재발급 로직은 /token-reissue 엔드포인트에서만 수행
         if (requestURI.equals(TOKEN_REISSUE_URL)) {
