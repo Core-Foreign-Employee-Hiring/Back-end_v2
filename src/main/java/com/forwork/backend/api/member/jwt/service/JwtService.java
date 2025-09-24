@@ -80,7 +80,6 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token) {
-        log.info("[isTokenValid][token= {}]", token);
         try {
             JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
             return true;
