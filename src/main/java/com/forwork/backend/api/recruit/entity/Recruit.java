@@ -66,9 +66,13 @@ public class Recruit extends BaseTimeEntity {
     private String directInputSalaryType;      // 급여 형태 직접 입력
 
     private String posterImageUrl;             // 채용 포스터 이미지 URL
+    @Column(columnDefinition = "LONGTEXT")
     private String mainTasks;                  // 주요 업무 내용
+    @Column(columnDefinition = "LONGTEXT")
     private String qualifications;             // 자격 요건
+    @Column(columnDefinition = "LONGTEXT")
     private String preferences;                // 우대 사항
+    @Column(columnDefinition = "LONGTEXT")
     private String others;                     // 기타 사항
 
     @Enumerated(STRING)
