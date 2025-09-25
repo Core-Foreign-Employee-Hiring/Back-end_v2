@@ -3,7 +3,6 @@ package com.forwork.backend.api.recruit.dto.response;
 import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.entity.RecruitJobCategory;
-import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.api.recruit.enums.SalaryType;
 import com.forwork.backend.api.recruit.service.RecruitUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,27 +13,20 @@ import java.util.List;
 public record RecruitPreviewResponseDTO(
         @Schema(description = "공고 id")
         Long recruitId,
-
         @Schema(description = "회사 사진")
         String companyImageUrl,
-
         @Schema(description = "회사명")
         String companyName,
-
         @Schema(description = "모집 종료 기간")
         LocalDate recruitEndDate,
-
-        @Schema(description = "계약 형태")
-        ContractType contractType,
-
+        @Schema(description = "공고명")
+        String title,
         @Schema(description = "직무")
         List<JobCategory> jobCategories,
-
         @Schema(description = "급여 종류")
         SalaryType salaryType,
         @Schema(description = "급여")
         Integer salary
-
 ) {
 
     public static RecruitPreviewResponseDTO fromEntity(Recruit recruit) {
@@ -47,7 +39,7 @@ public record RecruitPreviewResponseDTO(
                 recruit.getCompanyImageUrl(),
                 recruit.getCompanyName(),
                 recruit.getRecruitEndDate(),
-                recruit.getContractType(),
+                recruit.getTitle(),
                 jobCategories,
                 recruit.getSalaryType(),
                 recruit.getSalary()
