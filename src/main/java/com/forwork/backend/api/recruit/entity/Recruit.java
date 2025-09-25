@@ -23,6 +23,12 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Builder
 @AllArgsConstructor
 @Getter
+@Table(
+        name = "recruit",
+        indexes = {
+                @Index(name = "idx_recruit_end_date", columnList = "recruitEndDate")
+        }
+)
 public class Recruit extends BaseTimeEntity {
 
     @Id
