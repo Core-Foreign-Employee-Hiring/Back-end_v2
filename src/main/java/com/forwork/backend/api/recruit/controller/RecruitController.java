@@ -159,4 +159,21 @@ public class RecruitController {
         RecruitBookmarkStatusResponseDTO response = new RecruitBookmarkStatusResponseDTO(recruitBookmarkStatus);
         return ApiResponse.success(SuccessStatus.UPDATE_RECRUIT_BOOKMARK_STATUS_SUCCESS, response);
     }
+
+
+    /*
+     * d
+     * */
+
+    @Operation(
+            summary = "공고 삭제  API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 삭제 성공"),
+    })
+    @DeleteMapping("/{recruit-id}")
+    public ResponseEntity<ApiResponse<Void>> deleteRecruit(@PathVariable("recruit-id") Long recruitId) {
+        recruitService.deleteRecruit(recruitId);
+        return ApiResponse.success_only(SuccessStatus.DELETE_RECRUIT_ARTICLE_SUCCESS);
+    }
 }
