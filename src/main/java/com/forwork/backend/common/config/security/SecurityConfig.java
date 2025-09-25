@@ -77,7 +77,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/v2/recruit/**").permitAll()
                         .requestMatchers("/api/v1/pass-archives/detail").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/pass-archives", "/api/v1/pass-archives/{pass-archive-id}/reviews").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/pass-archives", "/api/v1/pass-archives/{pass-archive-id}/reviews", "/api/v1/pass-archives/{pass-archive-id}/inquiry-url")
+                        .permitAll() // 아카이브 관련 GET 요청
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->
