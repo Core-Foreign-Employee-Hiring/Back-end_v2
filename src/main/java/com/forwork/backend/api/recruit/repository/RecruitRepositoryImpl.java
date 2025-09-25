@@ -4,6 +4,7 @@ import com.forwork.backend.api.member.entity.JobCategory;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.api.recruit.enums.RecruitPublishStatus;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,8 +34,8 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
         LocalDate now = LocalDate.now();
 
-        List<Long> ids=queryFactory.
-                selectDistinct(recruit.id)
+        List<Tuple> result = queryFactory.
+                selectDistinct(recruit.id, recruit.recruitEndDate)
                 .from(recruit)
                 .leftJoin(recruit.recruitJobCategories, recruitJobCategory)
                 .where(
@@ -44,12 +45,16 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                         jobCategoryEq(jobCategories),
                         contractTypeEq(contractTypes)
                 )
-                .orderBy(recruit.id.desc())
+                .orderBy(recruit.recruitEndDate.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        if(ids.isEmpty()){
+        List<Long> recruitIds = result.stream()
+                .map(t -> t.get(recruit.id))  // recruit.id 컬럼만 추출
+                .toList();
+
+        if(recruitIds.isEmpty()){
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
@@ -57,8 +62,8 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                 .selectFrom(recruit)
                 .leftJoin(recruit.recruitJobCategories, recruitJobCategory).fetchJoin()
                 .leftJoin(recruitJobCategory.jobCategoryEntity, jobCategoryEntity).fetchJoin()
-                .where(recruit.id.in(ids))
-                .orderBy(recruit.id.desc())
+                .where(recruit.id.in(recruitIds))
+                .orderBy(recruit.recruitEndDate.asc())
                 .fetch();
 
         JPAQuery<Long> countQuery=queryFactory
@@ -79,7 +84,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
     private BooleanExpression keywordEq(String keyword){
         return (keyword == null || keyword.isEmpty())?null
-                : recruit.companyName.contains(keyword);
+                : recruit.companyName.contains(keyword).or(recruit.title.contains(keyword));
     }
 
     private BooleanExpression jobCategoryEq(List<JobCategory> jobCategories) {
