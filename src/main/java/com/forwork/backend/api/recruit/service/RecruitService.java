@@ -152,6 +152,20 @@ public class RecruitService {
     }
 
 
+    /*
+    * d
+    * */
+    @Transactional
+    public void deleteRecruit(Long recruitId){
+        // 카테고리 삭제
+        recruitJobCategoryJpaRepository.deleteByRecruitId(recruitId);
+        // 북마크 삭제
+        recruitBookmarkRepository.deleteByRecruitId(recruitId);
+
+        // 공고 삭제
+        recruitRepository.deleteById(recruitId);
+    }
+
 
 
 
