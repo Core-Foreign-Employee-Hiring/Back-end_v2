@@ -1,8 +1,7 @@
 package com.forwork.backend.api.recruit.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forwork.backend.api.member.entity.CompanyType;
-import com.forwork.backend.api.member.entity.JobCategory;
+import com.forwork.backend.api.member.entity.*;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +31,17 @@ public record RecruitDetailResponseDTO(
 
         @Schema(description = "직종")
         List<JobCategory> jobCategories,
+
+        @Schema(description = "직무")
+        List<JobRole> jobRoles,
+        @Schema(description = "언어")
+        List<LanguageType> languageTypes,
+        @Schema(description = "비자")
+        List<Visa> visas,
+        @Schema(description = "근무지역")
+        WorkRegion workRegion,
+        @Schema(description = "관련 국적")
+        Nationality nationality,
 
         @Schema(description = "근무 형태 (ENUM: 대면, 비대면, 혼합 등)")
         WorkType workType,
@@ -96,9 +106,8 @@ public record RecruitDetailResponseDTO(
 
 ) {
 
-        public static RecruitDetailResponseDTO fromEntity(Recruit recruit, List<JobCategory> jobCategories, RecruitBookmarkStatus recruitBookmarkStatus) {
-
-
+        public static RecruitDetailResponseDTO fromEntity(Recruit recruit, List<JobCategory> jobCategories, RecruitBookmarkStatus recruitBookmarkStatus,
+                                                          List<JobRole> jobRoles, List<LanguageType> languageTypes, List<Visa> visas) {
 
                 return new RecruitDetailResponseDTO(
                         recruit.getId(),
@@ -112,6 +121,12 @@ public record RecruitDetailResponseDTO(
                         recruit.getDirectInputContractType(),
 
                         jobCategories,
+
+                        jobRoles,
+                        languageTypes,
+                        visas,
+                        WorkRegion.getWorkRegionByDBValue(recruit.getWorkRegion()),
+                        Nationality.getNationalityByDBValue(recruit.getNationality()),
 
                         recruit.getWorkType(),
                         recruit.getDirectInputWorkType(),

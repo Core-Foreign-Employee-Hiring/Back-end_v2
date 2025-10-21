@@ -92,6 +92,10 @@ public enum ErrorStatus {
     ANSWER_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 답변이 등록되어 있습니다."),
     PAYMENT_ALREADY_EXISTS_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 존재하는 결제 정보입니다. 처음부터 다시 진행해주세요."),
     PAYOUT_ALREADY_REQUESTED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 인출 요청한 결제 내역입니다."),
+    RECRUIT_JOB_ROLE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "직무는 최대 5개까지 선택할 수 있습니다."),
+    RECRUIT_LANGUAGE_TYPE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "언어는 최대 5개까지 선택할 수 있습니다."),
+    RECRUIT_WORK_REGION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "근무 지역은 최대 3개까지 선택할 수 있습니다."),
+
 
     /**
      * 401 UNAUTHORIZED

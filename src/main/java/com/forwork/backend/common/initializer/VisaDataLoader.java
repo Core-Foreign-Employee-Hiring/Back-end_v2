@@ -1,8 +1,8 @@
 package com.forwork.backend.common.initializer;
 
-import com.forwork.backend.api.member.entity.JobCategory;
-import com.forwork.backend.api.member.entity.JobCategoryEntity;
-import com.forwork.backend.api.member.repository.JobCategoryEntityRepository;
+import com.forwork.backend.api.recruit.entity.VisaEntity;
+import com.forwork.backend.api.recruit.repository.VisaEntityRepository;
+import com.forwork.backend.api.member.entity.Visa;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -14,19 +14,18 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class JobCategoryDataLoader implements ApplicationRunner {
+public class VisaDataLoader implements ApplicationRunner {
 
-    private final JobCategoryEntityRepository entityRepository;
+    private final VisaEntityRepository entityRepository;
 
     @Override
     public void run(ApplicationArguments args) {
         if (entityRepository.count() == 0) { // 기존 데이터가 없는 경우만 삽입
-            List<JobCategoryEntity> businessFields = Arrays.stream(JobCategory.values())
-                    .map(JobCategoryEntity::new)
+            List<VisaEntity> businessFields = Arrays.stream(Visa.values())
+                    .map(VisaEntity::new)
                     .collect(Collectors.toList());
 
             entityRepository.saveAll(businessFields);
         }
     }
 }
-

@@ -1,15 +1,15 @@
 package com.forwork.backend.api.recruit.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forwork.backend.api.member.entity.Address;
-import com.forwork.backend.api.member.entity.CompanyType;
-import com.forwork.backend.api.member.entity.JobCategory;
+import com.forwork.backend.api.member.entity.*;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record RecruitRequestDTO(
         @Schema(description = "공고 제목")
@@ -33,7 +33,16 @@ public record RecruitRequestDTO(
         LocalDate establishedDate,
         @Schema(description = "업종")
         String businessType,
-
+        @Schema(description = "직무")
+        @Size(max=5, message="최대 5개")
+        Set<JobRole> jobRoles,
+        @Schema(description = "언어")
+        @Size(max=5, message="최대 5개")
+        Set<LanguageType> languageTypes,
+        @Schema(description = "비자")
+        Set<Visa> visas,
+        @Schema(description = "관련 국적")
+        Nationality nationality,
         @JsonProperty("isAlwaysRecruiting")
         @Schema(description = "상시 모집 기간 여부")
         boolean isAlwaysRecruiting,
@@ -126,6 +135,8 @@ public record RecruitRequestDTO(
                 .applicationMethod(applicationMethod)
                 .directInputApplicationMethod(directInputApplicationMethod)
                 .recruitPublishStatus(recruitPublishStatus)
+                .workRegion(WorkRegion.fromPrefix(address1).getDbValue())
+                .nationality(nationality.getDbValue())
                 .build();
     }
 

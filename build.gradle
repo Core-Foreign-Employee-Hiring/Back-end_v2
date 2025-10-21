@@ -42,6 +42,9 @@ dependencies {
 	// Apache Commons Validator
 	implementation 'commons-validator:commons-validator:1.9.0'
 
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 	// Mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.2'
 

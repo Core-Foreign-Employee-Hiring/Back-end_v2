@@ -1,11 +1,9 @@
-package com.forwork.backend.api.recruit.entity;
+package com.forwork.backend.api.member.entity;
 
-import com.forwork.backend.api.member.entity.JobCategory;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @NoArgsConstructor
@@ -15,10 +13,9 @@ public class JobCategoryEntity {
     @Column(name="job_category_entity_id")
     private Long id;
 
-    @Enumerated(STRING)
-    private JobCategory jobCategory;
+    private String jobCategory;
 
     public JobCategoryEntity(JobCategory jobCategory) {
-        this.jobCategory = jobCategory;
+        this.jobCategory = jobCategory.getDbValue();
     }
 }

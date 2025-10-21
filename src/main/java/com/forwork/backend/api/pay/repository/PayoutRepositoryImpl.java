@@ -44,6 +44,7 @@ public class PayoutRepositoryImpl implements PayoutRepositoryQueryDSL {
         JPAQuery<Long> countQuery = queryFactory
                 .select(payout.count())
                 .from(payout)
+                .join(payout.seller)
                 .where(
                         sellerIdEq(sellerId),
                         payoutStatusEq(payoutStatus)

@@ -12,6 +12,12 @@ public interface RecruitRepository extends JpaRepository<Recruit, Long>, Recruit
     @Query("select r from Recruit r" +
             " left join fetch r.recruitJobCategories rjc" +
             " left join fetch rjc.jobCategoryEntity " +
+            " left join fetch r.recruitJobRoles rjr" +
+            " left join fetch rjr.jobRoleEntity " +
+            " left join fetch r.recruitLanguageTypes rjl" +
+            " left join fetch rjl.languageTypeEntity " +
+            " left join fetch r.recruitVisas rv" +
+            " left join fetch rv.visaEntity " +
             " where r.id=:recruitId and r.recruitPublishStatus='PUBLISHED'")
     Optional<Recruit> findByRecruitId(@Param("recruitId")Long recruitId);
 

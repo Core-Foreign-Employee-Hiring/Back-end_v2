@@ -1,6 +1,6 @@
 package com.forwork.backend.api.recruit.controller;
 
-import com.forwork.backend.api.member.entity.JobCategory;
+import com.forwork.backend.api.member.entity.Nationality;
 import com.forwork.backend.api.recruit.dto.request.RecruitRequestDTO;
 import com.forwork.backend.api.recruit.dto.request.RecruitUpdateRequestDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitBookmarkStatusResponseDTO;
@@ -8,10 +8,14 @@ import com.forwork.backend.api.recruit.dto.response.RecruitDetailResponseDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitDraftResponseDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitPreviewResponseDTO;
 import com.forwork.backend.api.recruit.enums.ContractType;
+import com.forwork.backend.api.recruit.enums.LanguageType;
 import com.forwork.backend.api.recruit.enums.RecruitBookmarkStatus;
+import com.forwork.backend.api.recruit.enums.WorkRegion;
 import com.forwork.backend.api.recruit.service.RecruitService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.dto.PageResponseDTO;
+import com.forwork.backend.api.member.entity.JobRole;
+import com.forwork.backend.api.member.entity.Visa;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,19 +23,22 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Tag(name = "Recruit", description = "Recruit 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/recruit")
 @Slf4j
+@Validated
 public class RecruitController {
     private final RecruitService recruitService;
 
@@ -49,7 +56,7 @@ public class RecruitController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "해당 사용자를 찾을 수 없습니다."),
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> save(@RequestBody RecruitRequestDTO recruitRequestDTO) {
+    public ResponseEntity<ApiResponse<Void>> save(@Valid @RequestBody RecruitRequestDTO recruitRequestDTO) {
         Long recruitId = recruitService.save(recruitRequestDTO);
 
         return ApiResponse.success_only(SuccessStatus.CREATE_RECRUIT_ARTICLE_SUCCESS);
@@ -100,17 +107,33 @@ public class RecruitController {
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "공고 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "직무는 최대 5개까지 선택할 수 있습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "언어는 최대 5개까지 선택할 수 있습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "근무 지역은 최대 3개까지 선택할 수 있습니다."),
     })
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponseDTO<RecruitPreviewResponseDTO>>> getRecruits(
             @Parameter(description = "검색 키워드", in = ParameterIn.QUERY)
             @RequestParam(value = "keyword", required = false) String keyword,
 
-            @Parameter(description = "직종 목록", in = ParameterIn.QUERY)
-            @RequestParam(value = "jobCategories", required = false) List<JobCategory> jobCategories,
+            @Parameter(description = "직무", in = ParameterIn.QUERY)
+            @RequestParam(value = "jobRoles", required = false) Set<JobRole> jobRoles,
 
-            @Parameter(description = "계약 형태 목록", in = ParameterIn.QUERY)
-            @RequestParam(value = "contractTypes", required = false) List<ContractType> contractTypes,
+            @Parameter(description = "관련 국적", in = ParameterIn.QUERY)
+            @RequestParam(value = "nationality", required = false) Nationality nationality,
+
+            @Parameter(description = "언어", in = ParameterIn.QUERY)
+            @RequestParam(value = "languageTypes", required = false) Set<LanguageType> languageTypes,
+
+            @Parameter(description = "비자", in = ParameterIn.QUERY)
+            @RequestParam(value = "visa", required = false) Visa visa,
+
+            @Parameter(description = "근무지역", in = ParameterIn.QUERY)
+            @RequestParam(value = "workRegions", required = false) Set<WorkRegion> workRegions,
+
+            @Parameter(description = "계약 형태", in = ParameterIn.QUERY)
+            @RequestParam(value = "contractType", required = false) ContractType contractType,
+
 
             @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
             @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -119,7 +142,7 @@ public class RecruitController {
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
 
-        PageResponseDTO<RecruitPreviewResponseDTO> response = recruitService.getRecruits(keyword, jobCategories, contractTypes, page, size);
+        PageResponseDTO<RecruitPreviewResponseDTO> response = recruitService.getRecruits(keyword, page, size, jobRoles, nationality, languageTypes, visa, workRegions, contractType);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 
