@@ -1,9 +1,13 @@
 package com.forwork.backend.api.recruit.service;
 
-import com.forwork.backend.api.member.entity.JobCategory;
+import com.forwork.backend.api.member.entity.Nationality;
 import com.forwork.backend.api.recruit.entity.Recruit;
 import com.forwork.backend.api.recruit.enums.ContractType;
+import com.forwork.backend.api.recruit.enums.LanguageType;
+import com.forwork.backend.api.recruit.enums.WorkRegion;
 import com.forwork.backend.api.recruit.repository.RecruitRepository;
+import com.forwork.backend.api.member.entity.JobRole;
+import com.forwork.backend.api.member.entity.Visa;
 import com.forwork.backend.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.forwork.backend.common.response.ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION;
 
@@ -42,8 +46,9 @@ public class RecruitReader {
     }
 
 
-    public Page<Recruit> getRecruits(String keyword, List<JobCategory> jobCategories, List<ContractType> contractTypes, Pageable pageable) {
-        Page<Recruit> recruits = recruitRepository.getRecruits(keyword, jobCategories, contractTypes, pageable);
+    public Page<Recruit> getRecruits(String keyword, Pageable pageable,
+                                     Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Visa visa, Set<WorkRegion> workRegions, ContractType contractType) {
+        Page<Recruit> recruits = recruitRepository.getRecruits(keyword, pageable, jobRoles, nationality, languageTypes, visa, workRegions, contractType);
 
         return recruits;
     }

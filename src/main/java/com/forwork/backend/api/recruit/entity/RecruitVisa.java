@@ -1,6 +1,5 @@
 package com.forwork.backend.api.recruit.entity;
 
-import com.forwork.backend.api.member.entity.JobCategoryEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,15 +10,15 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 @Table(
-        name = "recruit_job_category",
+        name = "recruit_visa_role",
         indexes = {
-                @Index(name = "idx_recruit_job_category", columnList = "recruit_id, job_category_id")
+                @Index(name = "idx_recruit_visa_role", columnList = "recruit_id, visa_id")
         }
 )
 @Getter
-public class RecruitJobCategory {
+public class RecruitVisa {
     @Id @GeneratedValue(strategy = IDENTITY)
-    @Column(name="recruit_job_category_id")
+    @Column(name="recruit_visa_id")
     private Long id;
 
     @ManyToOne(fetch=LAZY)
@@ -27,11 +26,11 @@ public class RecruitJobCategory {
     private Recruit recruit;
 
     @ManyToOne(fetch=LAZY)
-    @JoinColumn(name="job_category_id")
-    private JobCategoryEntity jobCategoryEntity;
+    @JoinColumn(name="visa_id")
+    private VisaEntity visaEntity;
 
-    public RecruitJobCategory(Recruit recruit, JobCategoryEntity jobCategoryEntity) {
+    public RecruitVisa(Recruit recruit, VisaEntity visaEntity) {
         this.recruit = recruit;
-        this.jobCategoryEntity = jobCategoryEntity;
+        this.visaEntity = visaEntity;
     }
 }

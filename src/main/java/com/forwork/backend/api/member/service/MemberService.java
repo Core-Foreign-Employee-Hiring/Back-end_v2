@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +32,8 @@ public class MemberService {
     private final PhoneNumberVerificationRepository phoneNumberVerificationRepository;
     private final CompanyValidationRepository companyValidationRepository;
     private final PasswordResetRepository passwordResetRepository;
+    private final JobRoleEntityRepository jobRoleEntityRepository;
+    private final MemberJobRoleRepository memberJobRoleRepository;
 
     // 회원가입
     @Transactional
@@ -80,9 +82,9 @@ public class MemberService {
                 .address(address)
                 .birthday(memberRegisterRequestDTO.getBirthDate())
                 .gender(memberRegisterRequestDTO.getGender())
-                .nationality(memberRegisterRequestDTO.getNationality())
+                .nationality(memberRegisterRequestDTO.getNationality().getDbValue())
                 .education(memberRegisterRequestDTO.getEducation())
-                .visa(memberRegisterRequestDTO.getVisa())
+                .visa(memberRegisterRequestDTO.getVisa().getDbValue())
                 .termsOfServiceAgreement(memberRegisterRequestDTO.isTermsOfServiceAgreement())
                 .isOver15(memberRegisterRequestDTO.isOver15())
                 .personalInfoAgreement(memberRegisterRequestDTO.isPersonalInfoAgreement())
@@ -92,7 +94,24 @@ public class MemberService {
                 .profileImage(null)
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(member).getId();
+
+        /*
+        * 직무 처리
+        * */
+
+        Set<JobRole> jobRoles = memberRegisterRequestDTO.getJobRoles();
+        List<JobRoleEntity> allByJobRoles =
+                jobRoleEntityRepository.findAllByJobRoles(jobRoles.stream().map(JobRole::getDbValue).toList());
+
+        Set<MemberJobRole> recruitJobRoles=new HashSet<>();
+
+        for (JobRoleEntity jobRoleEntity : allByJobRoles) {
+            MemberJobRole memberJobRole = new MemberJobRole(member, jobRoleEntity);
+            recruitJobRoles.add(memberJobRole);
+        }
+
+        memberJobRoleRepository.saveAll(recruitJobRoles);
     }
 
     // 로그인
@@ -186,6 +205,10 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
 
+        // 직무
+        Set<MemberJobRole> jobRoles = new HashSet<>(memberJobRoleRepository.findByMemberId(memberId));
+        List<JobRole> jobRoles1 = JobRole.convertToJobRolesByMember(jobRoles);
+
         return new MemberProfileResponseDTO(
                 member.getName(),
                 member.getEmail(),
@@ -195,9 +218,10 @@ public class MemberService {
                 member.getAddress() != null ? member.getAddress().getAddress2() : null,
                 member.getBirthday(),
                 member.getGender(),
-                member.getNationality(),
-                member.getVisa(),
+                Nationality.getNationalityByDBValue(member.getNationality()) ,
+                Visa.getVisaByDBValue(member.getVisa()) ,
                 member.getEducation(),
+                jobRoles1,
                 member.isTermsOfServiceAgreement(),
                 member.isPersonalInfoAgreement(),
                 member.isAdInfoAgreementSmsMms(),
@@ -287,10 +311,10 @@ public class MemberService {
 
         // 국적/비자/학력/성별
         if (memberUpdateRequestDTO.getNationality() != null && !memberUpdateRequestDTO.getNationality().equals(member.getNationality())) {
-            member.updateNationality(memberUpdateRequestDTO.getNationality());
+            member.updateNationality(memberUpdateRequestDTO.getNationality().getDbValue());
         }
         if (memberUpdateRequestDTO.getVisa() != null && !memberUpdateRequestDTO.getVisa().equals(member.getVisa())) {
-            member.updateVisa(memberUpdateRequestDTO.getVisa());
+            member.updateVisa(memberUpdateRequestDTO.getVisa().getDbValue());
         }
         if (memberUpdateRequestDTO.getEducation() != null && !memberUpdateRequestDTO.getEducation().equals(member.getEducation())) {
             member.updateEducation(memberUpdateRequestDTO.getEducation());
@@ -316,6 +340,39 @@ public class MemberService {
                 && memberUpdateRequestDTO.getAdInfoAgreementEmail() != member.isAdInfoAgreementEmail()) {
             member.updateAdInfoAgreementEmail(memberUpdateRequestDTO.getAdInfoAgreementEmail());
         }
+
+        /*
+         * 직무
+         * */
+
+        Set<MemberJobRole> memberJobRoles = new HashSet<>(memberJobRoleRepository.findByMemberId(memberId));
+
+        List<JobRole> oldJobRoles = JobRole.convertToJobRolesByMember(memberJobRoles);
+        List<JobRole> newJobRoles = memberUpdateRequestDTO.getJobRoles().stream().toList();
+
+        // add= new-old
+        List<JobRole> doAddJobRoles=new ArrayList<>(newJobRoles);
+
+        doAddJobRoles.removeAll(oldJobRoles);
+        List<JobRoleEntity> allByJobRoles = jobRoleEntityRepository.findAllByJobRoles(doAddJobRoles.stream().map(JobRole::getDbValue).toList());
+
+        List<MemberJobRole> toAddEntityJobRole=new ArrayList<>();
+        for (JobRoleEntity allByJobRole : allByJobRoles) {
+            MemberJobRole memberJobRole = new MemberJobRole(member, allByJobRole);
+            toAddEntityJobRole.add(memberJobRole);
+
+        }
+
+        // delete= old-new
+        List<MemberJobRole>toDeleteJobRole=new ArrayList<>();
+        for(MemberJobRole memberJobRole : memberJobRoles){
+            if(!newJobRoles.contains(JobRole.getJobRole(memberJobRole.getJobRoleEntity().getJobRole()))){
+                toDeleteJobRole.add(memberJobRole);
+            }
+        }
+
+        memberJobRoleRepository.saveAll(toAddEntityJobRole);
+        if(!toDeleteJobRole.isEmpty()){memberJobRoleRepository.deleteAll(toDeleteJobRole);}
 
     }
 

@@ -1,24 +1,22 @@
 package com.forwork.backend.api.recruit.service;
 
-import com.forwork.backend.api.member.entity.JobCategory;
-import com.forwork.backend.api.member.entity.Member;
+import com.forwork.backend.api.member.entity.*;
+import com.forwork.backend.api.member.repository.JobCategoryEntityRepository;
+import com.forwork.backend.api.member.repository.JobRoleEntityRepository;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.recruit.dto.request.RecruitRequestDTO;
 import com.forwork.backend.api.recruit.dto.request.RecruitUpdateRequestDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitDetailResponseDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitDraftResponseDTO;
 import com.forwork.backend.api.recruit.dto.response.RecruitPreviewResponseDTO;
-import com.forwork.backend.api.recruit.entity.JobCategoryEntity;
-import com.forwork.backend.api.recruit.entity.Recruit;
-import com.forwork.backend.api.recruit.entity.RecruitBookmark;
-import com.forwork.backend.api.recruit.entity.RecruitJobCategory;
+import com.forwork.backend.api.recruit.entity.*;
 import com.forwork.backend.api.recruit.enums.ContractType;
+import com.forwork.backend.api.recruit.enums.LanguageType;
 import com.forwork.backend.api.recruit.enums.RecruitBookmarkStatus;
-import com.forwork.backend.api.recruit.repository.JobCategoryEntityRepository;
-import com.forwork.backend.api.recruit.repository.RecruitBookmarkRepository;
-import com.forwork.backend.api.recruit.repository.RecruitJobCategoryRepository;
-import com.forwork.backend.api.recruit.repository.RecruitRepository;
+import com.forwork.backend.api.recruit.enums.WorkRegion;
+import com.forwork.backend.api.recruit.repository.*;
 import com.forwork.backend.common.dto.PageResponseDTO;
+import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +26,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static com.forwork.backend.common.response.ErrorStatus.RECRUIT_NOT_FOUND_EXCEPTION;
+import static com.forwork.backend.common.response.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +36,12 @@ import static com.forwork.backend.common.response.ErrorStatus.RECRUIT_NOT_FOUND_
 public class RecruitService {
     private final RecruitRepository recruitRepository;
     private final JobCategoryEntityRepository jobCategoryEntityJpaRepository;
+    private final JobRoleEntityRepository jobRoleEntityRepository;
+    private final RecruitJobRoleRepository recruitJobRoleRepository;
+    private final LanguageTypeEntityRepository languageTypeEntityRepository;
+    private final RecruitLanguageTypeRepository recruitLanguageTypeRepository;
+    private final VisaEntityRepository visaEntityRepository;
+    private final RecruitVisaRepository recruitVisaRepository;
     private final RecruitJobCategoryRepository recruitJobCategoryJpaRepository;
     private final RecruitReader recruitReader;
     private final RecruitUpdater recruitUpdater;
@@ -60,9 +62,10 @@ public class RecruitService {
 
         // 직종 처리.
         List<JobCategory> jobCategories = recruitRequestDTO.jobCategories();
-        List<JobCategoryEntity> allByJobCategories = jobCategoryEntityJpaRepository.findAllByJobCategories(jobCategories);
+        List<JobCategoryEntity> allByJobCategories =
+                jobCategoryEntityJpaRepository.findAllByJobCategories(jobCategories.stream().map(JobCategory::getDbValue).toList());
 
-        List<RecruitJobCategory> recruitJobCategories=new ArrayList<>();
+        Set<RecruitJobCategory> recruitJobCategories=new HashSet<>();
 
         for (JobCategoryEntity jobCategoryEntity : allByJobCategories) {
             RecruitJobCategory recruitJobCategory = new RecruitJobCategory(recruit, jobCategoryEntity);
@@ -70,6 +73,52 @@ public class RecruitService {
         }
 
         recruitJobCategoryJpaRepository.saveAll(recruitJobCategories);
+
+
+        // 직무 처리
+
+        Set<JobRole> jobRoles = recruitRequestDTO.jobRoles();
+        List<JobRoleEntity> allByJobRoles =
+                jobRoleEntityRepository.findAllByJobRoles(jobRoles.stream().map(JobRole::getDbValue).toList());
+
+        Set<RecruitJobRole> recruitJobRoles=new HashSet<>();
+
+        for (JobRoleEntity jobRoleEntity : allByJobRoles) {
+            RecruitJobRole recruitJobRole = new RecruitJobRole(recruit, jobRoleEntity);
+            recruitJobRoles.add(recruitJobRole);
+        }
+
+        recruitJobRoleRepository.saveAll(recruitJobRoles);
+
+        // 언어 처리
+
+        Set<LanguageType> languageTypes = recruitRequestDTO.languageTypes();
+        List<LanguageTypeEntity> allByLanguageTypes =
+                languageTypeEntityRepository.findAllByLanguageTypes(languageTypes.stream().map(LanguageType::getDbValue).toList());
+
+        Set<RecruitLanguageType> recruitLanguageTypes=new HashSet<>();
+
+        for (LanguageTypeEntity languageTypeEntity : allByLanguageTypes) {
+            RecruitLanguageType recruitLanguageType = new RecruitLanguageType(recruit, languageTypeEntity);
+            recruitLanguageTypes.add(recruitLanguageType);
+        }
+
+        recruitLanguageTypeRepository.saveAll(recruitLanguageTypes);
+
+        // 비자 처리
+
+        Set<Visa> visas = recruitRequestDTO.visas();
+        List<VisaEntity> allByVisas =
+                visaEntityRepository.findAllByVisas(visas.stream().map(Visa::getDbValue).toList());
+
+        Set<RecruitVisa> recruitVisas=new HashSet<>();
+
+        for (VisaEntity visaEntity : allByVisas) {
+            RecruitVisa recruitVisa = new RecruitVisa(recruit, visaEntity);
+            recruitVisas.add(recruitVisa);
+        }
+
+        recruitVisaRepository.saveAll(recruitVisas);
 
         return recruit.getId();
     }
@@ -81,21 +130,31 @@ public class RecruitService {
 
     public RecruitDetailResponseDTO getRecruit(Long memberId, Long recruitId){
         Recruit recruit = recruitReader.getRecruit(recruitId);
-        List<RecruitJobCategory> recruitJobCategories = recruit.getRecruitJobCategories();
+        // 직종
+        Set<RecruitJobCategory> recruitJobCategories = recruit.getRecruitJobCategories();
         List<JobCategory> jobCategories = RecruitUtils.convertToJobCategories(recruitJobCategories);
 
+        // 직무
+        Set<RecruitJobRole> recruitJobRoles = recruit.getRecruitJobRoles();
+        List<JobRole> jobRoles = JobRole.convertToJobRolesByRecruit(recruitJobRoles);
+
+        // 언어
+        Set<RecruitLanguageType> recruitLanguageTypes = recruit.getRecruitLanguageTypes();
+        List<LanguageType> languageTypes = RecruitUtils.convertToLanguageTypes(recruitLanguageTypes);
+
+        // 비자
+        Set<RecruitVisa> recruitVisas = recruit.getRecruitVisas();
+        List<Visa> visas = RecruitUtils.convertToVisas(recruitVisas);
+
         RecruitBookmarkStatus recruitBookmarkStatus = getRecruitBookmarkStatus(memberId, recruitId);
-
-        RecruitDetailResponseDTO response = RecruitDetailResponseDTO.fromEntity(recruit, jobCategories, recruitBookmarkStatus);
-
-
+        RecruitDetailResponseDTO response = RecruitDetailResponseDTO.fromEntity(recruit, jobCategories, recruitBookmarkStatus, jobRoles, languageTypes, visas);
 
         return response;
     }
 
     public RecruitDraftResponseDTO getLatestDraft(Long employerId) {
         Recruit recruit = recruitReader.getLatestDraft(employerId);
-        List<RecruitJobCategory> recruitJobCategories = recruit.getRecruitJobCategories();
+        Set<RecruitJobCategory> recruitJobCategories = recruit.getRecruitJobCategories();
         List<JobCategory> jobCategories = RecruitUtils.convertToJobCategories(recruitJobCategories);
 
         RecruitDraftResponseDTO response = RecruitDraftResponseDTO.fromEntity(recruit, jobCategories);
@@ -103,10 +162,14 @@ public class RecruitService {
         return response;
     }
 
-    public PageResponseDTO<RecruitPreviewResponseDTO> getRecruits(String keyword, List<JobCategory> jobCategories, List<ContractType> contractTypes,
-                                                                  Integer page, Integer size) {
+    public PageResponseDTO<RecruitPreviewResponseDTO> getRecruits(String keyword, Integer page, Integer size,
+                                                                  Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Visa visa, Set<WorkRegion> workRegions, ContractType contractType) {
+
+        validateRecruitSelectionLimits(jobRoles, languageTypes, workRegions);
+
+
         Pageable pageable= PageRequest.of(page, size);
-        Page<Recruit> recruits = recruitReader.getRecruits(keyword, jobCategories, contractTypes, pageable);
+        Page<Recruit> recruits = recruitReader.getRecruits(keyword, pageable, jobRoles, nationality, languageTypes, visa, workRegions, contractType);
 
         Page<RecruitPreviewResponseDTO> dtos = recruits.map(RecruitPreviewResponseDTO::fromEntity);
 
@@ -114,6 +177,8 @@ public class RecruitService {
 
         return response;
     }
+
+
 
 
     /*
@@ -159,13 +224,22 @@ public class RecruitService {
     public void deleteRecruit(Long recruitId){
         // 카테고리 삭제
         recruitJobCategoryJpaRepository.deleteByRecruitId(recruitId);
+
+        // 직무 삭제
+         recruitJobRoleRepository.deleteByRecruitId(recruitId);
+
+        // 언어 삭제
+        recruitLanguageTypeRepository.deleteByRecruitId(recruitId);
+
+        // 비자 삭제
+        recruitVisaRepository.deleteByRecruitId(recruitId);
+
         // 북마크 삭제
         recruitBookmarkRepository.deleteByRecruitId(recruitId);
 
         // 공고 삭제
         recruitRepository.deleteById(recruitId);
     }
-
 
 
 
@@ -183,6 +257,20 @@ public class RecruitService {
             return RecruitBookmarkStatus.INACTIVE;
         }
 
+    }
+
+    private static void validateRecruitSelectionLimits(Set<JobRole> jobRoles, Set<LanguageType> languageTypes, Set<WorkRegion> workRegions) {
+        if (jobRoles != null && jobRoles.size() > 5) {
+            throw new BadRequestException(RECRUIT_JOB_ROLE_LIMIT_EXCEEDED.getMessage());
+        }
+
+        if (languageTypes != null && languageTypes.size() > 5) {
+            throw new BadRequestException(RECRUIT_LANGUAGE_TYPE_LIMIT_EXCEEDED.getMessage());
+        }
+
+        if (workRegions != null && workRegions.size() > 3) {
+            throw new BadRequestException(RECRUIT_WORK_REGION_LIMIT_EXCEEDED.getMessage());
+        }
     }
 
 

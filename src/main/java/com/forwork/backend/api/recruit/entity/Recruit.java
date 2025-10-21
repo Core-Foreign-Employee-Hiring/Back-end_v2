@@ -12,8 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -90,7 +90,23 @@ public class Recruit extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "recruit", fetch = FetchType.LAZY)
-    private List<RecruitJobCategory> recruitJobCategories = new ArrayList<>();
+    private Set<RecruitJobCategory> recruitJobCategories = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "recruit", fetch = FetchType.LAZY)
+    private Set<RecruitJobRole> recruitJobRoles = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "recruit", fetch = FetchType.LAZY)
+    private Set<RecruitLanguageType> recruitLanguageTypes = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "recruit", fetch = FetchType.LAZY)
+    private Set<RecruitVisa> recruitVisas = new HashSet<>();
+
+    private String workRegion;
+
+    private String nationality;
 
     public String getFormattedWorkStartTime() {
         return formatTime(workStartTime);
@@ -151,6 +167,7 @@ public class Recruit extends BaseTimeEntity {
         this.others = dto.others();
         this.applicationMethod = dto.applicationMethod();
         this.directInputApplicationMethod = dto.directInputApplicationMethod();
+        this.nationality=dto.nationality().getDbValue();
     }
 
 

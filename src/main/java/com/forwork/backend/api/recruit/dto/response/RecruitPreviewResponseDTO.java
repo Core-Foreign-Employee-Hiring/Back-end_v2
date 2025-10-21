@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record RecruitPreviewResponseDTO(
         @Schema(description = "공고 id")
@@ -31,7 +32,7 @@ public record RecruitPreviewResponseDTO(
 
     public static RecruitPreviewResponseDTO fromEntity(Recruit recruit) {
 
-        List<RecruitJobCategory> recruitJobCategories = recruit.getRecruitJobCategories();
+        Set<RecruitJobCategory> recruitJobCategories = recruit.getRecruitJobCategories();
         List<JobCategory> jobCategories = RecruitUtils.convertToJobCategories(recruitJobCategories);
 
         return new RecruitPreviewResponseDTO(

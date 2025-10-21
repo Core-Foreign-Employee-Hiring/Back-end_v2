@@ -1,12 +1,16 @@
 package com.forwork.backend.api.member.dto;
 
+import com.forwork.backend.api.member.entity.Nationality;
 import com.forwork.backend.api.member.entity.Gender;
+import com.forwork.backend.api.member.entity.JobRole;
+import com.forwork.backend.api.member.entity.Visa;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -26,9 +30,12 @@ public class MemberRegisterRequestDTO {
     private LocalDate birthDate;
     private Gender gender;
 
-    private String nationality;
+    private Nationality nationality;
     private String education;
-    private String visa;
+    private Visa visa;
+
+    @Size(max=5, message="최대 5개")
+    private Set<JobRole> jobRoles;
 
     private boolean termsOfServiceAgreement;
     private boolean isOver15; // 만 15세 이상 확인

@@ -39,6 +39,7 @@ public class PassArchiveRepositoryImpl implements PassArchiveQueryDSL{
         JPAQuery<Long> countQuery = queryFactory
                 .select(passArchive.count())
                 .from(passArchive)
+                .join(passArchive.thumbnail)
                 .where(
                         keywordEq(keyword)
                 );

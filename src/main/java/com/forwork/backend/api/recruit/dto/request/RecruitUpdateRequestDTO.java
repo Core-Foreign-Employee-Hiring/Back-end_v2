@@ -2,11 +2,16 @@ package com.forwork.backend.api.recruit.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forwork.backend.api.member.entity.JobCategory;
+import com.forwork.backend.api.member.entity.JobRole;
+import com.forwork.backend.api.member.entity.Nationality;
+import com.forwork.backend.api.member.entity.Visa;
 import com.forwork.backend.api.recruit.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record RecruitUpdateRequestDTO(
         @Schema(description = "공고 제목")
@@ -27,6 +32,17 @@ public record RecruitUpdateRequestDTO(
 
         @Schema(description = "직종")
         List<JobCategory> jobCategories,
+
+        @Schema(description = "직무")
+        @Size(max=5, message="최대 5개")
+        Set<JobRole> jobRoles,
+        @Schema(description = "언어")
+        @Size(max=5, message="최대 5개")
+        Set<LanguageType> languageTypes,
+        @Schema(description = "비자")
+        Set<Visa> visas,
+        @Schema(description = "관련 국적")
+        Nationality nationality,
 
         @Schema(description = "근무 형태 (ENUM: 대면, 비대면, 혼합 등)")
         WorkType workType,
