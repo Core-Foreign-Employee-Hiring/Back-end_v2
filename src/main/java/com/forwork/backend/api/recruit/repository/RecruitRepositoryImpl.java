@@ -57,7 +57,6 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                         recruit.recruitEndDate.goe(now),
                         keywordEq(keyword),
                         jobRoleEq(jobRoles),
-                        nationalityEq(nationality),
                         languageTypeEq(languageTypes),
                         visaEq(visa),
                         workRegionEq(workRegions),
@@ -95,7 +94,6 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                         recruit.recruitEndDate.goe(now),
                         keywordEq(keyword),
                         jobRoleEq(jobRoles),
-                        nationalityEq(nationality),
                         languageTypeEq(languageTypes),
                         visaEq(visa),
                         workRegionEq(workRegions),
@@ -127,12 +125,6 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
         return recruitJobRole.recruit.id.eq(recruit.id).and(recruitJobRole.jobRoleEntity.id.in(jobRoleIds));
     }
 
-    private BooleanExpression nationalityEq(Nationality nationality){
-        if(nationality==null){return null;}
-
-        return recruit.nationality.eq(nationality.getDbValue());
-
-    }
 
     private BooleanExpression languageTypeEq(Set<LanguageType> languageTypes) {
         if(languageTypes==null || languageTypes.isEmpty()){return null;}
