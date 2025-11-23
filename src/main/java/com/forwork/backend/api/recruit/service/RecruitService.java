@@ -163,13 +163,13 @@ public class RecruitService {
     }
 
     public PageResponseDTO<RecruitPreviewResponseDTO> getRecruits(String keyword, Integer page, Integer size,
-                                                                  Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Visa visa, Set<WorkRegion> workRegions, ContractType contractType) {
+                                                                  Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType) {
 
         validateRecruitSelectionLimits(jobRoles, languageTypes, workRegions);
 
 
         Pageable pageable= PageRequest.of(page, size);
-        Page<Recruit> recruits = recruitReader.getRecruits(keyword, pageable, jobRoles, nationality, languageTypes, visa, workRegions, contractType);
+        Page<Recruit> recruits = recruitReader.getRecruits(keyword, pageable, jobRoles, nationality, languageTypes, visas, workRegions, contractType);
 
         Page<RecruitPreviewResponseDTO> dtos = recruits.map(RecruitPreviewResponseDTO::fromEntity);
 

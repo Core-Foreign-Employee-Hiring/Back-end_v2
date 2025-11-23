@@ -47,8 +47,8 @@ public class RecruitReader {
 
 
     public Page<Recruit> getRecruits(String keyword, Pageable pageable,
-                                     Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Visa visa, Set<WorkRegion> workRegions, ContractType contractType) {
-        Page<Recruit> recruits = recruitRepository.getRecruits(keyword, pageable, jobRoles, nationality, languageTypes, visa, workRegions, contractType);
+                                     Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType) {
+        Page<Recruit> recruits = recruitRepository.getRecruits(keyword, pageable, jobRoles, nationality, languageTypes, visas, workRegions, contractType);
 
         return recruits;
     }
