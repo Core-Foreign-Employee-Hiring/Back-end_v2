@@ -106,8 +106,6 @@ public class Recruit extends BaseTimeEntity {
 
     private String workRegion;
 
-    private String nationality;
-
     public String getFormattedWorkStartTime() {
         return formatTime(workStartTime);
     }
@@ -167,7 +165,6 @@ public class Recruit extends BaseTimeEntity {
         this.others = dto.others();
         this.applicationMethod = dto.applicationMethod();
         this.directInputApplicationMethod = dto.directInputApplicationMethod();
-        this.nationality=dto.nationality().getDbValue();
     }
 
 

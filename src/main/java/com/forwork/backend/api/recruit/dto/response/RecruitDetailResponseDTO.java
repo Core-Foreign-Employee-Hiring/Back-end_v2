@@ -40,8 +40,6 @@ public record RecruitDetailResponseDTO(
         List<Visa> visas,
         @Schema(description = "근무지역")
         WorkRegion workRegion,
-        @Schema(description = "관련 국적")
-        Nationality nationality,
 
         @Schema(description = "근무 형태 (ENUM: 대면, 비대면, 혼합 등)")
         WorkType workType,
@@ -126,7 +124,6 @@ public record RecruitDetailResponseDTO(
                         languageTypes,
                         visas,
                         WorkRegion.getWorkRegionByDBValue(recruit.getWorkRegion()),
-                        Nationality.getNationalityByDBValue(recruit.getNationality()),
 
                         recruit.getWorkType(),
                         recruit.getDirectInputWorkType(),

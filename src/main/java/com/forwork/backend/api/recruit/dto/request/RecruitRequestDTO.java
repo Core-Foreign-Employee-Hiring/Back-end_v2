@@ -41,8 +41,6 @@ public record RecruitRequestDTO(
         Set<LanguageType> languageTypes,
         @Schema(description = "비자")
         Set<Visa> visas,
-        @Schema(description = "관련 국적")
-        Nationality nationality,
         @JsonProperty("isAlwaysRecruiting")
         @Schema(description = "상시 모집 기간 여부")
         boolean isAlwaysRecruiting,
@@ -136,7 +134,6 @@ public record RecruitRequestDTO(
                 .directInputApplicationMethod(directInputApplicationMethod)
                 .recruitPublishStatus(recruitPublishStatus)
                 .workRegion(WorkRegion.fromPrefix(address1).getDbValue())
-                .nationality(nationality.getDbValue())
                 .build();
     }
 
