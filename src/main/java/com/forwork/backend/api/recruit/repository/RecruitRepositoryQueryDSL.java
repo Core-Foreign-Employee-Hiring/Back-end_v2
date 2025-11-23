@@ -15,6 +15,6 @@ import java.util.Set;
 public interface RecruitRepositoryQueryDSL {
 
     Page<Recruit> getRecruits(String keyword, Pageable pageable,
-                              Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Visa visa, Set<WorkRegion> workRegions, ContractType contractType);
+                              Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType);
 
 }

@@ -126,7 +126,7 @@ public class RecruitController {
             @RequestParam(value = "languageTypes", required = false) Set<LanguageType> languageTypes,
 
             @Parameter(description = "비자", in = ParameterIn.QUERY)
-            @RequestParam(value = "visa", required = false) Visa visa,
+            @RequestParam(value = "visas", required = false) Set<Visa> visas,
 
             @Parameter(description = "근무지역", in = ParameterIn.QUERY)
             @RequestParam(value = "workRegions", required = false) Set<WorkRegion> workRegions,
@@ -142,7 +142,7 @@ public class RecruitController {
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
 
-        PageResponseDTO<RecruitPreviewResponseDTO> response = recruitService.getRecruits(keyword, page, size, jobRoles, nationality, languageTypes, visa, workRegions, contractType);
+        PageResponseDTO<RecruitPreviewResponseDTO> response = recruitService.getRecruits(keyword, page, size, jobRoles, nationality, languageTypes, visas, workRegions, contractType);
         return ApiResponse.success(SuccessStatus.SEND_RECRUIT_ALL_LIST_SUCCESS, response);
     }
 

@@ -42,7 +42,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
     @Override
     public Page<Recruit> getRecruits(String keyword, Pageable pageable,
-                                     Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Visa visa, Set<WorkRegion> workRegions, ContractType contractType) {
+                                     Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType) {
 
         LocalDate now = LocalDate.now();
 
@@ -58,7 +58,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                         keywordEq(keyword),
                         jobRoleEq(jobRoles),
                         languageTypeEq(languageTypes),
-                        visaEq(visa),
+                        visaEq(visas),
                         workRegionEq(workRegions),
                         contractTypeEq(contractType)
                 )
@@ -95,7 +95,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                         keywordEq(keyword),
                         jobRoleEq(jobRoles),
                         languageTypeEq(languageTypes),
-                        visaEq(visa),
+                        visaEq(visas),
                         workRegionEq(workRegions),
                         contractTypeEq(contractType)
                 );
@@ -140,13 +140,15 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
         return recruitLanguageType.recruit.id.eq(recruit.id).and(recruitLanguageType.languageTypeEntity.id.in(languageTypeIds));
     }
 
-    private BooleanExpression visaEq(Visa visa){
-        if(visa==null ){return null;}
+    private BooleanExpression visaEq(Set<Visa> visas){
+        if(visas==null || visas.isEmpty()){return null;}
+
+        List<String> list = visas.stream().map(Visa::getDbValue).toList();
 
         List<Long> visaIds = queryFactory
                 .select(visaEntity.id)
                 .from(visaEntity)
-                .where(visaEntity.visa.in(visa.getDbValue()))
+                .where(visaEntity.visa.in(list))
                 .fetch();
 
         return recruitVisa.recruit.id.eq(recruit.id).and(recruitVisa.visaEntity.id.in(visaIds));
