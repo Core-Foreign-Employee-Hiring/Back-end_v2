@@ -93,32 +93,42 @@ public class RecruitService {
         // 언어 처리
 
         Set<LanguageType> languageTypes = recruitRequestDTO.languageTypes();
-        List<LanguageTypeEntity> allByLanguageTypes =
-                languageTypeEntityRepository.findAllByLanguageTypes(languageTypes.stream().map(LanguageType::getDbValue).toList());
 
-        Set<RecruitLanguageType> recruitLanguageTypes=new HashSet<>();
+        if(languageTypes !=null && !languageTypes.isEmpty()){
+            List<LanguageTypeEntity> allByLanguageTypes =
+                    languageTypeEntityRepository.findAllByLanguageTypes(languageTypes.stream().map(LanguageType::getDbValue).toList());
 
-        for (LanguageTypeEntity languageTypeEntity : allByLanguageTypes) {
-            RecruitLanguageType recruitLanguageType = new RecruitLanguageType(recruit, languageTypeEntity);
-            recruitLanguageTypes.add(recruitLanguageType);
+            Set<RecruitLanguageType> recruitLanguageTypes=new HashSet<>();
+
+            for (LanguageTypeEntity languageTypeEntity : allByLanguageTypes) {
+                RecruitLanguageType recruitLanguageType = new RecruitLanguageType(recruit, languageTypeEntity);
+                recruitLanguageTypes.add(recruitLanguageType);
+            }
+
+            recruitLanguageTypeRepository.saveAll(recruitLanguageTypes);
         }
 
-        recruitLanguageTypeRepository.saveAll(recruitLanguageTypes);
 
         // 비자 처리
 
         Set<Visa> visas = recruitRequestDTO.visas();
-        List<VisaEntity> allByVisas =
-                visaEntityRepository.findAllByVisas(visas.stream().map(Visa::getDbValue).toList());
 
-        Set<RecruitVisa> recruitVisas=new HashSet<>();
 
-        for (VisaEntity visaEntity : allByVisas) {
-            RecruitVisa recruitVisa = new RecruitVisa(recruit, visaEntity);
-            recruitVisas.add(recruitVisa);
+        if(visas!=null && !visas.isEmpty()){
+            List<VisaEntity> allByVisas =
+                    visaEntityRepository.findAllByVisas(visas.stream().map(Visa::getDbValue).toList());
+
+            Set<RecruitVisa> recruitVisas=new HashSet<>();
+
+            for (VisaEntity visaEntity : allByVisas) {
+                RecruitVisa recruitVisa = new RecruitVisa(recruit, visaEntity);
+                recruitVisas.add(recruitVisa);
+            }
+
+            recruitVisaRepository.saveAll(recruitVisas);
         }
 
-        recruitVisaRepository.saveAll(recruitVisas);
+
 
         return recruit.getId();
     }
