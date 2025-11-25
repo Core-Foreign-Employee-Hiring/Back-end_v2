@@ -139,6 +139,9 @@ public enum ErrorStatus {
     REVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
     ACCOUT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND,"등록된 계좌정보를 찾을 수 없습니다."),
     INQUIRY_LINK_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 링크를 찾을 수 없습니다."),
+    SPEC_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "스펙 정보를 찾을 수 없습니다."),
+    EDUCATION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "학력 정보를 찾을 수 없습니다."),
+
 
 
     /**

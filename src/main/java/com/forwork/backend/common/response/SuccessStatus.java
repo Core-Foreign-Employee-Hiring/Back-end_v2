@@ -110,6 +110,8 @@ public enum SuccessStatus {
     SEND_WITHDRAWER_INFO_SUCCESS(HttpStatus.OK, "인출자 정보 조회 성공"),
     DELETE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.OK, "공고 삭제 성공"),
     DELETE_ARCHIVE_SUCCESS(HttpStatus.OK, "아카이브 삭제 성공"),
+    GET_MEMBER_SPECIFICATION_SUCCESS(HttpStatus.OK, "스펙 조회 성공"),
+
 
 
 
@@ -136,6 +138,8 @@ public enum SuccessStatus {
     INQUIRY_CREATE_SUCCESS(HttpStatus.CREATED, "문의하기 성공"),
     ANSWER_CREATE_SUCCESS(HttpStatus.CREATED, "답변하기 성공"),
     CREATE_ACCOUNT_SUCCESS(HttpStatus.CREATED, "계좌정보 등록 성공"),
+    CREATE_SPEC_SUCCESS(HttpStatus.CREATED, "스펙 등록 성공"),
+
 
     ;
 
