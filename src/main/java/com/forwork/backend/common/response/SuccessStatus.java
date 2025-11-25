@@ -109,6 +109,8 @@ public enum SuccessStatus {
     SEND_INQUIRY_LINK_SUCCESS(HttpStatus.OK, "문의 링크 조회 성공"),
     SEND_WITHDRAWER_INFO_SUCCESS(HttpStatus.OK, "인출자 정보 조회 성공"),
     DELETE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.OK, "공고 삭제 성공"),
+    DELETE_ARCHIVE_SUCCESS(HttpStatus.OK, "아카이브 삭제 성공"),
+
 
 
 

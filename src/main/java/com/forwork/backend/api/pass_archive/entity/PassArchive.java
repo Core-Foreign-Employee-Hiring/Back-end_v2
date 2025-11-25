@@ -2,6 +2,7 @@ package com.forwork.backend.api.pass_archive.entity;
 
 import com.forwork.backend.api.file.entity.UploadFile;
 import com.forwork.backend.api.member.entity.Member;
+import com.forwork.backend.api.order.entity.OrderPassArchive;
 import com.forwork.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -61,4 +62,16 @@ public class PassArchive extends BaseTimeEntity {
 
     @Builder.Default
     private List<UploadFile> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "passArchive", cascade = CascadeType.REMOVE)
+    @Builder.Default
+    private List<OrderPassArchive> orderPassArchives = new ArrayList<>();
+
+    @OneToMany(mappedBy = "archive", cascade = CascadeType.REMOVE)
+    @Builder.Default
+    private List<ArchiveInquiry> archiveInquiries = new ArrayList<>();
+
+    @OneToMany(mappedBy = "passArchive", cascade = CascadeType.REMOVE)
+    @Builder.Default
+    private List<ArchiveReview> archiveReviews = new ArrayList<>();
 }

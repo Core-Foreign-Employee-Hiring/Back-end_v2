@@ -296,4 +296,31 @@ public class PassArchiveController {
 
         return ApiResponse.success_only(SuccessStatus.ARCHIVE_REVIEW_CREATE_SUCCESS);
     }
+
+    @Operation(
+            summary = "테스트: 아카이브 하나 삭제 API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 삭제 성공"),
+    })
+    @DeleteMapping("/test/{pass-archive-id}")
+    public ResponseEntity<ApiResponse<Void>> test_delete(@AuthenticationPrincipal SecurityMember securityMember,
+                                                       @PathVariable("pass-archive-id") Long archiveId) {
+        archiveTestService.deleteArchive(archiveId);
+
+        return ApiResponse.success_only(SuccessStatus.DELETE_ARCHIVE_SUCCESS);
+    }
+
+    @Operation(
+            summary = "테스트: 아카이브 모두 삭제 API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 삭제 성공"),
+    })
+    @DeleteMapping("/test")
+    public ResponseEntity<ApiResponse<Void>> test_deleteAll(@AuthenticationPrincipal SecurityMember securityMember) {
+        archiveTestService.deleteAllArchives();
+
+        return ApiResponse.success_only(SuccessStatus.DELETE_ARCHIVE_SUCCESS);
+    }
 }
