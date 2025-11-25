@@ -134,6 +134,8 @@ public enum SuccessStatus {
     INQUIRY_CREATE_SUCCESS(HttpStatus.CREATED, "문의하기 성공"),
     ANSWER_CREATE_SUCCESS(HttpStatus.CREATED, "답변하기 성공"),
     CREATE_ACCOUNT_SUCCESS(HttpStatus.CREATED, "계좌정보 등록 성공"),
+    CREATE_SPEC_SUCCESS(HttpStatus.CREATED, "스펙 등록 성공"),
+
 
     ;
 

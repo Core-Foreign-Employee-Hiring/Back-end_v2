@@ -5,6 +5,7 @@ import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.service.CompanyValidationService;
 import com.forwork.backend.api.member.service.EmailService;
 import com.forwork.backend.api.member.service.MemberService;
+import com.forwork.backend.api.member.service.MemberSpecificationService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.response.ApiResponse;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,6 +34,7 @@ public class MemberController {
     private final JwtService jwtService;
     private final CompanyValidationService companyValidationService;
     private final EmailService emailService;
+    private final MemberSpecificationService memberSpecificationService;
 
     @Operation(
             summary = "회원가입 API (태근)",
@@ -362,6 +365,20 @@ public class MemberController {
 
         memberService.changePasswordByReset(passwordResetConfirmDTO);
         return ApiResponse.success_only(SuccessStatus.SEND_MODIFY_PASSWORD_SUCCESS);
+    }
+
+    @Operation(
+            summary = "내 스펙 입력 API (용범)", description = "입력= MemberSpecificationRequestDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 등록 성공"),
+    })
+    @PostMapping("/specification")
+    public ResponseEntity<ApiResponse<Void>> createMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                       @Valid @RequestBody MemberSpecificationRequestDTO memberSpecificationRequestDTO) {
+
+        memberSpecificationService.createMemberSpecification(securityMember.getId(), memberSpecificationRequestDTO);
+        return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
 }
