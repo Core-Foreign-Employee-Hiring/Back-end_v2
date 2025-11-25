@@ -16,5 +16,15 @@ public enum ContractType {
     public String getDisplayName() {
         return displayName;
     }
+
+    public static ContractType from(String value) {
+        if (value == null) return null;
+
+        try {
+            return ContractType.valueOf(value);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
 }
 

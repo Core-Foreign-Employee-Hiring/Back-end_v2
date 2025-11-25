@@ -52,7 +52,7 @@ public class MemberService {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
 
-        /*// 이메일 인증 여부 체크
+        // 이메일 인증 여부 체크
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(memberRegisterRequestDTO.getEmail())
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_EMAIL_VERIFICATION_EXCEPTION.getMessage()));
         if (!emailVerification.isVerified()) {
@@ -64,7 +64,7 @@ public class MemberService {
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
-        }*/
+        }
 
         Address address = new Address(
                 memberRegisterRequestDTO.getZipcode(),

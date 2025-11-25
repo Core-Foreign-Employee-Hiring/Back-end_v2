@@ -12,9 +12,6 @@ import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.ErrorStatus;
 import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.http.PATCH;
 
 @Tag(name = "Member", description = "Member 관련 API 입니다.")
 @RestController
@@ -379,6 +375,21 @@ public class MemberController {
 
         memberSpecificationService.createMemberSpecification(securityMember.getId(), memberSpecificationRequestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
+    }
+
+    @Operation(
+            summary = "내 스펙 조회 API (용범)",
+            description = "출력= MemberSpecificationRequestDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 조회 성공"),
+    })
+    @GetMapping("/specification")
+    public ResponseEntity<ApiResponse<MemberSpecificationResponseDTO>> getMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        MemberSpecificationResponseDTO response = memberSpecificationService.getMemberSpecification(securityMember.getId());
+
+        return ApiResponse.success(SuccessStatus.GET_MEMBER_SPECIFICATION_SUCCESS, response);
     }
 
 }

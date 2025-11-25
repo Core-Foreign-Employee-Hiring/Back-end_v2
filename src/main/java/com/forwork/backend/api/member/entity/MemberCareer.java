@@ -16,15 +16,23 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Getter
 @Table(
-        name="member_lanuage_skill",
+        name="member_career",
         indexes = @Index(name="idx_member_specification_id", columnList = "member_specification_id")
 )
-public class MemberLanguageSkill extends BaseTimeEntity {
+public class MemberCareer extends BaseTimeEntity {
     @Id @GeneratedValue(strategy= IDENTITY)
-    @Column(name="member_language_skill_id")
+    @Column(name="member_career_id")
     private Long id;
 
-    private Integer klptScore;
+    private String companyName;
+    private String position;
+    private Integer startYear;
+    private Integer startMonth;
+    private Integer endYear;
+    private Integer endMonth;
+    private String contractType;
+    @Column(columnDefinition="LONGTEXT")
+    private String highlight;
 
     @ManyToOne(fetch=LAZY)
     @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

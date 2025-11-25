@@ -1,5 +1,6 @@
 package com.forwork.backend.api.member.entity;
 
+import com.forwork.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
         name="member_english_skill",
         indexes = @Index(name="idx_member_language_skill_id", columnList = "member_language_skill_id")
 )
-public class MemberEnglishSkill {
+public class MemberEnglishSkill extends BaseTimeEntity {
     @Id @GeneratedValue(strategy= IDENTITY)
     @Column(name="member_english_skill_id")
     private Long id;
