@@ -100,7 +100,10 @@ public record RecruitDetailResponseDTO(
         String businessType,
 
         @Schema(description = "현재 북마크 상태")
-        RecruitBookmarkStatus recruitBookmarkStatus
+        RecruitBookmarkStatus recruitBookmarkStatus,
+
+        @Schema(description = "회사 이미지 사진")
+        String companyImageUrl
 
 ) {
 
@@ -159,7 +162,8 @@ public record RecruitDetailResponseDTO(
                         recruit.getEstablishedDate(),
                         recruit.getBusinessType(),
 
-                        recruitBookmarkStatus
+                        recruitBookmarkStatus,
+                        recruit.getCompanyImageUrl()
                 );
         }
 }
