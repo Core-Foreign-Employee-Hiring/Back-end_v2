@@ -4,6 +4,7 @@ import com.forwork.backend.api.pay.exception.PaymentException;
 import com.forwork.backend.common.exception.BaseException;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.ErrorStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Objects;
 
 @RestControllerAdvice
+@Slf4j
 public class ControllerExceptionAdvice {
 
     @ExceptionHandler(BaseException.class)
@@ -47,5 +49,16 @@ public class ControllerExceptionAdvice {
     public ResponseEntity<ApiResponse> handleGlobalException(PaymentException ex) {
         return ResponseEntity.status(ex.getHttpStatus().value())
                 .body(ApiResponse.fail(ex.getHttpStatus().value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleAllUnhandledExceptions(Exception ex) {
+        log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.fail(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "서버 내부 오류가 발생했습니다."
+                ));
     }
 }
