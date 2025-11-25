@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 import static com.forwork.backend.common.response.ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION;
 import static com.forwork.backend.common.response.ErrorStatus.USER_NOT_FOUND_EXCEPTION;
 
@@ -55,5 +58,31 @@ public class ArchiveTestService {
         // 아카이브 업데이트
         passArchiveRepository.updateStarCountByPassArchiveId(passArchive.getPassArchiveId());
         passArchiveRepository.updateStarByPassArchiveId(passArchive.getPassArchiveId(), passArchive.getStar());
+    }
+
+    /**
+     * 아카이브 삭제
+     */
+    @Transactional
+    public void deleteArchive(Long archiveId){
+        Optional<PassArchive> byId = passArchiveRepository.findById(archiveId);
+
+        if(byId.isPresent()){
+            PassArchive passArchive = byId.get();
+            passArchiveRepository.delete(passArchive);
+        }
+
+    }
+
+
+    /**
+     * 현재 아카이브 전체 삭제
+     */
+    @Transactional
+    public void deleteAllArchives(){
+        List<PassArchive> all = passArchiveRepository.findAll();
+
+        passArchiveRepository.deleteAll(all);
+
     }
 }
