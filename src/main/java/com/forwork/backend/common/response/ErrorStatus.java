@@ -116,6 +116,8 @@ public enum ErrorStatus {
     ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 대한 구매 내역이 없습니다."),
     UNAUTHORIZED_INQUIRY_ANSWER_EXCEPTION(HttpStatus.FORBIDDEN, "다른 사람 아카이브 문의에는 답변할 수 없습니다."),
     UNAUTHORIZED_PAYOUT_REQUEST_EXCEPTION(HttpStatus.FORBIDDEN, "인출 요청자와 판매자가 일치하지 않습니다."),
+    SPEC_EVALUATION_NOT_OWNER_EXCEPTION(HttpStatus.FORBIDDEN, "본인 스펙 평가가 아닙니다."),
+
 
 
     /**
@@ -141,6 +143,8 @@ public enum ErrorStatus {
     INQUIRY_LINK_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 링크를 찾을 수 없습니다."),
     SPEC_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "스펙 정보를 찾을 수 없습니다."),
     EDUCATION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "학력 정보를 찾을 수 없습니다."),
+    SPEC_EVALUATION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "스펙 평가 정보를 찾을 수 없습니다."),
+
 
 
 

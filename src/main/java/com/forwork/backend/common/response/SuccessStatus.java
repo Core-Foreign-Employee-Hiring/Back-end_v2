@@ -111,6 +111,7 @@ public enum SuccessStatus {
     DELETE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.OK, "공고 삭제 성공"),
     DELETE_ARCHIVE_SUCCESS(HttpStatus.OK, "아카이브 삭제 성공"),
     GET_MEMBER_SPECIFICATION_SUCCESS(HttpStatus.OK, "스펙 조회 성공"),
+    SPEC_EVALUATION_FIND_SUCCESS(HttpStatus.OK, "스펙 평가 조회 성공"),
 
 
 
@@ -139,6 +140,7 @@ public enum SuccessStatus {
     ANSWER_CREATE_SUCCESS(HttpStatus.CREATED, "답변하기 성공"),
     CREATE_ACCOUNT_SUCCESS(HttpStatus.CREATED, "계좌정보 등록 성공"),
     CREATE_SPEC_SUCCESS(HttpStatus.CREATED, "스펙 등록 성공"),
+    SPEC_EVALUATION_SUCCESS(HttpStatus.CREATED, "스펙 평가 완료"),
 
 
     ;

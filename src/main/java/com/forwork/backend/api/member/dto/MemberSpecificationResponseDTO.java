@@ -50,6 +50,17 @@ public record MemberSpecificationResponseDTO(
             );
         }
 
+        public static Education of(MemberSpecificationDTO.Education dto) {
+            if (dto == null) return null;
+            return new Education(
+                    dto.schoolName(),
+                    dto.majors(),
+                    dto.earnedScore(),
+                    dto.maxScore()
+            );
+        }
+
+
     }
 
     public record LanguageSkill(
@@ -76,6 +87,19 @@ public record MemberSpecificationResponseDTO(
 
             return new LanguageSkill(memberLanguageSkill.getKlptScore(), englishSkillDtos);
         }
+
+        public static LanguageSkill of(MemberSpecificationDTO.LanguageSkill dto) {
+            if (dto == null) return null;
+
+            List<LanguageSkill.EnglishSkill> englishSkills = dto.englishSkills().stream()
+                    .map(es -> new LanguageSkill.EnglishSkill(es.type(), es.score()))
+                    .toList();
+
+            return new LanguageSkill(
+                    dto.klptScore(),
+                    englishSkills
+            );
+        }
     }
 
     public record Certification(
@@ -98,6 +122,17 @@ public record MemberSpecificationResponseDTO(
                     entity.getAcquiredYear(),
                     entity.getAcquiredMonth(),
                     entity.getDocumentUrl()
+            );
+        }
+
+        public static Certification of(MemberSpecificationDTO.Certification dto) {
+            if (dto == null) return null;
+
+            return new Certification(
+                    dto.certificationName(),
+                    dto.acquiredYear(),
+                    dto.acquiredMonth(),
+                    dto.documentUrl()
             );
         }
 
@@ -142,6 +177,21 @@ public record MemberSpecificationResponseDTO(
                     entity.getHighlight()
             );
         }
+
+        public static Career of(MemberSpecificationDTO.Career dto) {
+            if (dto == null) return null;
+
+            return new Career(
+                    dto.companyName(),
+                    dto.position(),
+                    dto.startYear(),
+                    dto.startMonth(),
+                    dto.endYear(),
+                    dto.endMonth(),
+                    dto.contractType(),
+                    dto.highlight()
+            );
+        }
     }
 
     public record Award(
@@ -173,6 +223,19 @@ public record MemberSpecificationResponseDTO(
                     entity.getDocumentUrl()
             );
         }
+
+        public static Award of(MemberSpecificationDTO.Award dto) {
+            if (dto == null) return null;
+
+            return new Award(
+                    dto.awardName(),
+                    dto.host(),
+                    dto.acquiredYear(),
+                    dto.acquiredMonth(),
+                    dto.description(),
+                    dto.documentUrl()
+            );
+        }
     }
 
     public record Experience(
@@ -200,6 +263,18 @@ public record MemberSpecificationResponseDTO(
                     entity.getInsight()
             );
         }
+
+        public static Experience of(MemberSpecificationDTO.Experience dto) {
+            if (dto == null) return null;
+
+            return new Experience(
+                    dto.experience(),
+                    dto.beforeImprovementRate(),
+                    dto.afterImprovementRate(),
+                    dto.description(),
+                    dto.insight()
+            );
+        }
     }
 
     public static MemberSpecificationResponseDTO of(
@@ -220,4 +295,23 @@ public record MemberSpecificationResponseDTO(
         );
     }
 
+    public static MemberSpecificationResponseDTO of(MemberSpecificationDTO dto) {
+        return new MemberSpecificationResponseDTO(
+
+                Education.of(dto.education()),
+                LanguageSkill.of(dto.languageSkill()),
+                dto.certifications().stream()
+                        .map(Certification::of)
+                        .toList(),
+                dto.careers().stream()
+                        .map(Career::of)
+                        .toList(),
+                dto.awards().stream()
+                        .map(Award::of)
+                        .toList(),
+                dto.experiences().stream()
+                        .map(Experience::of)
+                        .toList()
+        );
+    }
 }
