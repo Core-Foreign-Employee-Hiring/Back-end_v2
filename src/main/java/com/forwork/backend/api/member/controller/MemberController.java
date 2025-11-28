@@ -367,7 +367,7 @@ public class MemberController {
             summary = "내 스펙 입력 API (용범)", description = "입력= MemberSpecificationRequestDTO"
     )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 등록 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "스펙 등록 성공"),
     })
     @PostMapping("/specification")
     public ResponseEntity<ApiResponse<Void>> createMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember,
@@ -391,5 +391,40 @@ public class MemberController {
 
         return ApiResponse.success(SuccessStatus.GET_MEMBER_SPECIFICATION_SUCCESS, response);
     }
+
+    @Operation(
+            summary = "내 스펙 평가 API (용범)",
+            description = "출력= 스펙 평가 id"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "스펙 평가 완료"),
+    })
+    @PostMapping("/specification/evaluation")
+    public ResponseEntity<ApiResponse<Long>> evaluate(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        Long response = memberSpecificationService.evaluateSpecification(securityMember.getId());
+
+        return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_SUCCESS, response);
+    }
+
+    @Operation(
+            summary = "내 스펙 평가 조회 API (용범)",
+            description = "출력= MemberSpecEvaluationResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 평가 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "본인 스펙 평가가 아닙니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 평가 정보를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 정보를 찾을 수 없습니다."),
+    })
+    @GetMapping("/specification/evaluation/{spec-evaluation-id}")
+    public ResponseEntity<ApiResponse<MemberSpecEvaluationResponseDTO>> getSpecEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                          @PathVariable("spec-evaluation-id")Long specEvaluationId) {
+
+        MemberSpecEvaluationResponseDTO response = memberSpecificationService.getSpecEvaluation(securityMember.getId(), specEvaluationId);
+
+        return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_FIND_SUCCESS, response);
+    }
+
 
 }

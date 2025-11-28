@@ -1,11 +1,11 @@
 package com.forwork.backend.api.member.service;
 
-import com.forwork.backend.api.member.dto.MemberSpecificationRequestDTO;
-import com.forwork.backend.api.member.dto.MemberSpecificationResponseDTO;
+import com.forwork.backend.api.member.dto.*;
 import com.forwork.backend.api.member.entity.*;
 import com.forwork.backend.api.member.repository.*;
 import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.common.exception.NotFoundException;
+import com.forwork.backend.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,13 +26,14 @@ public class MemberSpecificationService {
     private final MemberRepository memberRepository;
     private final MemberMajorRepository memberMajorRepository;
     private final MemberLanguageSkillRepository memberLanguageSkillRepository;
-    private final MemberEnglishSkillRepository englishSkillRepository;
     private final MemberCertificationRepository memberCertificationRepository;
     private final MemberCareerRepository memberCareerRepository;
     private final MemberAwardRepository memberAwardRepository;
-    private final MemberExperienceRepository experienceRepository;
     private final MemberEnglishSkillRepository memberEnglishSkillRepository;
     private final MemberExperienceRepository memberExperienceRepository;
+    private final MemberSpecificationReader memberSpecificationReader;
+    private final MemberSpecEvaluationClient memberSpecEvaluationClient;
+    private final SpecificationEvaluationRepository specificationEvaluationRepository;
 
 
     /*
@@ -115,7 +116,7 @@ public class MemberSpecificationService {
                             )
                             .toList();
 
-                    englishSkillRepository.saveAll(memberEnglishSkills);
+                    memberEnglishSkillRepository.saveAll(memberEnglishSkills);
                 });
 
 
@@ -202,9 +203,43 @@ public class MemberSpecificationService {
                             )
                             .toList();
 
-                    experienceRepository.saveAll(memberExperiences);
+                    memberExperienceRepository.saveAll(memberExperiences);
 
                 });
+    }
+
+    /**
+     * 스펙 평가
+     */
+
+    public Long evaluateSpecification(Long memberId){
+        MemberSpecificationDTO memberSpecificationDTO = memberSpecificationReader.getMemberSpecification(memberId);
+
+        // ai 서버에거 갖고 온다.
+        MemberSpecEvaluationExternalResponseDTO memberSpecEvaluationExternalResponseDTO = memberSpecEvaluationClient.evaluateSpecification(memberSpecificationDTO);
+
+        // DB 저장.
+
+        MemberSpecification memberSpecification = memberSpecificationRepository.findById(memberSpecificationDTO.memberSpecificationId())
+                .orElseThrow(() -> {
+                    log.warn("[evaluateSpecification][스펙 없음.][memberSpecificationId= {}]", memberSpecificationDTO.memberSpecificationId());
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        SpecificationEvaluation specificationEvaluation = SpecificationEvaluation.builder()
+                .experience(memberSpecEvaluationExternalResponseDTO.experience())
+                .certificate(memberSpecEvaluationExternalResponseDTO.certificate())
+                .language(memberSpecEvaluationExternalResponseDTO.language())
+                .career(memberSpecEvaluationExternalResponseDTO.career())
+                .education(memberSpecEvaluationExternalResponseDTO.education())
+                .analysis(memberSpecEvaluationExternalResponseDTO.analysis())
+                .memberSpecification(memberSpecification)
+                .build();
+
+        Long id = specificationEvaluationRepository.save(specificationEvaluation).getId();
+
+        return id;
+
     }
 
     /*
@@ -216,93 +251,40 @@ public class MemberSpecificationService {
      */
 
     public MemberSpecificationResponseDTO getMemberSpecification(Long memberId){
-        /*
-         * 스펙
-         * */
+        MemberSpecificationDTO memberSpecification = memberSpecificationReader.getMemberSpecification(memberId);
 
+        MemberSpecificationResponseDTO response = MemberSpecificationResponseDTO.of(memberSpecification);
+        return response;
+    }
+
+    /**
+     * 스펙 평가 조회
+     */
+    public MemberSpecEvaluationResponseDTO getSpecEvaluation(Long memberId, Long specEvaluationId){
+
+        // 스펙 조회
         MemberSpecification memberSpecification = memberSpecificationRepository.findByMemberIdId(memberId)
                 .orElseThrow(() -> {
-                    log.warn("[getMemberSpecification][스펙 없음.][memberId= {}]", memberId);
+                    log.warn("[getSpecEvaluation][스펙 없음.][memberId= {}]", memberId);
                     return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
                 });
-        Long memberSpecificationId = memberSpecification.getId();
 
-        /*
-         * 학력
-         * */
+        // 스펙 평가 조회
+        SpecificationEvaluation specificationEvaluation = specificationEvaluationRepository.findBySpecificationEvaluationIdWithSpec(specEvaluationId)
+                .orElseThrow(() -> {
+                    log.warn("[getSpecEvaluation][스펙 평가 없음.][specEvaluationId= {}]", specEvaluationId);
+                    return new NotFoundException(SPEC_EVALUATION_NOT_FOUND_EXCEPTION.getMessage());
+                });
 
-        MemberSpecificationResponseDTO.Education education =
-                memberEducationRepository.findByMemberSpecificationId(memberSpecificationId)
-                        .map(memberEducation -> {
-                            // 전공 조회
-                            List<String> majors = memberMajorRepository.findAllByMemberEducationId(memberEducation.getId());
-                            return MemberSpecificationResponseDTO.Education.of(memberEducation, majors);
-                        })
-                        .orElse(null);
+        // 본인 거 맞나?
 
+        if(!memberSpecification.getId().equals(specificationEvaluation.getMemberSpecification().getId())){
+            log.warn("[getSpecEvaluation][본인 거 아님][본인 스펙 id= {}, 스펙 평가 id= {}]", memberSpecification.getId(), specEvaluationId);
 
-        /*
-         * 어학
-         * */
+            throw new UnauthorizedException(SPEC_EVALUATION_NOT_OWNER_EXCEPTION.getMessage());
+        }
 
-        MemberSpecificationResponseDTO.LanguageSkill languageSkill = memberLanguageSkillRepository.findByMemberSpecificationId(memberSpecificationId)
-                .map(memberLanguageSkill -> {
-                    // 영어 시험 조회
-                    List<MemberEnglishSkill> byMemberLanguageSkillId = memberEnglishSkillRepository.findByMemberLanguageSkillId(memberLanguageSkill.getId());
-                    return MemberSpecificationResponseDTO.LanguageSkill.of(memberLanguageSkill, byMemberLanguageSkillId);
-                })
-                .orElse(null);
-
-
-
-        /*
-         * 자격증
-         * */
-
-        List<MemberCertification> memberCertifications = memberCertificationRepository.findByMemberSpecification(memberSpecificationId);
-
-        List<MemberSpecificationResponseDTO.Certification> certifications = memberCertifications.stream()
-                .map(MemberSpecificationResponseDTO.Certification::of)
-                .toList();
-
-        /*
-         * 경력
-         * */
-
-        List<MemberCareer> memberCareers = memberCareerRepository.findByMemberSpecificationId(memberSpecificationId);
-
-        List<MemberSpecificationResponseDTO.Career> careers = memberCareers.stream()
-                .map(MemberSpecificationResponseDTO.Career::of)
-                .toList();
-
-
-        /*
-         * 수상
-         * */
-        List<MemberAward> memberAwards = memberAwardRepository.findByMemberSpecificationId(memberSpecificationId);
-
-        List<MemberSpecificationResponseDTO.Award> awards = memberAwards.stream()
-                .map(MemberSpecificationResponseDTO.Award::of)
-                .toList();
-
-        /*
-         * 경험
-         * */
-
-        List<MemberExperience> memberExperiences = memberExperienceRepository.findByMemberSpecificationId(memberSpecificationId);
-
-        List<MemberSpecificationResponseDTO.Experience> experiences = memberExperiences.stream()
-                .map(MemberSpecificationResponseDTO.Experience::of)
-                .toList();
-
-        MemberSpecificationResponseDTO response = MemberSpecificationResponseDTO.of(
-                education,
-                languageSkill,
-                certifications,
-                careers,
-                awards,
-                experiences
-        );
+        MemberSpecEvaluationResponseDTO response = MemberSpecEvaluationResponseDTO.of(specificationEvaluation);
 
         return response;
     }

@@ -39,7 +39,8 @@ public enum JobCategory {
             DOTNET_DEVELOPER,
             GRAPHICS_ENGINEER,
             AR_VR_ENGINEER,
-            RUBY_ON_RAILS_DEVELOPER
+            RUBY_ON_RAILS_DEVELOPER,
+            AI
 
     )),
 
