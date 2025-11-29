@@ -16,11 +16,13 @@ public record MemberSpecEvaluationResponseDTO(
         Integer career,
         @Schema(description = "학력")
         Integer education,
+        @Schema(description = "상위 몇 퍼?")
+        double topPercent,
         @Schema(description = "분석?")
         String analysis
 ) {
 
-    public static MemberSpecEvaluationResponseDTO of(SpecificationEvaluation specificationEvaluation) {
+    public static MemberSpecEvaluationResponseDTO of(SpecificationEvaluation specificationEvaluation, double topPercent) {
         return new MemberSpecEvaluationResponseDTO(
                 specificationEvaluation.getId(),
                 specificationEvaluation.getExperience(),
@@ -28,6 +30,7 @@ public record MemberSpecEvaluationResponseDTO(
                 specificationEvaluation.getLanguage(),
                 specificationEvaluation.getCareer(),
                 specificationEvaluation.getEducation(),
+                topPercent,
                 specificationEvaluation.getAnalysis()
         );
     }
