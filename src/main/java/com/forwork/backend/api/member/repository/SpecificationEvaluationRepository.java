@@ -13,4 +13,8 @@ public interface SpecificationEvaluationRepository extends JpaRepository<Specifi
             " left join se.memberSpecification" +
             " where se.id=:specEvaluationId")
     Optional<SpecificationEvaluation> findBySpecificationEvaluationIdWithSpec(@Param("specEvaluationId") Long specEvaluationId);
+
+    @Query("select count(se) from SpecificationEvaluation se" +
+            " where se.score > :score")
+    long countHigherThan(@Param("score") Integer score);
 }

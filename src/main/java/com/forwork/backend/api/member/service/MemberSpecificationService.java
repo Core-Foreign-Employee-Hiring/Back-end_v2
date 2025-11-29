@@ -218,6 +218,11 @@ public class MemberSpecificationService {
         // ai 서버에거 갖고 온다.
         MemberSpecEvaluationExternalResponseDTO memberSpecEvaluationExternalResponseDTO = memberSpecEvaluationClient.evaluateSpecification(memberSpecificationDTO);
 
+        // score 계산 (일단, 오각형 총합)
+        int score=memberSpecEvaluationExternalResponseDTO.experience()+memberSpecEvaluationExternalResponseDTO.certificate()
+                +memberSpecEvaluationExternalResponseDTO.language()+memberSpecEvaluationExternalResponseDTO.career()
+                +memberSpecEvaluationExternalResponseDTO.education();
+
         // DB 저장.
 
         MemberSpecification memberSpecification = memberSpecificationRepository.findById(memberSpecificationDTO.memberSpecificationId())
@@ -232,6 +237,7 @@ public class MemberSpecificationService {
                 .language(memberSpecEvaluationExternalResponseDTO.language())
                 .career(memberSpecEvaluationExternalResponseDTO.career())
                 .education(memberSpecEvaluationExternalResponseDTO.education())
+                .score(score)
                 .analysis(memberSpecEvaluationExternalResponseDTO.analysis())
                 .memberSpecification(memberSpecification)
                 .build();
@@ -284,7 +290,18 @@ public class MemberSpecificationService {
             throw new UnauthorizedException(SPEC_EVALUATION_NOT_OWNER_EXCEPTION.getMessage());
         }
 
-        MemberSpecEvaluationResponseDTO response = MemberSpecEvaluationResponseDTO.of(specificationEvaluation);
+        /*
+        * 상위 몇 퍼?
+        * */
+
+        // 전체 개수
+        long totalCount = specificationEvaluationRepository.count();
+
+        // 나보다 큰 거 몇 개?
+        long higherThan = specificationEvaluationRepository.countHigherThan(specificationEvaluation.getScore());
+        double topPercent = 100.0 * ((double) higherThan / totalCount);
+
+        MemberSpecEvaluationResponseDTO response = MemberSpecEvaluationResponseDTO.of(specificationEvaluation, topPercent);
 
         return response;
     }

@@ -15,8 +15,11 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Getter
 @Table(
-        name="specification_evaluation",
-        indexes = @Index(name="idx_member_specification_id", columnList = "member_specification_id")
+        name = "specification_evaluation",
+        indexes = {
+                @Index(name = "idx_member_specification_id", columnList = "member_specification_id"),
+                @Index(name = "idx_score", columnList = "score")
+        }
 )
 public class SpecificationEvaluation {
     @Id @GeneratedValue(strategy= IDENTITY)
@@ -28,6 +31,7 @@ public class SpecificationEvaluation {
     private Integer language;
     private Integer career;
     private Integer education;
+    private Integer score;
     @Column(columnDefinition = "LONGTEXT")
     private String analysis;
 
