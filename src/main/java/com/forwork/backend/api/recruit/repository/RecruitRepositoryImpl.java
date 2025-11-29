@@ -41,8 +41,8 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
     }
 
     @Override
-    public Page<Recruit> getRecruits(String keyword, Pageable pageable,
-                                     Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType) {
+    public Page<Recruit> getRecruitsOrderByEndDate(String keyword, Pageable pageable,
+                                                   Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType) {
 
         LocalDate now = LocalDate.now();
 
@@ -81,6 +81,65 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
                 .leftJoin(recruitJobCategory.jobCategoryEntity, jobCategoryEntity).fetchJoin()
                 .where(recruit.id.in(recruitIds))
                 .orderBy(recruit.recruitEndDate.asc())
+                .fetch();
+
+        JPAQuery<Long> countQuery=queryFactory
+                .select(recruit.id.countDistinct())
+                .from(recruit)
+                .leftJoin(recruit.recruitJobRoles, recruitJobRole)
+                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType)
+                .leftJoin(recruit.recruitVisas, recruitVisa)
+                .where(
+                        recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
+                        recruit.recruitEndDate.goe(now),
+                        keywordEq(keyword),
+                        jobRoleEq(jobRoles),
+                        languageTypeEq(languageTypes),
+                        visaEq(visas),
+                        workRegionEq(workRegions),
+                        contractTypeEq(contractType)
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+
+    }
+
+    @Override
+    public Page<Recruit> getRecruitsOrderByLatest(String keyword, Pageable pageable, Set<JobRole> jobRoles, Nationality nationality, Set<LanguageType> languageTypes, Set<Visa> visas, Set<WorkRegion> workRegions, ContractType contractType) {
+        LocalDate now = LocalDate.now();
+
+        List<Long> ids=queryFactory.
+                selectDistinct(recruit.id)
+                .from(recruit)
+                .leftJoin(recruit.recruitJobRoles, recruitJobRole)
+                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType)
+                .leftJoin(recruit.recruitVisas, recruitVisa)
+                .where(
+                        recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
+                        recruit.recruitEndDate.goe(now),
+                        keywordEq(keyword),
+                        jobRoleEq(jobRoles),
+                        languageTypeEq(languageTypes),
+                        visaEq(visas),
+                        workRegionEq(workRegions),
+                        contractTypeEq(contractType)
+                )
+                .orderBy(recruit.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        if(ids.isEmpty()){
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        List<Recruit> content=queryFactory
+                .selectFrom(recruit)
+                .leftJoin(recruit.recruitJobCategories, recruitJobCategory).fetchJoin()
+                .leftJoin(recruitJobCategory.jobCategoryEntity, jobCategoryEntity).fetchJoin()
+                .where(recruit.id.in(ids))
+                .orderBy(recruit.id.desc())
                 .fetch();
 
         JPAQuery<Long> countQuery=queryFactory
