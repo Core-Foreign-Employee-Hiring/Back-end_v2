@@ -27,7 +27,10 @@ public enum LanguageType {
     ITALIAN("ITALIAN", "이탈리아어", "Italian"),
     PERSIAN("PERSIAN", "페르시아어", "Persian"),
     POLISH("POLISH", "폴란드어", "Polish"),
-    UKRAINIAN("UKRAINIAN", "우크라이나어", "Ukrainian");
+    UKRAINIAN("UKRAINIAN", "우크라이나어", "Ukrainian"),
+    THAI("THAI", "태국어", "Thai")
+
+    ;
 
 
     private final String dbValue;
