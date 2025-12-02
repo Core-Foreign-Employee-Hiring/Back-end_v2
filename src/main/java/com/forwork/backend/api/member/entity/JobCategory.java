@@ -94,7 +94,9 @@ public enum JobCategory {
             SOLUTION_CONSULTANT,
             MEDIA_SALES,
             CUSTOMER_SUCCESS_MANAGER,
-            SALES_ENGINEER
+            SALES_ENGINEER,
+            CORPORATE_SALES,
+            SALES_MANAGEMENT
     )),
 
     CUSTOMER_SERVICE_RETAIL("CUSTOMER_SERVICE_RETAIL", "고객서비스/리테일", EnumSet.of(
