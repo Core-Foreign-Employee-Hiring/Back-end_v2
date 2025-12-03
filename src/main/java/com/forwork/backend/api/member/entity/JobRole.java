@@ -194,6 +194,7 @@ public enum JobRole {
     WELDER("WELDER", "용접공"),
     CARPENTER("CARPENTER", "목수"),
     HEAVY_EQUIPMENT_TECHNICIAN("HEAVY_EQUIPMENT_TECHNICIAN", "중장비 기술자"),
+    SITE_MANAGER("SITE_MANAGER", "현장관리자"),
 
     MODEL("MODEL", "모델"),
     ACTOR("ACTOR", "배우"),

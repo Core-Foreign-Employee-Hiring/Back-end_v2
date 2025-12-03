@@ -243,7 +243,8 @@ public enum JobCategory {
             CONSTRUCTION_WORKER,
             WELDER,
             CARPENTER,
-            HEAVY_EQUIPMENT_TECHNICIAN
+            HEAVY_EQUIPMENT_TECHNICIAN,
+            SITE_MANAGER
 
     )),
 
