@@ -18,7 +18,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("select o from Order o" +
             " where o.merchantOrderId=:merchantOrderId")
-    Optional<Order> findByOrderId(@Param("merchantOrderId")String merchantOrderId);
+    Optional<Order> findByMerchantOrderId(@Param("merchantOrderId")String merchantOrderId);
+
+    @Query("select o from Order o" +
+            " left join fetch o.buyer" +
+            " where o.merchantOrderId=:merchantOrderId")
+    Optional<Order> findByMerchantOrderIdWithBuyer(@Param("merchantOrderId")String merchantOrderId);
 
 
     @Query("select new com.forwork.backend.api.order.dto.query.PassArchivePreviewIdAndPaymentApprovedAtQueryDTO(opa.passArchive.passArchiveId, p.approvedAt)" +

@@ -10,7 +10,9 @@ import com.forwork.backend.api.pass_archive.dto.PassArchiveCreateRequestDTO;
 import com.forwork.backend.api.pass_archive.dto.PassArchiveDetailResponseDTO;
 import com.forwork.backend.api.pass_archive.dto.PassArchiveFileResponseDTO;
 import com.forwork.backend.api.pass_archive.dto.PassArchivePreviewResponseDTO;
+import com.forwork.backend.api.pass_archive.entity.ArchiveDownloadHistory;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
+import com.forwork.backend.api.pass_archive.repository.ArchiveDownloadHistoryRepository;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.common.dto.PageResponseDTO;
 import com.forwork.backend.common.exception.BadRequestException;
@@ -31,6 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.forwork.backend.common.response.ErrorStatus.ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION;
+import static com.forwork.backend.common.response.ErrorStatus.USER_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class PassArchiveService {
     private final MemberRepository memberRepository;
     private final PassArchiveRepository passArchiveRepository;
     private final OrderRepository orderRepository;
+    private final ArchiveDownloadHistoryRepository archiveDownloadHistoryRepository;
 
     // 합격 아카이브 생성(파일 업로드 후 저장 메소드 전달)
     public Long createArchive(PassArchiveCreateRequestDTO passArchiveCreateRequestDTO, MultipartFile thumbnail, List<MultipartFile> images, List<MultipartFile> products, Long memberId) {
@@ -87,6 +91,7 @@ public class PassArchiveService {
     }
 
     // 아카이브 다운
+    @Transactional
     public List<PassArchiveFileResponseDTO> downloadArchive(Long memberId, Long passArchiveId){
         // 구매했는지
         boolean b = orderRepository.existsPurchasedArchive(memberId, passArchiveId);
@@ -104,6 +109,19 @@ public class PassArchiveService {
                 .map(PassArchiveFileResponseDTO::of)
                 .toList();
 
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[downloadArchive][멤버 없음.][memberId={}]", memberId);
+                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        ArchiveDownloadHistory history = ArchiveDownloadHistory.builder()
+                .buyer(member)
+                .passArchive(passArchive)
+                .build();
+
+        archiveDownloadHistoryRepository.save(history);
+        
         return response;
     }
 
