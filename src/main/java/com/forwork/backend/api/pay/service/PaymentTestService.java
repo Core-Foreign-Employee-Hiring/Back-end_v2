@@ -9,6 +9,7 @@ import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.api.pay.dto.internal.PaymentDTO;
+import com.forwork.backend.api.pay.dto.request.PaymentConfirmRequestDTO;
 import com.forwork.backend.api.pay.enums.TossPaymentStatus;
 import com.forwork.backend.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -78,9 +79,22 @@ public class PaymentTestService {
         * 결제
         * */
 
+
+
         // 초기 결제 생성
         String paymentKey = UUID.randomUUID().toString();
-        paymentCreator.create(paymentKey, merchantOrderId);
+
+        PaymentConfirmRequestDTO paymentConfirmRequestDTO = new PaymentConfirmRequestDTO(
+                paymentKey,
+                merchantOrderId,
+                String.valueOf(passArchive.getPrice()),
+                true,
+                true,
+                true
+
+        );
+
+        paymentCreator.create(paymentConfirmRequestDTO);
 
 
         // 결제 완료

@@ -9,6 +9,7 @@ import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,7 +44,7 @@ public class PaymentController {
             ),
     })
     @PostMapping("/confirm")
-    public ResponseEntity<ApiResponse<Void>> confirmPayment(@RequestBody PaymentConfirmRequestDTO paymentConfirmRequestDTO,
+    public ResponseEntity<ApiResponse<Void>> confirmPayment(@Valid @RequestBody PaymentConfirmRequestDTO paymentConfirmRequestDTO,
                                                             @AuthenticationPrincipal SecurityMember securityMember) {
         paymentService.requestConfirm(paymentConfirmRequestDTO);
 

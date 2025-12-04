@@ -73,7 +73,8 @@ public class PassArchiveController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 다운로드 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "해당 아카이브에 대한 구매 내역이 없습니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다.")
     })
     @GetMapping("/{archive-id}/download")
     public ResponseEntity<ApiResponse<List<PassArchiveFileResponseDTO>>> downloadArchive(@AuthenticationPrincipal SecurityMember securityMember,

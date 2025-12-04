@@ -3,7 +3,6 @@ package com.forwork.backend.api.pay.service;
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pay.dto.internal.PaymentDTO;
 import com.forwork.backend.api.pay.dto.request.PaymentConfirmRequestDTO;
-import com.forwork.backend.api.pay.entity.Payment;
 import com.forwork.backend.api.pay.enums.PaymentStatus;
 import com.forwork.backend.api.pay.exception.PaymentTimeoutException;
 import com.forwork.backend.api.pay.exception.confirm.PaymentAbortedException;
@@ -14,8 +13,6 @@ import com.forwork.backend.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 import static com.forwork.backend.common.response.ErrorStatus.ALREADY_DONE_PAYMENT_BEFORE_ORDER_EXCEPTION;
 import static com.forwork.backend.common.response.ErrorStatus.PAYMENT_ALREADY_EXISTS_EXCEPTION;
@@ -71,7 +68,7 @@ public class PaymentService {
                             log.warn("[requestConfirm][paymentKey 이미 존재][paymentKey={}]", paymentKey);
                             throw new BadRequestException(PAYMENT_ALREADY_EXISTS_EXCEPTION.getMessage());
                         },
-                        () -> paymentCreator.create(paymentKey, merchantOrderId)
+                        () -> paymentCreator.create(paymentConfirmRequestDTO)
                 );
 
 

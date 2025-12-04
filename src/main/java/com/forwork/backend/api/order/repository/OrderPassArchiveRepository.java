@@ -27,4 +27,9 @@ public interface OrderPassArchiveRepository extends JpaRepository<OrderPassArchi
     @Query("select distinct opa.passArchive.passArchiveId from OrderPassArchive opa" +
             " where opa.order.id in :orderIds")
     List<Long> findArchiveIdsByOrderIds(@Param("orderIds") List<Long> orderIds);
+
+    @Query("select opa from OrderPassArchive opa" +
+            " left join fetch opa.passArchive" +
+            " where opa.order.id=:orderId")
+    List<OrderPassArchive> findAllByOrderIdWithPassArchive(@Param("orderId") Long orderId);
 }
