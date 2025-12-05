@@ -9,15 +9,12 @@ import com.forwork.backend.api.order.dto.query.PassArchivePreviewIdAndPaymentApp
 import com.forwork.backend.api.order.entity.OrderPassArchive;
 import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
-import com.forwork.backend.api.pass_archive.entity.ArchiveInquiry;
 import com.forwork.backend.api.pass_archive.entity.ArchiveReview;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
-import com.forwork.backend.api.pass_archive.repository.ArchiveInquiryRepository;
 import com.forwork.backend.api.pass_archive.repository.ArchiveReviewRepository;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.api.pass_archive.service.ArchiveInquiryReader;
 import com.forwork.backend.api.pay.entity.Payment;
-import com.forwork.backend.api.pay.repository.PaymentRepository;
 import com.forwork.backend.api.pay.service.PaymentReader;
 import com.forwork.backend.common.dto.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -99,6 +96,7 @@ public class EmployeeMyPageService {
         dtos.getContent().forEach((PassArchivePreviewIdAndPaymentApprovedAtQueryDTO e) ->{
             Long passArchiveId = e.passArchiveId();
             LocalDate approvedAt = e.approvedAt().toLocalDate();
+            Long paymentId=e.paymentId();
 
             // id에 맞는 PassArchive 찾아옴.
             PassArchive matchedPassArchive = passArchiveMap.get(passArchiveId);
@@ -106,7 +104,8 @@ public class EmployeeMyPageService {
             // id에 맞는 ArchiveReview 찾아옴.
             ArchiveReview archiveReview = archiveReviewMap.get(passArchiveId);
 
-            PurchasedArchivesPreviewResponseDTO purchasedArchivesPreviewResponseDTO = PurchasedArchivesPreviewResponseDTO.of(matchedPassArchive, archiveReview, approvedAt);
+            PurchasedArchivesPreviewResponseDTO purchasedArchivesPreviewResponseDTO
+                    = PurchasedArchivesPreviewResponseDTO.of(matchedPassArchive, archiveReview, paymentId, approvedAt);
 
             content.add(purchasedArchivesPreviewResponseDTO);
         });

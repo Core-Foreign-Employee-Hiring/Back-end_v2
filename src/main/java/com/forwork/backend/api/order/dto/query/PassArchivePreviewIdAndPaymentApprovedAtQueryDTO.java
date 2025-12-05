@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 public record PassArchivePreviewIdAndPaymentApprovedAtQueryDTO(
         Long passArchiveId,
+        Long paymentId,
         OffsetDateTime approvedAt
 ) {
 }
