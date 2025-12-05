@@ -33,6 +33,8 @@ public class PassArchive extends BaseTimeEntity {
 
     private String inquiryUrl;
 
+    private boolean isDeleted;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -74,4 +76,9 @@ public class PassArchive extends BaseTimeEntity {
     @OneToMany(mappedBy = "passArchive", cascade = CascadeType.REMOVE)
     @Builder.Default
     private List<ArchiveReview> archiveReviews = new ArrayList<>();
+
+    public void delete(){
+        this.isDeleted=true;
+    }
+
 }

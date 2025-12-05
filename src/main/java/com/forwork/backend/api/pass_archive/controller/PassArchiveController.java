@@ -276,6 +276,24 @@ public class PassArchiveController {
         return ApiResponse.success(SuccessStatus.SEND_INQUIRY_LINK_SUCCESS, response);
     }
 
+    @Operation(
+            summary = "아카이브 삭제 API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "아카이브 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "문의 링크를 찾을 수 없습니다."),
+
+    })
+    @DeleteMapping("/{pass-archive-id}")
+    public ResponseEntity<ApiResponse<Void>> deleteArchive(@AuthenticationPrincipal SecurityMember securityMember,
+                                                           @PathVariable("pass-archive-id") Long archiveId) {
+
+        passArchiveService.deleteArchive(securityMember.getId(), archiveId);
+
+        return ApiResponse.success_only(SuccessStatus.DELETE_ARCHIVE_SUCCESS);
+    }
+
     /*
     * 테스트
     * */

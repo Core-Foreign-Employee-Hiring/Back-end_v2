@@ -28,6 +28,7 @@ public class PassArchiveRepositoryImpl implements PassArchiveQueryDSL{
                 .from(passArchive)
                 .join(passArchive.thumbnail).fetchJoin()
                 .where(
+                        passArchive.isDeleted.eq(false),
                         keywordEq(keyword)
                 )
                 .orderBy(passArchive.passArchiveId.desc())
@@ -41,6 +42,7 @@ public class PassArchiveRepositoryImpl implements PassArchiveQueryDSL{
                 .from(passArchive)
                 .join(passArchive.thumbnail)
                 .where(
+                        passArchive.isDeleted.eq(false),
                         keywordEq(keyword)
                 );
 
