@@ -9,6 +9,8 @@ import java.time.LocalDate;
 public record PurchasedArchivesPreviewResponseDTO(
         @Schema(description = "아카이브 id")
         Long passArchiveId,
+        @Schema(description = "결제 id")
+        Long paymentId,
         @Schema(description = "썸네일 사진 url")
         String thumbnailUrl,
         @Schema(description = "제목")
@@ -27,7 +29,7 @@ public record PurchasedArchivesPreviewResponseDTO(
         double star
 ) {
 
-    public static PurchasedArchivesPreviewResponseDTO of(PassArchive passArchive, ArchiveReview archiveReview, LocalDate approvedAt){
+    public static PurchasedArchivesPreviewResponseDTO of(PassArchive passArchive, ArchiveReview archiveReview, Long paymentId, LocalDate approvedAt){
         String thumbnailUrl=(passArchive.getThumbnail()==null)?null:passArchive.getThumbnail().getFileUrl();
         boolean isReviewed= archiveReview != null;
         Long archiveReviewId=(archiveReview==null)?null:archiveReview.getId();
@@ -35,6 +37,7 @@ public record PurchasedArchivesPreviewResponseDTO(
 
         return new PurchasedArchivesPreviewResponseDTO(
                 passArchive.getPassArchiveId(),
+                paymentId,
                 thumbnailUrl,
                 passArchive.getTitle(),
                 passArchive.getOneLineReview(),
