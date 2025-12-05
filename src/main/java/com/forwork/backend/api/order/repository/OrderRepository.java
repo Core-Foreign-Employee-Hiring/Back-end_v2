@@ -30,7 +30,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             " from Order o" +
             " join Payment p on p.order.id=o.id" +
             " join OrderPassArchive opa on opa.order.id=o.id" +
-            " where p.paymentStatus='DONE' and o.buyer.id = :memberId" +
+            " join opa.passArchive pa" +
+            " where p.paymentStatus='DONE' and o.buyer.id = :memberId and pa.isDeleted=false" +
             " order by opa.id desc")
     Page<PassArchivePreviewIdAndPaymentApprovedAtQueryDTO> findMyArchiveByMemberId(@Param("memberId")Long memberId, Pageable pageable);
 

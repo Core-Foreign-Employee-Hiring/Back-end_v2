@@ -30,17 +30,23 @@ public interface PassArchiveRepository extends JpaRepository<PassArchive, Long>,
 
     @Query("select pa from PassArchive pa" +
             " join fetch pa.products" +
-            " where pa.passArchiveId=:archiveId")
+            " where pa.passArchiveId=:archiveId and pa.isDeleted=false")
     Optional<PassArchive>findArchiveByArchiveIdWithProducts(@Param("archiveId")Long archiveId);
 
     @Query("select pa from PassArchive pa" +
             " join fetch pa.member" +
-            " where pa.passArchiveId=:archiveId")
+            " where pa.passArchiveId=:archiveId and pa.isDeleted=false")
     Optional<PassArchive> findArchiveByArchiveIdWithMember(@Param("archiveId") Long archiveId);
 
     @Query("select pa from PassArchive pa" +
-            " where pa.member.id=:writerId")
+            " where pa.member.id=:writerId and pa.isDeleted=false")
     Page<PassArchive> findAllByWriterId(@Param("writerId") Long writerId, Pageable pageable);
+
+
+    @Query("select pa from PassArchive pa" +
+            " join fetch pa.thumbnail" +
+            " where pa.passArchiveId=:passArchiveId and pa.isDeleted=false")
+    Optional<PassArchive> findArchiveByPassArchiveIdWithThumbnail(@Param("passArchiveId") Long passArchiveId);
 
     @Modifying
     @Query("update PassArchive pa set pa.star=pa.star+:star where pa.passArchiveId=:passArchiveId")

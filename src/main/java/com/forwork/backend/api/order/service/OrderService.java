@@ -127,7 +127,7 @@ public class OrderService {
         Long passArchiveId = orderPassArchives.get(0).getPassArchive().getPassArchiveId();
 
         // 썸네일 갖고 와야 하는데
-        PassArchive passArchive = passArchiveRepository.findWithThumbnailImagesMemberByPassArchiveId(passArchiveId)
+        PassArchive passArchive = passArchiveRepository.findArchiveByPassArchiveIdWithThumbnail(passArchiveId)
                 .orElseThrow(() -> {
                     log.warn("[getOrder][아카이브 없음][passArchiveId={}]", passArchiveId);
                     return new NotFoundException(PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage());

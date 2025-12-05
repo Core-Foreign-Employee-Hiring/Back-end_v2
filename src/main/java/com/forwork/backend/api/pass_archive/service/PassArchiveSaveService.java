@@ -33,6 +33,7 @@ public class PassArchiveSaveService {
                 .thumbnail(thumbFile)
                 .images(imageFiles)
                 .products(productFiles)
+                .isDeleted(false)
                 .build();
 
         passArchiveRepository.save(passArchive);

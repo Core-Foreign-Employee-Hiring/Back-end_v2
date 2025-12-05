@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.forwork.backend.common.response.ErrorStatus.ARCHIVE_PURCHASE_FORBIDDEN_EXCEPTION;
-import static com.forwork.backend.common.response.ErrorStatus.USER_NOT_FOUND_EXCEPTION;
+import static com.forwork.backend.common.response.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -140,7 +139,7 @@ public class PassArchiveService {
 
     // 문의 url 조회
     public String getInquiryUrl(Long archiveId){
-        PassArchive passArchive = passArchiveRepository.findWithThumbnailImagesMemberByPassArchiveId(archiveId)
+        PassArchive passArchive = passArchiveRepository.findArchiveByPassArchiveIdWithThumbnail(archiveId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage()));
 
         String inquiryUrl = passArchive.getInquiryUrl();
@@ -151,6 +150,31 @@ public class PassArchiveService {
         }
 
         return inquiryUrl;
+    }
+
+    @Transactional
+    public void deleteArchive(Long memberId, Long archiveId){
+        // 소유자 확인
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[deleteArchive][멤버 없음.][memberId={}]", memberId);
+                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        PassArchive passArchive = passArchiveRepository.findArchiveByArchiveIdWithMember(archiveId)
+                .orElseThrow(() -> {
+                    log.warn("[deleteArchive][아카이브 not found][archiveId= {}]", archiveId);
+                    return new BadRequestException(ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage());
+                });
+        
+        if(!member.getId().equals(passArchive.getMember().getId())){
+            log.warn("[deleteArchive][소유자 아님.][memberId={}, writerId= {}]", memberId, passArchive.getMember().getId());
+            throw new BadRequestException(ARCHIVE_ACCESS_DENIED_EXCEPTION.getMessage());
+        }
+
+
+        // 삭제
+        passArchive.delete();
     }
 
 }

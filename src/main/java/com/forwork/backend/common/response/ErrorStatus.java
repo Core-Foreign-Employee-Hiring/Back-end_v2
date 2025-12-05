@@ -118,6 +118,8 @@ public enum ErrorStatus {
     UNAUTHORIZED_PAYOUT_REQUEST_EXCEPTION(HttpStatus.FORBIDDEN, "인출 요청자와 판매자가 일치하지 않습니다."),
     SPEC_EVALUATION_NOT_OWNER_EXCEPTION(HttpStatus.FORBIDDEN, "본인 스펙 평가가 아닙니다."),
     ORDER_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "해당 주문에 접근할 권한이 없습니다."),
+    ARCHIVE_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 접근할 권한이 없습니다."),
+
 
 
 
