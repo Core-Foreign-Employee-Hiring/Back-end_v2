@@ -13,8 +13,8 @@ import com.forwork.backend.api.pay.enums.TossPaymentGetExceptionType;
 import com.forwork.backend.api.pay.exception.PaymentException;
 import com.forwork.backend.api.pay.exception.PaymentTimeoutException;
 import com.forwork.backend.api.pay.exception.PaymentUnknownException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
@@ -42,12 +42,11 @@ import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class TossPaymentClient {
     private static final String TOSS_PAYMENT_CONFIRM_URL = "/v1/payments/confirm";
     private static final String TOSS_PAYMENT_GET_URL = "/v1/payments/{paymentKey}";
     private static final String TOSS_PAYMENT_CANCEL_URL = "/v1/payments/{paymentKey}/cancel";
-    private final RestTemplate restTemplate;
+    private final RestTemplate tossRestTemplate;
     private final ObjectMapper objectMapper;
 
     @Value("${toss.payments.secret-key}")
@@ -56,6 +55,13 @@ public class TossPaymentClient {
     @Value("${toss.payments.base-url}")
     private String baseUrl;
 
+    public TossPaymentClient(
+            @Qualifier("tossRestTemplate") RestTemplate tossRestTemplate,
+            ObjectMapper objectMapper
+    ) {
+        this.tossRestTemplate = tossRestTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * 결제 승인 요청
@@ -88,7 +94,7 @@ public class TossPaymentClient {
 
         try {
 
-            ResponseEntity<TossPaymentResponseDTO> response = restTemplate.exchange(
+            ResponseEntity<TossPaymentResponseDTO> response = tossRestTemplate.exchange(
                     baseUrl + TOSS_PAYMENT_CONFIRM_URL,
                     HttpMethod.POST,
                     entity,
@@ -178,7 +184,7 @@ public class TossPaymentClient {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<TossPaymentResponseDTO> response = restTemplate.exchange(
+            ResponseEntity<TossPaymentResponseDTO> response = tossRestTemplate.exchange(
                     baseUrl + TOSS_PAYMENT_GET_URL,
                     HttpMethod.GET,
                     entity,
@@ -271,7 +277,7 @@ public class TossPaymentClient {
         HttpEntity<TossPaymentCancelRequestDTO> entity = new HttpEntity<>(request, headers);
 
         try {
-            ResponseEntity<TossPaymentResponseDTO> response = restTemplate.exchange(
+            ResponseEntity<TossPaymentResponseDTO> response = tossRestTemplate.exchange(
                     baseUrl + TOSS_PAYMENT_CANCEL_URL,
                     HttpMethod.POST,
                     entity,
