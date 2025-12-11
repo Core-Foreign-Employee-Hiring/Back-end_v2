@@ -62,6 +62,12 @@ jobs:
         mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_TOSS_YML }}" > src/main/resources/application-toss.yml
 
+    # 2-8. application-spec.yml 파일 생성
+    - name: Create application-spec.yml
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_SPEC_YML }}" > src/main/resources/application-spec.yml
+
     # 3. Gradle 설정
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
