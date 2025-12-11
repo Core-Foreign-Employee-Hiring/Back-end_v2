@@ -154,9 +154,9 @@ public record RecruitDetailResponseDTO(
                         recruit.getCompanyName(),
                         recruit.getCompanyType(),
 
-                        recruit.getCompanyAddress().getZipcode(),
-                        recruit.getCompanyAddress().getAddress1(),
-                        recruit.getCompanyAddress().getAddress2(),
+                        recruit.getZipcode(),
+                        recruit.getAddress1(),
+                        recruit.getAddress2(),
 
                         recruit.getRepresentativeName(),
                         recruit.getEstablishedDate(),

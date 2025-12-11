@@ -40,8 +40,8 @@ public enum JobCategory {
             GRAPHICS_ENGINEER,
             AR_VR_ENGINEER,
             RUBY_ON_RAILS_DEVELOPER,
-            AI
-
+            AI,
+            SYSTEM_DEVELOPER
     )),
 
     BUSINESS_MANAGEMENT("BUSINESS_MANAGEMENT", "경영/비즈니스", EnumSet.of(

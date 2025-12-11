@@ -54,9 +54,9 @@ public record RecruitPreviewResponseDTO(
                 recruit.getSalaryType(),
                 recruit.getSalary(),
                 recruit.getContractType(),
-                recruit.getCompanyAddress()==null?null:recruit.getCompanyAddress().getZipcode(),
-                recruit.getCompanyAddress()==null?null:recruit.getCompanyAddress().getAddress1(),
-                recruit.getCompanyAddress()==null?null:recruit.getCompanyAddress().getAddress2()
+                recruit.getZipcode(),
+                recruit.getAddress1(),
+                recruit.getAddress2()
         );
     }
 }
