@@ -1,6 +1,5 @@
 package com.forwork.backend.api.recruit.entity;
 
-import com.forwork.backend.api.member.entity.Address;
 import com.forwork.backend.api.member.entity.CompanyType;
 import com.forwork.backend.api.recruit.dto.request.RecruitUpdateRequestDTO;
 import com.forwork.backend.api.recruit.enums.*;
@@ -40,7 +39,9 @@ public class Recruit extends BaseTimeEntity {
 
     private String companyImageUrl;
     private String companyName;
-    private Address companyAddress;
+    private String zipcode;  // 회사 우편번호
+    private String address1; // 회사 주소
+    private String address2; // 회사 상세 주소
     private CompanyType companyType;
     private String representativeName;
     private LocalDate establishedDate;

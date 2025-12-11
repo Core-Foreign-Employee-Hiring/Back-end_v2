@@ -39,6 +39,8 @@ public enum JobRole {
     AR_VR_ENGINEER("AR_VR_ENGINEER", "AR/VR 엔지니어"),
     RUBY_ON_RAILS_DEVELOPER("RUBY_ON_RAILS_DEVELOPER", "루비온레일즈 개발자"),
     AI("AI", "AI"),
+    SYSTEM_DEVELOPER("SYSTEM_DEVELOPER", "시스템 개발자"),
+
 
     PM_PO("PM_PO", "PM/PO"),
     PROJECT_MANAGER("PROJECT_MANAGER", "프로젝트 매니저"),
