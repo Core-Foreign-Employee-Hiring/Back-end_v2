@@ -68,6 +68,12 @@ jobs:
         mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_SPEC_YML }}" > src/main/resources/application-spec.yml
 
+    # 2-9. application-resilience4j.yml 파일 생성
+    - name: Create application-resilience4j.yml
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_RESILIENCE4J_YML }}" > src/main/resources/application-resilience4j.yml
+
     # 3. Gradle 설정
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
