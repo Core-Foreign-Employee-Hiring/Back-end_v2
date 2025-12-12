@@ -5,7 +5,6 @@ import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.service.CompanyValidationService;
 import com.forwork.backend.api.member.service.EmailService;
 import com.forwork.backend.api.member.service.MemberService;
-import com.forwork.backend.api.member.service.MemberSpecificationService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.response.ApiResponse;
@@ -14,7 +13,6 @@ import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +28,6 @@ public class MemberController {
     private final JwtService jwtService;
     private final CompanyValidationService companyValidationService;
     private final EmailService emailService;
-    private final MemberSpecificationService memberSpecificationService;
 
     @Operation(
             summary = "회원가입 API (태근)",
@@ -362,69 +359,5 @@ public class MemberController {
         memberService.changePasswordByReset(passwordResetConfirmDTO);
         return ApiResponse.success_only(SuccessStatus.SEND_MODIFY_PASSWORD_SUCCESS);
     }
-
-    @Operation(
-            summary = "내 스펙 입력 API (용범)", description = "입력= MemberSpecificationRequestDTO"
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "스펙 등록 성공"),
-    })
-    @PostMapping("/specification")
-    public ResponseEntity<ApiResponse<Void>> createMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                       @Valid @RequestBody MemberSpecificationRequestDTO memberSpecificationRequestDTO) {
-
-        memberSpecificationService.createMemberSpecification(securityMember.getId(), memberSpecificationRequestDTO);
-        return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
-    }
-
-    @Operation(
-            summary = "내 스펙 조회 API (용범)",
-            description = "출력= MemberSpecificationRequestDTO"
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 조회 성공"),
-    })
-    @GetMapping("/specification")
-    public ResponseEntity<ApiResponse<MemberSpecificationResponseDTO>> getMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember) {
-
-        MemberSpecificationResponseDTO response = memberSpecificationService.getMemberSpecification(securityMember.getId());
-
-        return ApiResponse.success(SuccessStatus.GET_MEMBER_SPECIFICATION_SUCCESS, response);
-    }
-
-    @Operation(
-            summary = "내 스펙 평가 API (용범)",
-            description = "출력= 스펙 평가 id"
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "스펙 평가 완료"),
-    })
-    @PostMapping("/specification/evaluation")
-    public ResponseEntity<ApiResponse<Long>> evaluate(@AuthenticationPrincipal SecurityMember securityMember) {
-
-        Long response = memberSpecificationService.evaluateSpecification(securityMember.getId());
-
-        return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_SUCCESS, response);
-    }
-
-    @Operation(
-            summary = "내 스펙 평가 조회 API (용범)",
-            description = "출력= MemberSpecEvaluationResponseDTO"
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 평가 조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "본인 스펙 평가가 아닙니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 평가 정보를 찾을 수 없습니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 정보를 찾을 수 없습니다."),
-    })
-    @GetMapping("/specification/evaluation/{spec-evaluation-id}")
-    public ResponseEntity<ApiResponse<MemberSpecEvaluationResponseDTO>> getSpecEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
-                                                                                          @PathVariable("spec-evaluation-id")Long specEvaluationId) {
-
-        MemberSpecEvaluationResponseDTO response = memberSpecificationService.getSpecEvaluation(securityMember.getId(), specEvaluationId);
-
-        return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_FIND_SUCCESS, response);
-    }
-
 
 }

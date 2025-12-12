@@ -14,7 +14,7 @@ public class RestTemplateConfig {
 
     @Bean(name = "memberSpecRestTemplate")
     public RestTemplate memberSpecRestTemplate() {
-        return buildRestTemplate(10000, 30000);
+        return buildRestTemplate(10000, 20000);
     }
 
     private RestTemplate buildRestTemplate(int connectTimeout, int readTimeout) {
