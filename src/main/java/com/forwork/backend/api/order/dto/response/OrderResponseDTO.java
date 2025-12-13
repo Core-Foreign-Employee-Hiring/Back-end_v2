@@ -6,6 +6,12 @@ import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record OrderResponseDTO(
+        @Schema(description = "merchantOrderId")
+        String merchantOrderId,
+
+        @Schema(description = "orderName")
+        String orderName,
+
         @Schema(description = "썸네일")
         String thumbnailUrl,
 
@@ -31,6 +37,8 @@ public record OrderResponseDTO(
         public static OrderResponseDTO of(Member buyer, Order order, PassArchive passArchive) {
                 String thumbnailUrl = passArchive.getThumbnail() == null ? null : passArchive.getThumbnail().getFileUrl();
                 return new OrderResponseDTO(
+                        order.getMerchantOrderId(),
+                        order.getOrderName(),
                         thumbnailUrl,
                         passArchive.getTitle(),
                         passArchive.getOneLineReview(),

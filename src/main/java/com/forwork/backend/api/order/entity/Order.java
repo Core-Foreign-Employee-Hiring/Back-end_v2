@@ -30,7 +30,7 @@ public class Order extends BaseTimeEntity {
 
     @Column(unique=true)
     private String merchantOrderId ;
-
+    private String orderName;
     private String amount;
 
     @ManyToOne(fetch = LAZY)
