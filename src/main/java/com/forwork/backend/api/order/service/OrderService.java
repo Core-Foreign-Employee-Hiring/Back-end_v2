@@ -12,6 +12,7 @@ import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.common.exception.BadRequestException;
+import com.forwork.backend.common.exception.InternalServerException;
 import com.forwork.backend.common.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,13 +32,14 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final PassArchiveRepository passArchiveRepository;
     private final OrderPassArchiveRepository orderPassArchiveRepository;
+    private static final int MERCHANT_ORDER_THRESHOLD =10;
 
     /*
     * c
     * */
 
     @Transactional
-    public void createOrder(Long buyerId, OrderRequestDTO orderRequestDTO) {
+    public String createOrder(Long buyerId, OrderRequestDTO orderRequestDTO) {
         Member buyer = memberRepository.findById(buyerId)
                 .orElseThrow(() -> {
                     log.warn("[createOrder][멤버 없음.][buyerId={}]", buyerId);
@@ -62,35 +64,82 @@ public class OrderService {
             throw new NotFoundException(PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage());
         }
 
-        Long orderId;
+        /*
+         * 필요하면 여기서 order 관련 각종 권한 처리. update 필요한 작업은 x
+         * */
+
+        // merchantOrderId 생성
+        String merchantOrderId = MerchantOrderIdGenerator.generate();
+
+        for(int i = 0; i< MERCHANT_ORDER_THRESHOLD; i++){
+            if(orderRepository.existsByMerchantOrderId(merchantOrderId)){
+                merchantOrderId = MerchantOrderIdGenerator.generate();
+            }
+            else{
+                break;
+            }
+        }
+
+        // orderName 생성
+        String orderName = createOrderName(passArchives);
+
+        // 총 금액
+        long sum = passArchives.stream()
+                .mapToLong(PassArchive::getPrice)
+                .sum();
+        String amount = String.valueOf(sum);
 
         try {
-
-            /*
-             * 필요하면 여기서 order 관련 각종 권한 처리. update 필요한 작업은 x
-             * */
-
+            // order 생성.
             Order order = Order.builder()
-                    .merchantOrderId(orderRequestDTO.merchantOrderId())
-                    .amount(orderRequestDTO.amount())
+                    .merchantOrderId(merchantOrderId)
+                    .orderName(orderName)
+                    .amount(amount)
                     .buyer(buyer)
                     .build();
 
-            orderId = orderRepository.save(order).getId();
+            orderRepository.save(order).getId();
 
         } catch (DataIntegrityViolationException e) {
-            log.warn("[createOrder][중복 merchantOrderId][merchantOrderId={}]", orderRequestDTO.merchantOrderId(), e);
-            throw new BadRequestException(ALREADY_REGISTERED_MERCHANT_ORDER_ID_EXCEPTION.getMessage());
+            // 프론트에게 재시도 유도
+            log.warn("[createOrder][중복 merchantOrderId][merchantOrderId={}]", merchantOrderId, e);
+            throw new InternalServerException(INTERNAL_SERVER_EXCEPTION.getMessage());
         }
 
-        Order order = orderRepository.findById(orderId).get();
+        Order order = orderRepository.findByMerchantOrderId(merchantOrderId).get();
 
         passArchives.forEach(
                 (passArchive) -> {
-                    OrderPassArchive orderPassArchive = new OrderPassArchive(order, passArchive);
+                    OrderPassArchive orderPassArchive = OrderPassArchive.builder()
+                            .amount(String.valueOf(passArchive.getPrice()))
+                            .order(order)
+                            .passArchive(passArchive)
+                            .build();
 
                     orderPassArchiveRepository.save(orderPassArchive);
                 });
+
+        return merchantOrderId;
+    }
+
+    private String createOrderName(List<PassArchive> passArchives) {
+
+
+        String firstProductName = passArchives.get(0).getTitle();
+
+        if (passArchives.size() == 1) {
+            return truncate(firstProductName, 100);
+        }
+
+        String orderName = firstProductName + " 외 " + (passArchives.size() - 1) + "건";
+        return truncate(orderName, 100);
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength);
     }
 
     /*

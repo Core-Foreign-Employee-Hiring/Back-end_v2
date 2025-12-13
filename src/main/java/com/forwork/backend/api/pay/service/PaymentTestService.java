@@ -2,10 +2,10 @@ package com.forwork.backend.api.pay.service;
 
 import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
-import com.forwork.backend.api.order.entity.Order;
-import com.forwork.backend.api.order.entity.OrderPassArchive;
+import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
 import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
+import com.forwork.backend.api.order.service.OrderService;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.api.pay.dto.internal.PaymentDTO;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static com.forwork.backend.common.response.ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION;
@@ -33,6 +34,7 @@ public class PaymentTestService {
     private final OrderPassArchiveRepository orderPassArchiveRepository;
     private final PaymentProcessor paymentProcessor;
     private final PaymentCreator paymentCreator;
+    private final OrderService orderService;
 
 
     /**
@@ -60,19 +62,7 @@ public class PaymentTestService {
         * */
 
         // 주문 생성
-        String merchantOrderId= UUID.randomUUID().toString();
-
-        Order order = Order.builder()
-                .merchantOrderId(merchantOrderId)
-                .amount(String.valueOf(passArchive.getPrice()))
-                .buyer(buyer)
-                .build();
-
-        orderRepository.save(order);
-
-        // orderPassArchive 생성
-        OrderPassArchive orderPassArchive = new OrderPassArchive(order, passArchive);
-        orderPassArchiveRepository.save(orderPassArchive);
+        String merchantOrderId = orderService.createOrder(buyerId, new OrderRequestDTO(List.of(archiveId)));
 
 
         /*

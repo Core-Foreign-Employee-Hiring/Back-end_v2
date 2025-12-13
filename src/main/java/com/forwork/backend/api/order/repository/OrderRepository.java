@@ -40,4 +40,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             " join Payment p on p.order.id=o.id" +
             " where o.buyer.id=:memberId and opa.passArchive.passArchiveId=:archiveId and p.paymentStatus='DONE'")
     boolean existsPurchasedArchive(@Param("memberId")Long memberId, @Param("archiveId")Long archiveId);
+
+    @Query("select count(*)>0 from Order o" +
+            " where o.merchantOrderId=:merchantOrderId")
+    boolean existsByMerchantOrderId(@Param("merchantOrderId")String merchantOrderId);
 }
