@@ -1,8 +1,8 @@
 package com.forwork.backend.api.member_specification.service;
 
-import com.forwork.backend.api.member.entity.*;
-import com.forwork.backend.api.member.repository.*;
-import com.forwork.backend.api.member_specification.dto.internal.MemberSpecEvaluationInternalDTO;
+import com.forwork.backend.api.member.entity.Member;
+import com.forwork.backend.api.member.repository.MemberRepository;
+import com.forwork.backend.api.member_specification.dto.external.response.MemberSpecEvaluationExternalResponseDTO;
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
 import com.forwork.backend.api.member_specification.dto.request.MemberSpecificationRequestDTO;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecEvaluationResponseDTO;
@@ -10,12 +10,10 @@ import com.forwork.backend.api.member_specification.dto.response.MemberSpecifica
 import com.forwork.backend.api.member_specification.entity.*;
 import com.forwork.backend.api.member_specification.repository.*;
 import com.forwork.backend.api.recruit.enums.ContractType;
-import com.forwork.backend.common.exception.InternalServerException;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -224,19 +222,12 @@ public class MemberSpecificationService {
         MemberSpecificationDTO memberSpecificationDTO = memberSpecificationReader.getMemberSpecification(memberId);
 
         // ai 서버에거 갖고 온다.
-        MemberSpecEvaluationInternalDTO memberSpecEvaluationInternalDTO = memberSpecEvaluationClient.evaluateSpecification(memberSpecificationDTO);
-
-        if(!memberSpecEvaluationInternalDTO.success()){
-            HttpStatus httpStatus = memberSpecEvaluationInternalDTO.httpStatus();
-
-            throw new InternalServerException("서버 내부 오류가 발생했습니다.");
-        }
-
+        MemberSpecEvaluationExternalResponseDTO memberSpecEvaluationExternalResponseDTO = memberSpecEvaluationClient.evaluateSpecification(memberSpecificationDTO);
 
         // score 계산 (일단, 오각형 총합)
-        int score=memberSpecEvaluationInternalDTO.experience()+memberSpecEvaluationInternalDTO.certificate()
-                +memberSpecEvaluationInternalDTO.language()+memberSpecEvaluationInternalDTO.career()
-                +memberSpecEvaluationInternalDTO.education();
+        int score=memberSpecEvaluationExternalResponseDTO.experience()+memberSpecEvaluationExternalResponseDTO.certificate()
+                +memberSpecEvaluationExternalResponseDTO.language()+memberSpecEvaluationExternalResponseDTO.career()
+                +memberSpecEvaluationExternalResponseDTO.education();
 
         // DB 저장.
 
@@ -247,13 +238,13 @@ public class MemberSpecificationService {
                 });
 
         SpecificationEvaluation specificationEvaluation = SpecificationEvaluation.builder()
-                .experience(memberSpecEvaluationInternalDTO.experience())
-                .certificate(memberSpecEvaluationInternalDTO.certificate())
-                .language(memberSpecEvaluationInternalDTO.language())
-                .career(memberSpecEvaluationInternalDTO.career())
-                .education(memberSpecEvaluationInternalDTO.education())
+                .experience(memberSpecEvaluationExternalResponseDTO.experience())
+                .certificate(memberSpecEvaluationExternalResponseDTO.certificate())
+                .language(memberSpecEvaluationExternalResponseDTO.language())
+                .career(memberSpecEvaluationExternalResponseDTO.career())
+                .education(memberSpecEvaluationExternalResponseDTO.education())
                 .score(score)
-                .analysis(memberSpecEvaluationInternalDTO.analysis())
+                .analysis(memberSpecEvaluationExternalResponseDTO.analysis())
                 .memberSpecification(memberSpecification)
                 .build();
 

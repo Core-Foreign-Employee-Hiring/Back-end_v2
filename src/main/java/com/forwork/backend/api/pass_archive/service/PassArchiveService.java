@@ -82,6 +82,10 @@ public class PassArchiveService {
         PassArchive passArchive = passArchiveRepository.findWithThumbnailImagesMemberByPassArchiveId(passArchiveId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage()));
 
+        if(passArchive.isDeleted()){
+            throw new NotFoundException(ErrorStatus.PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage());
+        }
+
         // 작성자인지 판단
         Member writer = passArchive.getMember();
         boolean isWriter= writer.getId().equals(memberId);
