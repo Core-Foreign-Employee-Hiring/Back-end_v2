@@ -2,8 +2,8 @@ package com.forwork.backend.api.member_specification.service;
 
 import com.forwork.backend.api.member_specification.dto.external.request.MemberSpecEvaluationExternalRequestDTO;
 import com.forwork.backend.api.member_specification.dto.external.response.MemberSpecEvaluationExternalResponseDTO;
-import com.forwork.backend.api.member_specification.dto.internal.MemberSpecEvaluationInternalDTO;
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
+import com.forwork.backend.common.exception.InternalServerException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+
+import static com.forwork.backend.common.response.ErrorStatus.INTERNAL_SERVER_EXCEPTION;
 
 @Component
 @Slf4j
@@ -30,7 +31,7 @@ public class MemberSpecEvaluationClient {
     }
 
     @CircuitBreaker(name = "specEvaluation", fallbackMethod = "fallbackEvaluateSpecification")
-    public MemberSpecEvaluationInternalDTO evaluateSpecification(MemberSpecificationDTO memberSpecification) {
+    public MemberSpecEvaluationExternalResponseDTO evaluateSpecification(MemberSpecificationDTO memberSpecification) {
 
         // 헤더
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +44,7 @@ public class MemberSpecEvaluationClient {
         HttpEntity<MemberSpecEvaluationExternalRequestDTO> entity = new HttpEntity<>(request, headers);
 
         // 3) AI 서버 호출
-        ResponseEntity<MemberSpecEvaluationExternalResponseDTO> dto =
+        ResponseEntity<MemberSpecEvaluationExternalResponseDTO> response =
                 memberSpecRestTemplate.exchange(
                         baseUrl + "/analysis",
                         HttpMethod.POST,
@@ -52,41 +53,30 @@ public class MemberSpecEvaluationClient {
                 );
 
         // 4) 응답 반환
-
-        MemberSpecEvaluationInternalDTO response = MemberSpecEvaluationInternalDTO.success(dto.getBody());
-
-        return response;
+        return response.getBody();
     }
 
-    private MemberSpecEvaluationInternalDTO fallbackEvaluateSpecification(HttpClientErrorException e) {
-        log.warn("[fallbackEvaluateSpecification][HttpClientErrorException][message= {}]", e.getMessage(), e);
-        HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
-
-        return MemberSpecEvaluationInternalDTO.failure(status, "");
+    private MemberSpecEvaluationExternalResponseDTO fallbackEvaluateSpecification(MemberSpecificationDTO memberSpecification,
+                                                                                  HttpServerErrorException ex) {
+        log.warn("[fallbackEvaluateSpecification][HttpServerErrorException][message= {}]", ex.getMessage(), ex);
+        throw new InternalServerException(INTERNAL_SERVER_EXCEPTION.getMessage());
     }
 
-    private MemberSpecEvaluationInternalDTO fallbackEvaluateSpecification(HttpServerErrorException e) {
-        log.warn("[fallbackEvaluateSpecification][HttpServerErrorException][message= {}]", e.getMessage(), e);
-        HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
-
-        return MemberSpecEvaluationInternalDTO.failure(status, "");
+    private MemberSpecEvaluationExternalResponseDTO fallbackEvaluateSpecification(MemberSpecificationDTO memberSpecification,
+                                                                                  ResourceAccessException ex) {
+        log.warn("[fallbackEvaluateSpecification][ResourceAccessException][message= {}]", ex.getMessage(), ex);
+        throw new InternalServerException(INTERNAL_SERVER_EXCEPTION.getMessage());
     }
 
-    private MemberSpecEvaluationInternalDTO fallbackEvaluateSpecification(ResourceAccessException e) {
-        log.warn("[fallbackEvaluateSpecification][ResourceAccessException][message= {}]", e.getMessage(), e);
-
-        return MemberSpecEvaluationInternalDTO.failure(HttpStatus.INTERNAL_SERVER_ERROR, "");
+    private MemberSpecEvaluationExternalResponseDTO fallbackEvaluateSpecification(MemberSpecificationDTO memberSpecification,
+                                                                                  CallNotPermittedException ex) {
+        log.warn("[fallbackEvaluateSpecification][CallNotPermittedException][message= {}]", ex.getMessage(), ex);
+        throw new InternalServerException(INTERNAL_SERVER_EXCEPTION.getMessage());
     }
 
-    private MemberSpecEvaluationInternalDTO fallbackEvaluateSpecification(CallNotPermittedException e) {
-        log.warn("[fallbackEvaluateSpecification][CallNotPermittedException][message= {}]", e.getMessage(), e);
-
-        return MemberSpecEvaluationInternalDTO.failure(HttpStatus.INTERNAL_SERVER_ERROR, "");
-    }
-
-    private MemberSpecEvaluationInternalDTO fallbackEvaluateSpecification(Throwable e) {
-        log.warn("[fallbackEvaluateSpecification][Throwable][message= {}]", e.getMessage(), e);
-
-        return MemberSpecEvaluationInternalDTO.failure(HttpStatus.INTERNAL_SERVER_ERROR, "");
+    private MemberSpecEvaluationExternalResponseDTO fallbackEvaluateSpecification(MemberSpecificationDTO memberSpecification,
+                                                                                  Throwable ex) {
+        log.warn("[fallbackEvaluateSpecification][Throwable][message= {}]", ex.getMessage(), ex);
+        throw new InternalServerException(INTERNAL_SERVER_EXCEPTION.getMessage());
     }
 }

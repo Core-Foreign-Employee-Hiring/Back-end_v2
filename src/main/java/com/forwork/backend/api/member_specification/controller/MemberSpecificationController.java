@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Member", description = "Member 스펙 관련 API 입니다.")
+@Tag(name = "MemberSpecification", description = "Member 스펙 관련 API 입니다.")
 @RestController
 @RequestMapping("/api/v2/member/specification")
 @RequiredArgsConstructor

@@ -161,6 +161,7 @@ public enum ErrorStatus {
     FAIL_PAY_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"결제 승인 요청 실패하였습니다."),
     FAIL_PAY_CANCEL_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"결제 취소 요청 실패하였습니다."),
     FAIL_PAYING_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"결제 요청 중 예외가 발생하였습니다."),
+    INTERNAL_SERVER_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
 
     ;
 

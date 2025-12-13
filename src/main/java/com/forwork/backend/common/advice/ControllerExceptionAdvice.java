@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
 
+import static com.forwork.backend.common.response.ErrorStatus.INTERNAL_SERVER_EXCEPTION;
+
 @RestControllerAdvice
 @Slf4j
 public class ControllerExceptionAdvice {
@@ -58,7 +60,7 @@ public class ControllerExceptionAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.fail(
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        "서버 내부 오류가 발생했습니다."
+                        INTERNAL_SERVER_EXCEPTION.getMessage()
                 ));
     }
 }
