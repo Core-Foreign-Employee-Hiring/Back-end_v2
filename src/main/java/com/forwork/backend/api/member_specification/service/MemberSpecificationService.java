@@ -35,7 +35,6 @@ public class MemberSpecificationService {
     private final MemberCertificationRepository memberCertificationRepository;
     private final MemberCareerRepository memberCareerRepository;
     private final MemberAwardRepository memberAwardRepository;
-    private final MemberEnglishSkillRepository memberEnglishSkillRepository;
     private final MemberExperienceRepository memberExperienceRepository;
     private final MemberSpecificationReader memberSpecificationReader;
     private final MemberSpecEvaluationClient memberSpecEvaluationClient;
@@ -75,9 +74,10 @@ public class MemberSpecificationService {
 
         MemberSpecificationRequestDTO.Education education = memberSpecificationRequestDTO.education();
 
-
         MemberEducation memberEducation = MemberEducation.builder()
                 .schoolName(education.schoolName())
+                .admissionDate(education.admissionDate())
+                .graduationDate(education.graduationDate())
                 .earnedScore(education.earnedScore())
                 .maxScore(education.maxScore())
                 .memberSpecification(memberSpec)
@@ -100,30 +100,20 @@ public class MemberSpecificationService {
          * 어학
          * */
 
-        MemberSpecificationRequestDTO.LanguageSkill languageSkill = memberSpecificationRequestDTO.languageSkill();
 
-        MemberLanguageSkill memberLanguageSkill = MemberLanguageSkill.builder()
-                .klptScore(languageSkill.klptScore())
-                .memberSpecification(memberSpec)
-                .build();
+        Optional.ofNullable(memberSpecificationRequestDTO.languageSkills())
+                        .ifPresent((languageSkills)->{
+                            List<MemberLanguageSkill> memberLanguageSkills = languageSkills.stream()
+                                    .map((languageSkill) -> MemberLanguageSkill.builder()
+                                            .title(languageSkill.title())
+                                            .score(languageSkill.score())
+                                            .memberSpecification(memberSpec)
+                                            .build()
+                                    )
+                                    .toList();
 
-
-        memberLanguageSkillRepository.save(memberLanguageSkill);
-
-        // 영어
-        Optional.ofNullable(languageSkill.englishSkills())
-                .ifPresent(englishSkills -> {
-                    List<MemberEnglishSkill> memberEnglishSkills = englishSkills.stream()
-                            .map(englishSkill -> MemberEnglishSkill.builder()  // 엔티티 변환
-                                    .type(englishSkill.type())
-                                    .score(englishSkill.score())
-                                    .memberLanguageSkill(memberLanguageSkill)
-                                    .build()
-                            )
-                            .toList();
-
-                    memberEnglishSkillRepository.saveAll(memberEnglishSkills);
-                });
+                            memberLanguageSkillRepository.saveAll(memberLanguageSkills);
+                        });
 
 
         /*
@@ -135,8 +125,7 @@ public class MemberSpecificationService {
                     List<MemberCertification> memberCertifications = certifications.stream()
                             .map(certification -> MemberCertification.builder()   // 엔티티 변환
                                     .certificationName(certification.certificationName())
-                                    .acquiredYear(certification.acquiredYear())
-                                    .acquiredMonth(certification.acquiredMonth())
+                                    .acquiredDate(certification.acquiredDate())
                                     .documentUrl(certification.documentUrl())
                                     .memberSpecification(memberSpec)
                                     .build()
@@ -157,10 +146,8 @@ public class MemberSpecificationService {
                             .map(career -> MemberCareer.builder()
                                     .companyName(career.companyName())
                                     .position(career.position())
-                                    .startYear(career.startYear())
-                                    .startMonth(career.startMonth())
-                                    .endYear(career.endYear())
-                                    .endMonth(career.endMonth())
+                                    .startDate(career.startDate())
+                                    .endDate(career.endDate())
                                     .contractType(Optional.ofNullable(career.contractType()).map(ContractType::name).orElse(null))
                                     .highlight(career.highlight())
                                     .memberSpecification(memberSpec)
@@ -179,8 +166,7 @@ public class MemberSpecificationService {
                             .map(award -> MemberAward.builder()
                                     .awardName(award.awardName())
                                     .host(award.host())
-                                    .acquiredYear(award.acquiredYear())
-                                    .acquiredMonth(award.acquiredMonth())
+                                    .acquiredDate(award.acquiredDate())
                                     .description(award.description())
                                     .documentUrl(award.documentUrl())
                                     .memberSpecification(memberSpec)
@@ -203,7 +189,8 @@ public class MemberSpecificationService {
                                             .beforeImprovementRate(experience.beforeImprovementRate())
                                             .afterImprovementRate(experience.afterImprovementRate())
                                             .description(experience.description())
-                                            .insight(experience.insight())
+                                            .startDate(experience.startDate())
+                                            .endDate(experience.endDate())
                                             .memberSpecification(memberSpec)
                                             .build()
                             )

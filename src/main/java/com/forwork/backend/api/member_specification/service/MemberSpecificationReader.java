@@ -23,7 +23,6 @@ public class MemberSpecificationReader {
     private final MemberCertificationRepository memberCertificationRepository;
     private final MemberCareerRepository memberCareerRepository;
     private final MemberAwardRepository memberAwardRepository;
-    private final MemberEnglishSkillRepository memberEnglishSkillRepository;
     private final MemberExperienceRepository memberExperienceRepository;
 
 
@@ -57,13 +56,9 @@ public class MemberSpecificationReader {
          * 어학
          * */
 
-        MemberSpecificationDTO.LanguageSkill languageSkill = memberLanguageSkillRepository.findByMemberSpecificationId(memberSpecificationId)
-                .map(memberLanguageSkill -> {
-                    // 영어 시험 조회
-                    List<MemberEnglishSkill> byMemberLanguageSkillId = memberEnglishSkillRepository.findByMemberLanguageSkillId(memberLanguageSkill.getId());
-                    return MemberSpecificationDTO.LanguageSkill.of(memberLanguageSkill, byMemberLanguageSkillId);
-                })
-                .orElse(null);
+        List<MemberSpecificationDTO.LanguageSkill> languageSkills = memberLanguageSkillRepository.findByMemberSpecificationId(memberSpecificationId).stream()
+                .map(MemberSpecificationDTO.LanguageSkill::of)
+                .toList();
 
 
         /*
@@ -109,7 +104,7 @@ public class MemberSpecificationReader {
         MemberSpecificationDTO response = MemberSpecificationDTO.of(
                 memberSpecificationId,
                 education,
-                languageSkill,
+                languageSkills,
                 certifications,
                 careers,
                 awards,

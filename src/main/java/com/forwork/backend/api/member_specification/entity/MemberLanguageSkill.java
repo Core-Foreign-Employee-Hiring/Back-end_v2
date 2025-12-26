@@ -24,7 +24,8 @@ public class MemberLanguageSkill extends BaseTimeEntity {
     @Column(name="member_language_skill_id")
     private Long id;
 
-    private Integer klptScore;
+    private String title;
+    private String score;
 
     @ManyToOne(fetch=LAZY)
     @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

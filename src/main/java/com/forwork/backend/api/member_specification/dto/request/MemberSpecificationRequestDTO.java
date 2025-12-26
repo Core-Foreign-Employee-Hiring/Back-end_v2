@@ -5,7 +5,6 @@ import com.forwork.backend.common.validation.ValidContractType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.Range;
 
 import java.util.List;
 
@@ -16,9 +15,8 @@ public record MemberSpecificationRequestDTO(
         Education education,
 
         @Schema(description = "어학")
-        @NotNull
         @Valid
-        LanguageSkill languageSkill,
+        List<LanguageSkill> languageSkills,
 
         @Schema(description = "자격증")
         @Valid
@@ -48,6 +46,20 @@ public record MemberSpecificationRequestDTO(
                 @Size(min = 1)
                 List<String> majors,
 
+                @Schema(
+                        description = "입학일",
+                        format = "yyyy-MM"
+                )
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String admissionDate,
+
+                @Schema(
+                        description = "졸업일(null -> 재학 중)",
+                        format = "yyyy-MM"
+                )
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String graduationDate,
+
                 @Schema(description = "내 학점")
                 @NotNull
                 @DecimalMin(value = "0.0")
@@ -63,24 +75,14 @@ public record MemberSpecificationRequestDTO(
         }
 
         public record LanguageSkill(
-                @Schema(description = "한국어 능력 시험 점수")
-                @NotNull
-                @Range(min = 1, max = 6)
-                Integer klptScore,
+                @Schema(description = "제목")
+                @NotBlank
+                String title,
 
-                @Schema(description = "영어 능력")
-                List<EnglishSkill> englishSkills
-
-
+                @Schema(description = "점수")
+                @NotBlank
+                String score
         ) {
-                public record EnglishSkill(
-                        @Schema(description = "시험 종류")
-                        String type,
-
-                        @Schema(description = "점수")
-                        String score
-                ) {
-                }
         }
 
         public record Certification(
@@ -89,13 +91,13 @@ public record MemberSpecificationRequestDTO(
                 @NotBlank
                 String certificationName,
 
-                @Schema(description = "취득날짜(년)")
-                @NotNull
-                Integer acquiredYear,
-
-                @Schema(description = "취득날짜(월)")
-                @NotNull
-                Integer acquiredMonth,
+                @Schema(
+                        description = "취득날짜",
+                        format = "yyyy-MM"
+                )
+                @NotBlank
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String acquiredDate,
 
                 @Schema(description = "증빙자료")
                 String documentUrl
@@ -112,21 +114,19 @@ public record MemberSpecificationRequestDTO(
                 @NotBlank
                 String position,
 
-                @Schema(description = "근무 시작일(년)")
-                @NotNull
-                Integer startYear,
+                @Schema(
+                        description = "근무 시작일",
+                        format = "yyyy-MM"
+                )
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String startDate,
 
-                @Schema(description = "근무 시작일(월)")
-                @NotNull
-                Integer startMonth,
-
-                @Schema(description = "근무 종료일(년)")
-                @NotNull
-                Integer endYear,
-
-                @Schema(description = "근무 종료일(월)")
-                @NotNull
-                Integer endMonth,
+                @Schema(
+                        description = "근무 종료일(null -> 재직 중)",
+                        format = "yyyy-MM"
+                )
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String endDate,
 
                 @Schema(description = "계약형태")
                 @ValidContractType(anyOf = {ContractType.CONTRACT, ContractType.REGULAR, ContractType.INTERN})
@@ -147,13 +147,13 @@ public record MemberSpecificationRequestDTO(
                 @NotBlank
                 String host,
 
-                @Schema(description = "취득날짜(년)")
-                @NotNull
-                Integer acquiredYear,
-
-                @Schema(description = "취득날짜(월)")
-                @NotNull
-                Integer acquiredMonth,
+                @Schema(
+                        description = "취득날짜",
+                        format = "yyyy-MM"
+                )
+                @NotBlank
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String acquiredDate,
 
                 @Schema(description = "설명")
                 String description,
@@ -178,8 +178,19 @@ public record MemberSpecificationRequestDTO(
                 @NotBlank
                 String description,
 
-                @Schema(description = "인사이트")
-                String insight
+                @Schema(
+                        description = "시작일",
+                        format = "yyyy-MM"
+                )
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String startDate,
+
+                @Schema(
+                        description = "종료일(null -> 진행 중)",
+                        format = "yyyy-MM"
+                )
+                @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
+                String endDate
         ) {
         }
 }

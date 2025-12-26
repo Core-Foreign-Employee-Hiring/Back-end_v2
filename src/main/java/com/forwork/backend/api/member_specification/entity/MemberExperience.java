@@ -28,8 +28,8 @@ public class MemberExperience {
     private Double afterImprovementRate;
     @Column(columnDefinition = "LONGTEXT")
     private String description;
-    @Column(columnDefinition = "LONGTEXT")
-    private String insight;
+    private String startDate;
+    private String endDate;
 
     @ManyToOne(fetch=LAZY)
     @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

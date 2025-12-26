@@ -1,7 +1,6 @@
 package com.forwork.backend.api.member_specification.dto.response;
 
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
-import com.forwork.backend.api.member_specification.entity.*;
 import com.forwork.backend.api.recruit.enums.ContractType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -12,7 +11,7 @@ public record MemberSpecificationResponseDTO(
         Education education,
 
         @Schema(description = "어학")
-        LanguageSkill languageSkill,
+        List<LanguageSkill> languageSkills,
 
         @Schema(description = "자격증")
         List<Certification> certifications,
@@ -35,6 +34,18 @@ public record MemberSpecificationResponseDTO(
             @Schema(description = "전공")
             List<String> majors,
 
+            @Schema(
+                    description = "입학일",
+                    format = "yyyy-MM"
+            )
+            String admissionDate,
+
+            @Schema(
+                    description = "졸업일(null -> 재학 중)",
+                    format = "yyyy-MM"
+            )
+            String graduationDate,
+
             @Schema(description = "내 학점")
             Double earnedScore,
 
@@ -42,20 +53,13 @@ public record MemberSpecificationResponseDTO(
             Double maxScore
     ) {
 
-        public static Education of(MemberEducation education, List<String> majors) {
-            return new Education(
-                    education.getSchoolName(),
-                    majors,
-                    education.getEarnedScore(),
-                    education.getMaxScore()
-            );
-        }
-
         public static Education of(MemberSpecificationDTO.Education dto) {
             if (dto == null) return null;
             return new Education(
                     dto.schoolName(),
                     dto.majors(),
+                    dto.admissionDate(),
+                    dto.graduationDate(),
                     dto.earnedScore(),
                     dto.maxScore()
             );
@@ -65,42 +69,20 @@ public record MemberSpecificationResponseDTO(
     }
 
     public record LanguageSkill(
-            @Schema(description = "한국어 능력 시험 점수")
-            Integer klptScore,
+            @Schema(description = "제목")
+            String title,
 
-            @Schema(description = "영어 능력")
-            List<LanguageSkill.EnglishSkill> englishSkills
-
+            @Schema(description = "점수")
+            String score
     ) {
-        public record EnglishSkill(
-                @Schema(description = "시험 종류")
-                String type,
 
-                @Schema(description = "점수")
-                String score
-        ) {
-        }
-
-        public static LanguageSkill of(MemberLanguageSkill memberLanguageSkill, List<MemberEnglishSkill> englishSkills) {
-            List<EnglishSkill> englishSkillDtos = englishSkills.stream()
-                    .map(es -> new EnglishSkill(es.getType(), es.getScore()))
-                    .toList();
-
-            return new LanguageSkill(memberLanguageSkill.getKlptScore(), englishSkillDtos);
-        }
-
-        public static LanguageSkill of(MemberSpecificationDTO.LanguageSkill dto) {
-            if (dto == null) return null;
-
-            List<LanguageSkill.EnglishSkill> englishSkills = dto.englishSkills().stream()
-                    .map(es -> new LanguageSkill.EnglishSkill(es.type(), es.score()))
-                    .toList();
-
+        public static LanguageSkill of(MemberSpecificationDTO.LanguageSkill memberLanguageSkill) {
             return new LanguageSkill(
-                    dto.klptScore(),
-                    englishSkills
+                    memberLanguageSkill.title(),
+                    memberLanguageSkill.score()
             );
         }
+
     }
 
     public record Certification(
@@ -108,31 +90,22 @@ public record MemberSpecificationResponseDTO(
             @Schema(description = "자격증 이름")
             String certificationName,
 
-            @Schema(description = "취득날짜(년)")
-            Integer acquiredYear,
-
-            @Schema(description = "취득날짜(월)")
-            Integer acquiredMonth,
+            @Schema(
+                    description = "취득날짜",
+                    format = "yyyy-MM"
+            )
+            String acquiredDate,
 
             @Schema(description = "증빙자료")
             String documentUrl
     ) {
-        public static Certification of(MemberCertification entity) {
-            return new Certification(
-                    entity.getCertificationName(),
-                    entity.getAcquiredYear(),
-                    entity.getAcquiredMonth(),
-                    entity.getDocumentUrl()
-            );
-        }
 
         public static Certification of(MemberSpecificationDTO.Certification dto) {
             if (dto == null) return null;
 
             return new Certification(
                     dto.certificationName(),
-                    dto.acquiredYear(),
-                    dto.acquiredMonth(),
+                    dto.acquiredDate(),
                     dto.documentUrl()
             );
         }
@@ -147,17 +120,17 @@ public record MemberSpecificationResponseDTO(
             @Schema(description = "포지션")
             String position,
 
-            @Schema(description = "근무 시작일(년)")
-            Integer startYear,
+            @Schema(
+                    description = "근무 시작일",
+                    format = "yyyy-MM"
+            )
+            String startDate,
 
-            @Schema(description = "근무 시작일(월)")
-            Integer startMonth,
-
-            @Schema(description = "근무 종료일(년)")
-            Integer endYear,
-
-            @Schema(description = "근무 종료일(월)")
-            Integer endMonth,
+            @Schema(
+                    description = "근무 종료일(null -> 재학 중)",
+                    format = "yyyy-MM"
+            )
+            String endDate,
 
             @Schema(description = "계약형태")
             ContractType contractType,
@@ -166,29 +139,14 @@ public record MemberSpecificationResponseDTO(
             String highlight
     ) {
 
-        public static Career of(MemberCareer entity) {
-            return new Career(
-                    entity.getCompanyName(),
-                    entity.getPosition(),
-                    entity.getStartYear(),
-                    entity.getStartMonth(),
-                    entity.getEndYear(),
-                    entity.getEndMonth(),
-                    ContractType.from(entity.getContractType()),
-                    entity.getHighlight()
-            );
-        }
-
         public static Career of(MemberSpecificationDTO.Career dto) {
             if (dto == null) return null;
 
             return new Career(
                     dto.companyName(),
                     dto.position(),
-                    dto.startYear(),
-                    dto.startMonth(),
-                    dto.endYear(),
-                    dto.endMonth(),
+                    dto.startDate(),
+                    dto.endDate(),
                     dto.contractType(),
                     dto.highlight()
             );
@@ -202,11 +160,9 @@ public record MemberSpecificationResponseDTO(
             @Schema(description = "주최")
             String host,
 
-            @Schema(description = "취득날짜(년)")
-            Integer acquiredYear,
+            @Schema(description = "취득날짜")
+            String acquiredDate,
 
-            @Schema(description = "취득날짜(월)")
-            Integer acquiredMonth,
 
             @Schema(description = "설명")
             String description,
@@ -214,16 +170,6 @@ public record MemberSpecificationResponseDTO(
             @Schema(description = "증빙자료")
             String documentUrl
     ) {
-        public static Award of(MemberAward entity) {
-            return new Award(
-                    entity.getAwardName(),
-                    entity.getHost(),
-                    entity.getAcquiredYear(),
-                    entity.getAcquiredMonth(),
-                    entity.getDescription(),
-                    entity.getDocumentUrl()
-            );
-        }
 
         public static Award of(MemberSpecificationDTO.Award dto) {
             if (dto == null) return null;
@@ -231,8 +177,7 @@ public record MemberSpecificationResponseDTO(
             return new Award(
                     dto.awardName(),
                     dto.host(),
-                    dto.acquiredYear(),
-                    dto.acquiredMonth(),
+                    dto.acquiredDate(),
                     dto.description(),
                     dto.documentUrl()
             );
@@ -252,18 +197,18 @@ public record MemberSpecificationResponseDTO(
             @Schema(description = "경험설명")
             String description,
 
-            @Schema(description = "인사이트")
-            String insight
+            @Schema(
+                    description = "시작일",
+                    format = "yyyy-MM"
+            )
+            String startDate,
+
+            @Schema(
+                    description = "종료일(null -> 진행 중)",
+                    format = "yyyy-MM"
+            )
+            String endDate
     ) {
-        public static Experience of(MemberExperience entity) {
-            return new Experience(
-                    entity.getExperience(),
-                    entity.getBeforeImprovementRate(),
-                    entity.getAfterImprovementRate(),
-                    entity.getDescription(),
-                    entity.getInsight()
-            );
-        }
 
         public static Experience of(MemberSpecificationDTO.Experience dto) {
             if (dto == null) return null;
@@ -273,34 +218,20 @@ public record MemberSpecificationResponseDTO(
                     dto.beforeImprovementRate(),
                     dto.afterImprovementRate(),
                     dto.description(),
-                    dto.insight()
+                    dto.startDate(),
+                    dto.endDate()
             );
         }
     }
 
-    public static MemberSpecificationResponseDTO of(
-            Education education,
-            LanguageSkill languageSkill,
-            List<Certification> certifications,
-            List<Career> careers,
-            List<Award> awards,
-            List<Experience> experiences
-    ) {
-        return new MemberSpecificationResponseDTO(
-                education,
-                languageSkill,
-                certifications,
-                careers,
-                awards,
-                experiences
-        );
-    }
 
     public static MemberSpecificationResponseDTO of(MemberSpecificationDTO dto) {
         return new MemberSpecificationResponseDTO(
 
                 Education.of(dto.education()),
-                LanguageSkill.of(dto.languageSkill()),
+                dto.languageSkills().stream()
+                        .map(LanguageSkill::of)
+                        .toList(),
                 dto.certifications().stream()
                         .map(Certification::of)
                         .toList(),
