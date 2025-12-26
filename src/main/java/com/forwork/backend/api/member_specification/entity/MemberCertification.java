@@ -25,8 +25,7 @@ public class MemberCertification extends BaseTimeEntity {
     private Long id;
 
     private String certificationName;
-    private Integer acquiredYear;
-    private Integer acquiredMonth;
+    private String acquiredDate;
     private String documentUrl;
 
     @ManyToOne(fetch=LAZY)

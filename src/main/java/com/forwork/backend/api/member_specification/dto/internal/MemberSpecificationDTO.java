@@ -8,7 +8,7 @@ import java.util.List;
 public record MemberSpecificationDTO(
         Long memberSpecificationId,
         Education education,
-        LanguageSkill languageSkill,
+        List<LanguageSkill> languageSkills,
         List<Certification> certifications,
         List<Career> careers,
         List<Award> awards,
@@ -19,14 +19,20 @@ public record MemberSpecificationDTO(
     public record Education(
             String schoolName,
             List<String> majors,
+            String admissionDate,  // yyyy-MM
+            String graduationDate, // yyyy-MM
             Double earnedScore,
             Double maxScore
     ) {
 
         public static Education of(MemberEducation education, List<String> majors) {
+
+
             return new Education(
                     education.getSchoolName(),
                     majors,
+                    education.getAdmissionDate(),
+                    education.getGraduationDate(),
                     education.getEarnedScore(),
                     education.getMaxScore()
             );
@@ -35,36 +41,27 @@ public record MemberSpecificationDTO(
     }
 
     public record LanguageSkill(
-            Integer klptScore,
-            List<LanguageSkill.EnglishSkill> englishSkills
-
+            String title,
+            String score
     ) {
-        public record EnglishSkill(
-                String type,
-                String score
-        ) {
-        }
 
-        public static LanguageSkill of(MemberLanguageSkill memberLanguageSkill, List<MemberEnglishSkill> englishSkills) {
-            List<LanguageSkill.EnglishSkill> englishSkillDtos = englishSkills.stream()
-                    .map(es -> new LanguageSkill.EnglishSkill(es.getType(), es.getScore()))
-                    .toList();
-
-            return new LanguageSkill(memberLanguageSkill.getKlptScore(), englishSkillDtos);
+        public static LanguageSkill of(MemberLanguageSkill memberLanguageSkill) {
+            return new LanguageSkill(
+                    memberLanguageSkill.getTitle(),
+                    memberLanguageSkill.getScore()
+            );
         }
     }
 
     public record Certification(
             String certificationName,
-            Integer acquiredYear,
-            Integer acquiredMonth,
+            String acquiredDate,
             String documentUrl
     ) {
         public static Certification of(MemberCertification entity) {
             return new Certification(
                     entity.getCertificationName(),
-                    entity.getAcquiredYear(),
-                    entity.getAcquiredMonth(),
+                    entity.getAcquiredDate(),
                     entity.getDocumentUrl()
             );
         }
@@ -74,10 +71,8 @@ public record MemberSpecificationDTO(
     public record Career(
             String companyName,
             String position,
-            Integer startYear,
-            Integer startMonth,
-            Integer endYear,
-            Integer endMonth,
+            String startDate,  // yyyy-MM
+            String endDate,    // yyyy-MM
             ContractType contractType,
             String highlight
     ) {
@@ -86,10 +81,8 @@ public record MemberSpecificationDTO(
             return new Career(
                     entity.getCompanyName(),
                     entity.getPosition(),
-                    entity.getStartYear(),
-                    entity.getStartMonth(),
-                    entity.getEndYear(),
-                    entity.getEndMonth(),
+                    entity.getStartDate(),
+                    entity.getEndDate(),
                     ContractType.from(entity.getContractType()),
                     entity.getHighlight()
             );
@@ -99,8 +92,7 @@ public record MemberSpecificationDTO(
     public record Award(
             String awardName,
             String host,
-            Integer acquiredYear,
-            Integer acquiredMonth,
+            String acquiredDate,
             String description,
             String documentUrl
     ) {
@@ -108,8 +100,7 @@ public record MemberSpecificationDTO(
             return new Award(
                     entity.getAwardName(),
                     entity.getHost(),
-                    entity.getAcquiredYear(),
-                    entity.getAcquiredMonth(),
+                    entity.getAcquiredDate(),
                     entity.getDescription(),
                     entity.getDocumentUrl()
             );
@@ -121,7 +112,8 @@ public record MemberSpecificationDTO(
             Double beforeImprovementRate,
             Double afterImprovementRate,
             String description,
-            String insight
+            String startDate,
+            String endDate
     ) {
         public static Experience of(MemberExperience entity) {
             return new Experience(
@@ -129,7 +121,8 @@ public record MemberSpecificationDTO(
                     entity.getBeforeImprovementRate(),
                     entity.getAfterImprovementRate(),
                     entity.getDescription(),
-                    entity.getInsight()
+                    entity.getStartDate(),
+                    entity.getEndDate()
             );
         }
     }
@@ -137,7 +130,7 @@ public record MemberSpecificationDTO(
     public static MemberSpecificationDTO of(
             Long memberSpecificationId,
             Education education,
-            LanguageSkill languageSkill,
+            List<LanguageSkill> languageSkills,
             List<Certification> certifications,
             List<Career> careers,
             List<Award> awards,
@@ -146,7 +139,7 @@ public record MemberSpecificationDTO(
         return new MemberSpecificationDTO(
                 memberSpecificationId,
                 education,
-                languageSkill,
+                languageSkills,
                 certifications,
                 careers,
                 awards,

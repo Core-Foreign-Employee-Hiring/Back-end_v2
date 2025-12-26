@@ -24,9 +24,11 @@ public class MemberEducation extends BaseTimeEntity {
     @Column(name="member_education_id")
     private Long id;
 
-    private String schoolName;       // 학교 이름
-    private Double earnedScore;  // 내 학점
-    private Double maxScore;     // 총점
+    private String schoolName;        // 학교 이름
+    private String admissionDate;     // 입학
+    private String graduationDate;    // 졸업
+    private Double earnedScore;       // 내 학점
+    private Double maxScore;          // 총점
 
     @ManyToOne(fetch=LAZY)
     @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

@@ -25,8 +25,7 @@ public class MemberAward {
 
     private String awardName;
     private String host;
-    private Integer acquiredYear;
-    private Integer acquiredMonth;
+    private String acquiredDate;
     @Column(columnDefinition = "LONGTEXT")
     private String description;
     private String documentUrl;

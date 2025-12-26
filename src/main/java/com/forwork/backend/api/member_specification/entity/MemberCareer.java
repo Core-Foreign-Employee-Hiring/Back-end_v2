@@ -26,10 +26,8 @@ public class MemberCareer extends BaseTimeEntity {
 
     private String companyName;
     private String position;
-    private Integer startYear;
-    private Integer startMonth;
-    private Integer endYear;
-    private Integer endMonth;
+    private String startDate;
+    private String endDate;
     private String contractType;
     @Column(columnDefinition="LONGTEXT")
     private String highlight;
