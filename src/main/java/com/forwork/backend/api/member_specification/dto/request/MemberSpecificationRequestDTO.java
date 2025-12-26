@@ -50,6 +50,7 @@ public record MemberSpecificationRequestDTO(
                         description = "입학일",
                         format = "yyyy-MM"
                 )
+                @NotBlank
                 @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
                 String admissionDate,
 
@@ -118,6 +119,7 @@ public record MemberSpecificationRequestDTO(
                         description = "근무 시작일",
                         format = "yyyy-MM"
                 )
+                @NotBlank
                 @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
                 String startDate,
 
@@ -182,6 +184,7 @@ public record MemberSpecificationRequestDTO(
                         description = "시작일",
                         format = "yyyy-MM"
                 )
+                @NotBlank
                 @Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])", message = "yyyy-MM 형식이어야 합니다.")
                 String startDate,
 
