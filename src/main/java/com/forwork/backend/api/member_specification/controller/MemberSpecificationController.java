@@ -23,6 +23,14 @@ import org.springframework.web.bind.annotation.*;
 public class MemberSpecificationController {
     private final MemberSpecificationService memberSpecificationService;
 
+    /*
+    * 스펙
+    * */
+
+    /*
+    * c
+    * */
+
     @Operation(
             summary = "내 스펙 입력 API (용범)", description = "입력= MemberSpecificationRequestDTO"
     )
@@ -36,6 +44,10 @@ public class MemberSpecificationController {
         memberSpecificationService.createMemberSpecification(securityMember.getId(), memberSpecificationRequestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
+
+    /*
+    * r
+    * */
 
     @Operation(
             summary = "내 스펙 조회 API (용범)",
@@ -52,6 +64,36 @@ public class MemberSpecificationController {
         return ApiResponse.success(SuccessStatus.GET_MEMBER_SPECIFICATION_SUCCESS, response);
     }
 
+
+    /*
+    * d
+    * */
+
+    @Operation(
+            summary = "스펙 삭제 API (용범)"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 정보를 찾을 수 없습니다."),
+    })
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> deleteMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember) {
+
+        memberSpecificationService.deleteMemberSpecification(securityMember.getId());
+
+        return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
+    }
+
+
+
+    /*
+    * 스펙 평가
+    * */
+
+    /*
+    * c
+    * */
+
     @Operation(
             summary = "내 스펙 평가 API (용범)",
             description = "출력= 스펙 평가 id"
@@ -66,6 +108,10 @@ public class MemberSpecificationController {
 
         return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_SUCCESS, response);
     }
+
+    /*
+    * r
+    * */
 
     @Operation(
             summary = "내 스펙 평가 조회 API (용범)",
