@@ -10,7 +10,6 @@ import java.util.List;
 
 public record MemberSpecificationRequestDTO(
         @Schema(description = "학력")
-        @NotNull
         @Valid
         Education education,
 

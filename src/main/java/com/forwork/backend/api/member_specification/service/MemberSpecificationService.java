@@ -299,4 +299,87 @@ public class MemberSpecificationService {
         return response;
     }
 
+    /*
+    * d
+    * */
+
+
+    /**
+     * 스펙, 평가 삭제
+     */
+
+    @Transactional
+    public void deleteMemberSpecification(Long memberId){
+
+        MemberSpecification memberSpecification = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[deleteMemberSpecification][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Long memberSpecificationId = memberSpecification.getId();
+
+
+        /*
+        * 평가
+        * */
+
+        specificationEvaluationRepository.deleteByMemberSpecificationId(memberSpecificationId);
+
+        /*
+        * 경험
+        * */
+
+        memberExperienceRepository.deleteByMemberSpecificationId(memberSpecificationId);
+
+        /*
+        * 수상
+        * */
+
+        memberAwardRepository.deleteByMemberSpecificationId(memberSpecificationId);
+
+        /*
+        * 경력
+        * */
+
+        memberCareerRepository.deleteByMemberSpecificationId(memberSpecificationId);
+
+        /*
+        * 자격증 -> 이상함
+        * */
+
+        memberCertificationRepository.deleteByMemberSpecificationId(memberSpecificationId);
+
+        /*
+        * 어학
+        * */
+
+        memberLanguageSkillRepository.deleteByMemberSpecificationId(memberSpecificationId);
+
+
+        /*
+        * 학력
+        * */
+
+        memberEducationRepository.findByMemberSpecificationId(memberSpecificationId)
+                .ifPresent((education)->{
+                    Long educationId = education.getId();
+
+                    memberMajorRepository.deleteByMemberEducationId(educationId);
+
+
+                    memberEducationRepository.deleteById(educationId);
+
+                });
+
+
+        /*
+        * 스펙
+        * */
+
+        memberSpecificationRepository.delete(memberSpecification);
+
+    }
+
+
 }
