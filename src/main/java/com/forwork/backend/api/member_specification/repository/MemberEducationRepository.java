@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberEducationRepository extends JpaRepository<MemberEducation, Long> {
@@ -14,4 +15,6 @@ public interface MemberEducationRepository extends JpaRepository<MemberEducation
             " order by e.id asc" +
             " limit 1")
     Optional<MemberEducation> findByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
+
+    List<MemberEducation> findAllByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 }
