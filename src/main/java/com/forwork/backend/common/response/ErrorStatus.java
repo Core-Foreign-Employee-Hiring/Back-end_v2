@@ -95,6 +95,8 @@ public enum ErrorStatus {
     RECRUIT_JOB_ROLE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "직무는 최대 5개까지 선택할 수 있습니다."),
     RECRUIT_LANGUAGE_TYPE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "언어는 최대 5개까지 선택할 수 있습니다."),
     RECRUIT_WORK_REGION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "근무 지역은 최대 3개까지 선택할 수 있습니다."),
+    RESUME_PROFILE_IMAGE_REQUIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "프로필 이미지는 필수입니다."),
+    RESUME_IMAGE_UPLOAD_FAILED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미지 업로드에 실패했습니다."),
 
 
     /**
@@ -119,6 +121,7 @@ public enum ErrorStatus {
     SPEC_EVALUATION_NOT_OWNER_EXCEPTION(HttpStatus.FORBIDDEN, "본인 스펙 평가가 아닙니다."),
     ORDER_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "해당 주문에 접근할 권한이 없습니다."),
     ARCHIVE_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 접근할 권한이 없습니다."),
+    RESUME_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "본인의 이력서만 수정/삭제할 수 있습니다."),
 
 
 

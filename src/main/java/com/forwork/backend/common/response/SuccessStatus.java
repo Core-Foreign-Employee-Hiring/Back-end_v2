@@ -113,6 +113,8 @@ public enum SuccessStatus {
     GET_MEMBER_SPECIFICATION_SUCCESS(HttpStatus.OK, "스펙 조회 성공"),
     SPEC_EVALUATION_FIND_SUCCESS(HttpStatus.OK, "스펙 평가 조회 성공"),
     DELETE_SPEC_SUCCESS(HttpStatus.OK, "스펙 삭제 성공"),
+    RESUME_SELECTION_UPDATE_SUCCESS(HttpStatus.OK, "이력서 항목이 업데이트되었습니다."),
+    RESUME_DELETE_SUCCESS(HttpStatus.OK, "이력서가 삭제되었습니다."),
 
 
 
@@ -125,6 +127,7 @@ public enum SuccessStatus {
     /**
      * 201
      */
+    RESUME_CREATE_SUCCESS(HttpStatus.CREATED, "이력서가 생성되었습니다."),
     CREATE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 등록 성공"),
     CREATE_DRAFT_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "공고 임시 저장 성공"),
     CREATE_EMPLOYEE_PORTFOLIO_SUCCESS(HttpStatus.CREATED, "피고용인 포트폴리오 등록 성공"),
