@@ -14,6 +14,7 @@ import java.util.List;
 public class ResumeDetailResponse {
     private Long resumeId;
     private String resumeName;
+    private String template;
     private String profileImageUrl;
     private String introduction;
 
@@ -70,6 +71,7 @@ public class ResumeDetailResponse {
     public static class EducationDto {
         private Long id;
         private String schoolName;
+        private List<String> majors;
         private String admissionDate;
         private String graduationDate;
         private Double earnedScore;

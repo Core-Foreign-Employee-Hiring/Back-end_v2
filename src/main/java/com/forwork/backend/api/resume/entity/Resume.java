@@ -30,6 +30,8 @@ public class Resume extends BaseTimeEntity {
     @Column(nullable = false)
     private String resumeName;
 
+    private String template;
+
     private String profileImageUrl;
 
     @Column(columnDefinition = "TEXT")
