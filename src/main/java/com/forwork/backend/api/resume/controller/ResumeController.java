@@ -36,7 +36,7 @@ public class ResumeController {
 
     @Operation(
             summary = "이력서 초안 생성 API (1페이지) (태근)",
-            description = "이력서 이름(필수), 프로필 이미지(필수), 자기소개(선택), URL 리스트(선택)를 받아 이력서를 생성합니다. " +
+            description = "이력서 이름(필수), 프로필 이미지(필수), 템플릿(필수), 자기소개(선택), URL 리스트(선택)를 받아 이력서를 생성합니다. " +
                     "입력된 필수/선택값은 자동으로 체크됩니다."
     )
     @ApiResponses({

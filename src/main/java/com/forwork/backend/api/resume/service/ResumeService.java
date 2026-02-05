@@ -45,6 +45,7 @@ public class ResumeService {
 
     private final MemberSpecificationRepository memberSpecificationRepository;
     private final MemberEducationRepository memberEducationRepository;
+    private final MemberMajorRepository memberMajorRepository;
     private final MemberCertificationRepository memberCertificationRepository;
     private final MemberLanguageSkillRepository memberLanguageSkillRepository;
     private final MemberCareerRepository memberCareerRepository;
@@ -77,6 +78,7 @@ public class ResumeService {
         Resume resume = Resume.builder()
                 .member(member)
                 .resumeName(resumeCreateRequest.getResumeName())
+                .template(resumeCreateRequest.getTemplate())
                 .introduction(resumeCreateRequest.getIntroduction())
                 .profileImageUrl(imageUrl)
                 .includeIntroduction(hasIntroduction)
@@ -205,6 +207,7 @@ public class ResumeService {
             if (resume.isIncludeEducation()) {
                 educations = memberEducationRepository.findAllByMemberSpecificationId(specId).stream()
                         .map(edu -> ResumeDetailResponse.EducationDto.builder()
+                                .majors(memberMajorRepository.findAllByMemberEducationId(edu.getId()))
                                 .id(edu.getId())
                                 .schoolName(edu.getSchoolName())
                                 .admissionDate(edu.getAdmissionDate())
@@ -286,6 +289,7 @@ public class ResumeService {
         return ResumeDetailResponse.builder()
                 .resumeId(resume.getId())
                 .resumeName(resume.getResumeName())
+                .template(resume.getTemplate())
                 .profileImageUrl(resume.getProfileImageUrl())
                 .introduction(resume.isIncludeIntroduction() ? resume.getIntroduction() : null)
                 .memberBasicInfo(memberBasicInfo)
@@ -330,4 +334,3 @@ public class ResumeService {
         resumeRepository.delete(resume);
     }
 }
-

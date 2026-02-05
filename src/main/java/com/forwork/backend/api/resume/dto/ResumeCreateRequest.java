@@ -15,6 +15,9 @@ public class ResumeCreateRequest {
     @NotBlank(message = "이력서 이름은 필수입니다")
     private String resumeName;
 
+    @NotBlank(message = "템플릿은 필수입니다")
+    private String template;
+
     private String introduction;
 
     @Valid
