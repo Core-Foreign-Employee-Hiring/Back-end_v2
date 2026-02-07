@@ -149,12 +149,12 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
         JPAQuery<Long> countQuery=queryFactory
                 .select(recruit.id.countDistinct())
                 .from(recruit)
-                .leftJoin(recruit.recruitJobRoles, recruitJobRole).fetchJoin()
-                .leftJoin(recruitJobRole.jobRoleEntity, jobRoleEntity).fetchJoin()
-                .leftJoin(recruit.recruitVisas, recruitVisa).fetchJoin()
-                .leftJoin(recruitVisa.visaEntity, visaEntity).fetchJoin()
-                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType).fetchJoin()
-                .leftJoin(recruitLanguageType.languageTypeEntity, languageTypeEntity).fetchJoin()
+                .leftJoin(recruit.recruitJobRoles, recruitJobRole)
+                .leftJoin(recruitJobRole.jobRoleEntity, jobRoleEntity)
+                .leftJoin(recruit.recruitVisas, recruitVisa)
+                .leftJoin(recruitVisa.visaEntity, visaEntity)
+                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType)
+                .leftJoin(recruitLanguageType.languageTypeEntity, languageTypeEntity)
                 .where(
                         recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
                         recruit.recruitEndDate.goe(now),
