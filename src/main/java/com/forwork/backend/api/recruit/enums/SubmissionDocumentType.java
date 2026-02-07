@@ -27,7 +27,11 @@ public enum SubmissionDocumentType {
     /**
      * Enum Set -> Bit 변환
      */
-    public static int toBit(Set<SubmissionDocumentType> types) {
+    public static Integer toBit(Set<SubmissionDocumentType> types) {
+        if (types == null || types.isEmpty()) {
+            return 0;
+        }
+
         return types.stream()
                 .mapToInt(SubmissionDocumentType::getBit)
                 .reduce(0, (a, b) -> a | b);
@@ -36,7 +40,11 @@ public enum SubmissionDocumentType {
     /**
      * Bit -> Enum Set 변환
      */
-    public static Set<SubmissionDocumentType> fromBit(int bitMask) {
+    public static Set<SubmissionDocumentType> fromBit(Integer bitMask) {
+        if (bitMask == null) {
+            return EnumSet.noneOf(SubmissionDocumentType.class);
+        }
+
         return Arrays.stream(values())
                 .filter(type -> (bitMask & type.bit) != 0)
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(SubmissionDocumentType.class)));

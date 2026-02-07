@@ -30,7 +30,11 @@ public enum WorkingDays {
     /**
      * Enum Set -> Bit
      */
-    public static int toBit(Set<WorkingDays> days) {
+    public static Integer toBit(Set<WorkingDays> days) {
+        if (days == null || days.isEmpty()) {
+            return 0;
+        }
+
         return days.stream()
                 .mapToInt(WorkingDays::getBit)
                 .reduce(0, (a, b) -> a | b);
@@ -39,7 +43,11 @@ public enum WorkingDays {
     /**
      * Bit -> Enum Set
      */
-    public static Set<WorkingDays> fromBit(int bitMask) {
+    public static Set<WorkingDays> fromBit(Integer bitMask) {
+        if (bitMask == null) {
+            return EnumSet.noneOf(WorkingDays.class);
+        }
+
         return Arrays.stream(values())
                 .filter(day -> (bitMask & day.bit) != 0)
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(WorkingDays.class)));
