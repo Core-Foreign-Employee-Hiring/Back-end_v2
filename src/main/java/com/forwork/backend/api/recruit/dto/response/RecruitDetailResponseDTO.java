@@ -116,7 +116,7 @@ public record RecruitDetailResponseDTO(
 
         @Schema(description = "위도")
         Double latitude,
-        @Schema(description = "경고")
+        @Schema(description = "경도")
         Double longitude,
 
         @Schema(description = "대표자명")

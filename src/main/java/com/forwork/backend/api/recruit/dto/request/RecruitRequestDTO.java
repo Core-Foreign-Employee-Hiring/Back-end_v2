@@ -27,7 +27,7 @@ public record RecruitRequestDTO(
         String address2,
         @Schema(description = "위도")
         Double latitude,
-        @Schema(description = "경고")
+        @Schema(description = "경도")
         Double longitude,
         @Schema(description = "기업 형태")
         CompanyType companyType,
