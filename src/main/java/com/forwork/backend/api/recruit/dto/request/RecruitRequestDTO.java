@@ -19,16 +19,26 @@ public record RecruitRequestDTO(
         String companyImageUrl,
         @Schema(description = "회사 이름")
         String companyName,
-        @Schema(description = "우편번호")
-        String zipcode,
-        @Schema(description = "주소")
-        String address1,
-        @Schema(description = "상세 주소")
-        String address2,
-        @Schema(description = "위도")
-        Double latitude,
-        @Schema(description = "경도")
-        Double longitude,
+        @Schema(description = "회사 우편번호")
+        String companyZipcode,
+        @Schema(description = "회사 주소")
+        String companyAddress1,
+        @Schema(description = "회사 상세 주소")
+        String companyAddress2,
+        @Schema(description = "회사 위도")
+        Double companyLatitude,
+        @Schema(description = "회사 경도")
+        Double companyLongitude,
+        @Schema(description = "근무지 우편번호")
+        String workZipcode,
+        @Schema(description = "근무지 주소")
+        String workAddress1,
+        @Schema(description = "근무지 상세 주소")
+        String workAddress2,
+        @Schema(description = "근무지 위도")
+        Double workLatitude,
+        @Schema(description = "근무지 경도")
+        Double workLongitude,
         @Schema(description = "기업 형태")
         CompanyType companyType,
         @Schema(description = "대표자명")
@@ -131,11 +141,16 @@ public record RecruitRequestDTO(
                 .title(title)
                 .companyImageUrl(companyImageUrl)
                 .companyName(companyName)
-                .zipcode(zipcode)
-                .address1(address1)
-                .address2(address2)
-                .latitude(latitude)
-                .longitude(longitude)
+                .companyZipcode(companyZipcode)
+                .companyAddress1(companyAddress1)
+                .companyAddress2(companyAddress2)
+                .companyLatitude(companyLatitude)
+                .companyLongitude(companyLongitude)
+                .workZipcode(workZipcode)
+                .workAddress1(workAddress1)
+                .workAddress2(workAddress2)
+                .workLatitude(workLatitude)
+                .workLongitude(workLongitude)
                 .companyType(companyType)
                 .representativeName(representativeName)
                 .establishedDate(establishedDate)
@@ -167,7 +182,7 @@ public record RecruitRequestDTO(
                 .applicationMethod(applicationMethod)
                 .directInputApplicationMethod(directInputApplicationMethod)
                 .recruitPublishStatus(recruitPublishStatus)
-                .workRegion(WorkRegion.fromPrefix(address1).getDbValue())
+                .workRegion(WorkRegion.fromPrefix(workAddress1).getDbValue())
                 .websiteUrl(websiteUrl)
                 .companyIntroduction(companyIntroduction)
                 .submissionDocumentBits(SubmissionDocumentType.toBit(submissionDocuments))
