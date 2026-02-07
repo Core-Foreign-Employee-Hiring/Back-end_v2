@@ -42,6 +42,9 @@ public class Recruit extends BaseTimeEntity {
     private String zipcode;  // 회사 우편번호
     private String address1; // 회사 주소
     private String address2; // 회사 상세 주소
+    private Double latitude;    // 위도
+    private Double longitude;   // 경도
+
     private CompanyType companyType;
     private String representativeName;
     private LocalDate establishedDate;
@@ -50,17 +53,24 @@ public class Recruit extends BaseTimeEntity {
     private boolean isAlwaysRecruiting;  //
     private LocalDate recruitStartDate;       // 모집 시작일
     private LocalDate recruitEndDate;         // 모집 종료일
+    private String directInputRecruitDate;       // 모집기간 직접 입력
+
 
     @Enumerated(STRING)
-    private ContractType contractType;         // 계약 형태 (ENUM: 정규직, 계약직, 프리랜서 등)
+    private ContractType contractType;         // 계약 형태 (ENUM: 정규직, 인턴, 계약직, 기타)
     private String directInputContractType;    // 계약 형태 직접 입력 (기타일 경우)
+
+    @Enumerated(STRING)
+    private CarrerType carrerType;             // 경력 형태 (ENUM: 신입, 경력)
+    private String directInputCarrerType;      // 경력 형태 직접 입력 (기타일 경우)
 
     @Enumerated(STRING)
     private WorkType workType;                 // 근무 형태 (대면, 비대면, 혼합 등)
     private String directInputWorkType;        // 근무 형태 직접 입력
 
     @Enumerated(STRING)
-    private WorkDayType workDayType;           // 근무 요일 (ENUM: 평일, 주말, 주 7일 등)
+    private WorkDayPatternType workDayPatternType;
+    private Integer workingDays;    // 근무요일 직접 입력
     private String directInputWorkDayType;     // 근무 요일 직접 입력
 
     private Integer workStartTime;             // 근무 시작 시간 (예: 900 → 09:00, 1330 → 13:30)
@@ -85,6 +95,15 @@ public class Recruit extends BaseTimeEntity {
     @Enumerated(STRING)
     private ApplicationMethod applicationMethod; // 지원 방법
     private String directInputApplicationMethod; // 링크
+
+    private String websiteUrl;                    // 웹사이트 링크
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String companyIntroduction;           // 회사소개
+
+    private Integer submissionDocumentBits;        // 제출서류
+    private String directInputSubmissionDocument;                  // 제출 서류 직접 입력
+
 
     @Enumerated(STRING)
     private RecruitPublishStatus recruitPublishStatus;
@@ -151,7 +170,6 @@ public class Recruit extends BaseTimeEntity {
         this.directInputContractType = dto.directInputContractType();
         this.workType = dto.workType();
         this.directInputWorkType = dto.directInputWorkType();
-        this.workDayType = dto.workDayType();
         this.directInputWorkDayType = dto.directInputWorkDayType();
         this.workStartTime = parseTimeStringToInt(dto.workStartTime());
         this.workEndTime = parseTimeStringToInt(dto.workEndTime());

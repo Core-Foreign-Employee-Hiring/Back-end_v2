@@ -1,19 +1,16 @@
 package com.forwork.backend.api.recruit.enums;
 
-public enum ContractType {
-    INTERN("인턴"),
-    REGULAR("정규직"),
-    CONTRACT("계약직"),
-    ETC("기타");
+import lombok.Getter;
+
+@Getter
+public enum CarrerType {
+    NEWCOMER("신입"),
+    EXPERIENCED("경력");
 
     private final String displayName;
 
-    ContractType(String displayName) {
+    CarrerType(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 
     public static ContractType from(String value) {
@@ -26,4 +23,3 @@ public enum ContractType {
         }
     }
 }
-
