@@ -25,6 +25,10 @@ public record RecruitRequestDTO(
         String address1,
         @Schema(description = "상세 주소")
         String address2,
+        @Schema(description = "위도")
+        Double latitude,
+        @Schema(description = "경도")
+        Double longitude,
         @Schema(description = "기업 형태")
         CompanyType companyType,
         @Schema(description = "대표자명")
@@ -49,10 +53,18 @@ public record RecruitRequestDTO(
         @Schema(description = "모집 종료일")
         LocalDate recruitEndDate,
 
-        @Schema(description = "계약 형태 (ENUM: 정규직, 계약직, 프리랜서 등)")
+        @Schema(description = "모집 기간 직접 입력")
+        String directInputRecruitDate,
+
+        @Schema(description = "계약 형태 (ENUM: 정규직, 인턴, 계약직, 기타)")
         ContractType contractType,
         @Schema(description = "계약 형태 직접 입력 (기타 선택 시 값 입력)")
         String directInputContractType,
+
+        @Schema(description = "경력 형태 (ENUM: 신입, 경력)")
+        CarrerType carrerType,
+        @Schema(description = "경력 형태 직접 입력 (기타 선택 시 값 입력)")
+        String directInputCarrerType,
 
         @Schema(description = "직종")
         List<JobCategory> jobCategories,
@@ -63,8 +75,10 @@ public record RecruitRequestDTO(
         String directInputWorkType,
 
         @Schema(description = "근무 요일 (ENUM: 평일, 주말, 주 6일 등)")
-        WorkDayType workDayType,
+        WorkDayPatternType workDayPatternType,
         @Schema(description = "근무 요일 직접 입력")
+        Set<WorkingDays> workingDays,
+        @Schema(description = "근무 요일 기타사항")
         String directInputWorkDayType,
 
         @Schema(description = "근무 시작 시간 (형식: HH:mm, 예: 09:30")
@@ -97,6 +111,18 @@ public record RecruitRequestDTO(
         @Schema(description = "링크")
         String directInputApplicationMethod,
 
+        @Schema(description = "웹사이트 링크")
+        String websiteUrl,
+
+        @Schema(description = "회사소개")
+        String companyIntroduction,
+
+        @Schema(description = "제출서류")
+        Set<SubmissionDocumentType> submissionDocuments,
+
+        @Schema(description = "제출서류 직접입력")
+        String directInputSubmissionDocument,
+
         @Schema(description = "PUBLISHED: 최종 등록, DRAFT: 임시 저장 ")
         RecruitPublishStatus recruitPublishStatus
 ) {
@@ -108,6 +134,8 @@ public record RecruitRequestDTO(
                 .zipcode(zipcode)
                 .address1(address1)
                 .address2(address2)
+                .latitude(latitude)
+                .longitude(longitude)
                 .companyType(companyType)
                 .representativeName(representativeName)
                 .establishedDate(establishedDate)
@@ -115,11 +143,15 @@ public record RecruitRequestDTO(
                 .isAlwaysRecruiting(isAlwaysRecruiting)
                 .recruitStartDate(recruitStartDate)
                 .recruitEndDate(recruitEndDate)
+                .directInputRecruitDate(directInputRecruitDate)
                 .contractType(contractType)
                 .directInputContractType(directInputContractType)
+                .carrerType(carrerType)
+                .directInputCarrerType(directInputCarrerType)
                 .workType(workType)
                 .directInputWorkType(directInputWorkType)
-                .workDayType(workDayType)
+                .workDayPatternType(workDayPatternType)
+                .workingDays(WorkingDays.toBit(workingDays))
                 .directInputWorkDayType(directInputWorkDayType)
                 .workStartTime(Recruit.parseTimeStringToInt(workStartTime) )
                 .workEndTime(Recruit.parseTimeStringToInt(workEndTime))
@@ -136,6 +168,10 @@ public record RecruitRequestDTO(
                 .directInputApplicationMethod(directInputApplicationMethod)
                 .recruitPublishStatus(recruitPublishStatus)
                 .workRegion(WorkRegion.fromPrefix(address1).getDbValue())
+                .websiteUrl(websiteUrl)
+                .companyIntroduction(companyIntroduction)
+                .submissionDocumentBits(SubmissionDocumentType.toBit(submissionDocuments))
+                .directInputSubmissionDocument(directInputSubmissionDocument)
                 .build();
     }
 

@@ -35,7 +35,7 @@ public record RecruitDraftResponseDTO(
         String directInputWorkType,
 
         @Schema(description = "근무 요일 (ENUM: 평일, 주말, 주 6일 등)")
-        WorkDayType workDayType,
+        WorkDayPatternType workDayPatternType,
         @Schema(description = "근무 요일 직접 입력")
         String directInputWorkDayType,
 
@@ -85,7 +85,7 @@ public record RecruitDraftResponseDTO(
                         recruit.getWorkType(),
                         recruit.getDirectInputWorkType(),
 
-                        recruit.getWorkDayType(),
+                        recruit.getWorkDayPatternType(),
                         recruit.getDirectInputWorkDayType(),
 
                         recruit.getFormattedWorkEndTime(),
