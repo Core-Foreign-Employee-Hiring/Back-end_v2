@@ -136,8 +136,12 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
 
         List<Recruit> content=queryFactory
                 .selectFrom(recruit)
-                .leftJoin(recruit.recruitJobCategories, recruitJobCategory).fetchJoin()
-                .leftJoin(recruitJobCategory.jobCategoryEntity, jobCategoryEntity).fetchJoin()
+                .leftJoin(recruit.recruitJobRoles, recruitJobRole).fetchJoin()
+                .leftJoin(recruitJobRole.jobRoleEntity, jobRoleEntity).fetchJoin()
+                .leftJoin(recruit.recruitVisas, recruitVisa).fetchJoin()
+                .leftJoin(recruitVisa.visaEntity, visaEntity).fetchJoin()
+                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType).fetchJoin()
+                .leftJoin(recruitLanguageType.languageTypeEntity, languageTypeEntity).fetchJoin()
                 .where(recruit.id.in(ids))
                 .orderBy(recruit.id.desc())
                 .fetch();
@@ -145,9 +149,12 @@ public class RecruitRepositoryImpl implements RecruitRepositoryQueryDSL {
         JPAQuery<Long> countQuery=queryFactory
                 .select(recruit.id.countDistinct())
                 .from(recruit)
-                .leftJoin(recruit.recruitJobRoles, recruitJobRole)
-                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType)
-                .leftJoin(recruit.recruitVisas, recruitVisa)
+                .leftJoin(recruit.recruitJobRoles, recruitJobRole).fetchJoin()
+                .leftJoin(recruitJobRole.jobRoleEntity, jobRoleEntity).fetchJoin()
+                .leftJoin(recruit.recruitVisas, recruitVisa).fetchJoin()
+                .leftJoin(recruitVisa.visaEntity, visaEntity).fetchJoin()
+                .leftJoin(recruit.recruitLanguageTypes, recruitLanguageType).fetchJoin()
+                .leftJoin(recruitLanguageType.languageTypeEntity, languageTypeEntity).fetchJoin()
                 .where(
                         recruit.recruitPublishStatus.eq(RecruitPublishStatus.PUBLISHED),
                         recruit.recruitEndDate.goe(now),
