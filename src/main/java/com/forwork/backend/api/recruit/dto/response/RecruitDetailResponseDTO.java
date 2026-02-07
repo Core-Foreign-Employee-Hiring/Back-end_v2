@@ -107,17 +107,26 @@ public record RecruitDetailResponseDTO(
         @Schema(description = "기업 형태")
         CompanyType companyType,
 
-        @Schema(description = "우편번호")
-        String zipcode,
-        @Schema(description = "주소")
-        String address1,
-        @Schema(description = "상세주소")
-        String address2,
-
-        @Schema(description = "위도")
-        Double latitude,
-        @Schema(description = "경도")
-        Double longitude,
+        @Schema(description = "회사 우편번호")
+        String companyZipcode,
+        @Schema(description = "회사 주소")
+        String companyAddress1,
+        @Schema(description = "회사 상세 주소")
+        String companyAddress2,
+        @Schema(description = "회사 위도")
+        Double companyLatitude,
+        @Schema(description = "회사 경도")
+        Double companyLongitude,
+        @Schema(description = "근무지 우편번호")
+        String workZipcode,
+        @Schema(description = "근무지 주소")
+        String workAddress1,
+        @Schema(description = "근무지 상세 주소")
+        String workAddress2,
+        @Schema(description = "근무지 위도")
+        Double workLatitude,
+        @Schema(description = "근무지 경도")
+        Double workLongitude,
 
         @Schema(description = "대표자명")
         String representativeName,
@@ -193,12 +202,17 @@ public record RecruitDetailResponseDTO(
                         recruit.getCompanyName(),
                         recruit.getCompanyType(),
 
-                        recruit.getZipcode(),
-                        recruit.getAddress1(),
-                        recruit.getAddress2(),
+                        recruit.getCompanyZipcode(),
+                        recruit.getCompanyAddress1(),
+                        recruit.getCompanyAddress2(),
+                        recruit.getCompanyLatitude(),
+                        recruit.getCompanyLongitude(),
 
-                        recruit.getLatitude(),
-                        recruit.getLongitude(),
+                        recruit.getWorkZipcode(),
+                        recruit.getWorkAddress1(),
+                        recruit.getWorkAddress2(),
+                        recruit.getWorkLatitude(),
+                        recruit.getWorkLongitude(),
 
                         recruit.getRepresentativeName(),
                         recruit.getEstablishedDate(),

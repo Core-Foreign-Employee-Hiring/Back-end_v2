@@ -39,11 +39,18 @@ public class Recruit extends BaseTimeEntity {
 
     private String companyImageUrl;
     private String companyName;
-    private String zipcode;  // 회사 우편번호
-    private String address1; // 회사 주소
-    private String address2; // 회사 상세 주소
-    private Double latitude;    // 위도
-    private Double longitude;   // 경도
+    private String companyZipcode;    // 회사 우편번호
+    private String companyAddress1;   // 회사 주소
+    private String companyAddress2;   // 회사 상세 주소
+    private Double companyLatitude;   // 회사 위도
+    private Double companyLongitude;  // 회사 경도
+
+    private String workZipcode;       // 근무지 우편번호
+    private String workAddress1;      // 근무지 주소
+    private String workAddress2;      // 근무지 상세 주소
+    private Double workLatitude;      // 근무지 위도
+    private Double workLongitude;     // 근무지 경도
+
 
     private CompanyType companyType;
     private String representativeName;
