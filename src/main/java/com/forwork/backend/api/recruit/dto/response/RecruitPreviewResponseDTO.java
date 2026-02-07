@@ -54,9 +54,9 @@ public record RecruitPreviewResponseDTO(
                 recruit.getSalaryType(),
                 recruit.getSalary(),
                 recruit.getContractType(),
-                recruit.getZipcode(),
-                recruit.getAddress1(),
-                recruit.getAddress2()
+                recruit.getCompanyZipcode(),
+                recruit.getCompanyAddress1(),
+                recruit.getCompanyAddress2()
         );
     }
 }
