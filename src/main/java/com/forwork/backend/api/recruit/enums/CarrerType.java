@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum CarrerType {
     NEWCOMER("신입"),
-    EXPERIENCED("경력");
+    EXPERIENCED("경력"),
+    NOT_SPECIFIED("경력 무관");;
 
     private final String displayName;
 
