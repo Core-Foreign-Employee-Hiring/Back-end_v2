@@ -27,10 +27,8 @@ public class ResumeCreateRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ResumeUrlDto {
-        @NotBlank(message = "URL 제목은 필수입니다")
         private String urlTitle;
 
-        @NotBlank(message = "URL 링크는 필수입니다")
         private String urlLink;
     }
 }
