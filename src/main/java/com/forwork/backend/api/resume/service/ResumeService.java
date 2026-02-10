@@ -73,7 +73,14 @@ public class ResumeService {
         // default 값 설정: 필수값 및 선택값이 있으면 default true
         // 사용자는 3페이지에서 이 값들을 변경하여 이력서에 표시할 항목을 선택할 수 있음
         boolean hasIntroduction = resumeCreateRequest.getIntroduction() != null && !resumeCreateRequest.getIntroduction().trim().isEmpty();
-        boolean hasUrls = resumeCreateRequest.getUrls() != null && !resumeCreateRequest.getUrls().isEmpty();
+        List<ResumeCreateRequest.ResumeUrlDto> validUrls = new ArrayList<>();
+        if (resumeCreateRequest.getUrls() != null) {
+            validUrls = resumeCreateRequest.getUrls().stream()
+                    .filter(dto -> dto.getUrlTitle() != null && !dto.getUrlTitle().trim().isEmpty()
+                            && dto.getUrlLink() != null && !dto.getUrlLink().trim().isEmpty())
+                    .toList();
+        }
+        boolean hasUrls = !validUrls.isEmpty();
 
         Resume resume = Resume.builder()
                 .member(member)
@@ -94,8 +101,8 @@ public class ResumeService {
         Resume savedResume = resumeRepository.save(resume);
 
         // URL 저장
-        if (resumeCreateRequest.getUrls() != null && !resumeCreateRequest.getUrls().isEmpty()) {
-            List<ResumeUrl> urls = resumeCreateRequest.getUrls().stream()
+        if (!validUrls.isEmpty()) {
+            List<ResumeUrl> urls = validUrls.stream()
                     .map(dto -> ResumeUrl.builder()
                             .resume(savedResume)
                             .urlTitle(dto.getUrlTitle())
