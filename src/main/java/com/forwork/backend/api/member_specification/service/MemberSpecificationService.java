@@ -1,15 +1,13 @@
 package com.forwork.backend.api.member_specification.service;
 
-import com.forwork.backend.api.member.entity.Member;
-import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.member_specification.dto.external.response.MemberSpecEvaluationExternalResponseDTO;
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
-import com.forwork.backend.api.member_specification.dto.request.MemberSpecificationRequestDTO;
+import com.forwork.backend.api.member_specification.dto.request.*;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecEvaluationResponseDTO;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecificationResponseDTO;
-import com.forwork.backend.api.member_specification.entity.*;
+import com.forwork.backend.api.member_specification.entity.MemberSpecification;
+import com.forwork.backend.api.member_specification.entity.SpecificationEvaluation;
 import com.forwork.backend.api.member_specification.repository.*;
-import com.forwork.backend.api.recruit.enums.ContractType;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +22,10 @@ import static com.forwork.backend.common.response.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class MemberSpecificationService {
     private final MemberSpecificationRepository memberSpecificationRepository;
     private final MemberEducationRepository memberEducationRepository;
-    private final MemberRepository memberRepository;
     private final MemberMajorRepository memberMajorRepository;
     private final MemberLanguageSkillRepository memberLanguageSkillRepository;
     private final MemberCertificationRepository memberCertificationRepository;
@@ -39,6 +35,19 @@ public class MemberSpecificationService {
     private final MemberSpecificationReader memberSpecificationReader;
     private final MemberSpecEvaluationClient memberSpecEvaluationClient;
     private final SpecificationEvaluationRepository specificationEvaluationRepository;
+    private final MemberEducationCreator memberEducationCreator;
+    private final MemberLanguageSkillCreator memberLanguageSkillCreator;
+    private final MemberCertificationCreator memberCertificationCreator;
+    private final MemberCareerCreator memberCareerCreator;
+    private final MemberAwardCreator memberAwardCreator;
+    private final MemberExperienceCreator memberExperienceCreator;
+    private final MemberLanguageSkillDeleter memberLanguageSkillDeleter;
+    private final MemberCertificationDeleter memberCertificationDeleter;
+    private final MemberCareerDeleter memberCareerDeleter;
+    private final MemberAwardDeleter memberAwardDeleter;
+    private final MemberExperienceDeleter memberExperienceDeleter;
+    private final MemberEducationDeleter memberEducationDeleter;
+
 
 
     /*
@@ -46,175 +55,125 @@ public class MemberSpecificationService {
      * */
 
     /**
-     * 스펙 입력
+     * 학력
      */
     @Transactional
-    public void createMemberSpecification(Long memberId, MemberSpecificationRequestDTO memberSpecificationRequestDTO) {
+    public void createEducation(Long memberId, EducationRequestDTO educationRequestDTO) {
 
-        Member member = memberRepository.findById(memberId)
+        memberSpecificationRepository.insertIgnore(memberId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
                 .orElseThrow(() -> {
-                    log.warn("[createMemberSpecification][member is not found][memberId= {}]", memberId);
-                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                    log.warn("[createEducation][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        /*
-         * 스펙 생성
-         * */
+        memberEducationCreator.create(memberSpec, educationRequestDTO);
 
-        MemberSpecification memberSpec = MemberSpecification.builder()
-                .member(member)
-                .build();
+    }
 
-        memberSpecificationRepository.save(memberSpec);
+    /**
+     * 어학
+     */
+    @Transactional
+    public void createLanguageSkill(Long memberId, LanguageSkillRequestDTO languageSkillRequestDTO) {
 
+        memberSpecificationRepository.insertIgnore(memberId);
 
-        /*
-         * 학력
-         * */
-
-        MemberSpecificationRequestDTO.Education education = memberSpecificationRequestDTO.education();
-
-        MemberEducation memberEducation = MemberEducation.builder()
-                .schoolName(education.schoolName())
-                .admissionDate(education.admissionDate())
-                .graduationDate(education.graduationDate())
-                .earnedScore(education.earnedScore())
-                .maxScore(education.maxScore())
-                .memberSpecification(memberSpec)
-                .build();
-
-        memberEducationRepository.save(memberEducation);
-
-        // 전공
-        List<MemberMajor> memberMajors = education.majors().stream()
-                .map(major -> MemberMajor.builder()
-                        .major(major)
-                        .memberEducation(memberEducation)
-                        .build())
-                .toList();
-
-        memberMajorRepository.saveAll(memberMajors);
-
-
-        /*
-         * 어학
-         * */
-
-
-        Optional.ofNullable(memberSpecificationRequestDTO.languageSkills())
-                        .ifPresent((languageSkills)->{
-                            List<MemberLanguageSkill> memberLanguageSkills = languageSkills.stream()
-                                    .map((languageSkill) -> MemberLanguageSkill.builder()
-                                            .title(languageSkill.title())
-                                            .score(languageSkill.score())
-                                            .memberSpecification(memberSpec)
-                                            .build()
-                                    )
-                                    .toList();
-
-                            memberLanguageSkillRepository.saveAll(memberLanguageSkills);
-                        });
-
-
-        /*
-         * 자격증
-         * */
-
-        Optional.ofNullable(memberSpecificationRequestDTO.certifications())
-                .ifPresent(certifications -> {
-                    List<MemberCertification> memberCertifications = certifications.stream()
-                            .map(certification -> MemberCertification.builder()   // 엔티티 변환
-                                    .certificationName(certification.certificationName())
-                                    .acquiredDate(certification.acquiredDate())
-                                    .documentUrl(certification.documentUrl())
-                                    .memberSpecification(memberSpec)
-                                    .build()
-                            )
-                            .toList();
-
-                    memberCertificationRepository.saveAll(memberCertifications);
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[createLanguageSkill][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
+        memberLanguageSkillCreator.create(memberSpec, languageSkillRequestDTO);
 
-        /*
-         * 경력
-         * */
+    }
 
-        Optional.ofNullable(memberSpecificationRequestDTO.careers())
-                .ifPresent(careers -> {
-                    List<MemberCareer> memberCareers = careers.stream()
-                            .map(career -> MemberCareer.builder()
-                                    .companyName(career.companyName())
-                                    .position(career.position())
-                                    .startDate(career.startDate())
-                                    .endDate(career.endDate())
-                                    .contractType(Optional.ofNullable(career.contractType()).map(ContractType::name).orElse(null))
-                                    .highlight(career.highlight())
-                                    .memberSpecification(memberSpec)
-                                    .build()
-                            ).toList();
 
-                    memberCareerRepository.saveAll(memberCareers);
+    /**
+     * 자격증
+     */
+    @Transactional
+    public void createCertification(Long memberId, CertificationRequestDTO certificationRequestDTO) {
+
+        memberSpecificationRepository.insertIgnore(memberId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[createCertification][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        /*
-         * 수상
-         * */
-        Optional.ofNullable(memberSpecificationRequestDTO.awards())
-                .ifPresent(awards -> {
-                    List<MemberAward> memberAwards = awards.stream()
-                            .map(award -> MemberAward.builder()
-                                    .awardName(award.awardName())
-                                    .host(award.host())
-                                    .acquiredDate(award.acquiredDate())
-                                    .description(award.description())
-                                    .documentUrl(award.documentUrl())
-                                    .memberSpecification(memberSpec)
-                                    .build()
-                            ).toList();
+        memberCertificationCreator.create(memberSpec, certificationRequestDTO);
 
-                    memberAwardRepository.saveAll(memberAwards);
+    }
+
+    /**
+     * 경력사항
+     */
+    @Transactional
+    public void createCareer(Long memberId, CareerRequestDTO careerRequestDTO) {
+
+        memberSpecificationRepository.insertIgnore(memberId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[createCareer][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
                 });
 
-        /*
-         * 경험
-         * */
+        memberCareerCreator.create(memberSpec, careerRequestDTO);
+    }
 
-        Optional.ofNullable(memberSpecificationRequestDTO.experiences())
-                .ifPresent(experiences -> {
-                    List<MemberExperience> memberExperiences = experiences.stream()
-                            .map(experience ->
-                                    MemberExperience.builder()
-                                            .experience(experience.experience())
-                                            .beforeImprovementRate(experience.beforeImprovementRate())
-                                            .afterImprovementRate(experience.afterImprovementRate())
-                                            .description(experience.description())
-                                            .startDate(experience.startDate())
-                                            .endDate(experience.endDate())
-                                            .memberSpecification(memberSpec)
-                                            .build()
-                            )
-                            .toList();
+    /**
+     * 수상
+     */
+    @Transactional
+    public void createAward(Long memberId, AwardCreateDTO awardCreateDTO) {
 
-                    memberExperienceRepository.saveAll(memberExperiences);
+        memberSpecificationRepository.insertIgnore(memberId);
 
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[createAward][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
                 });
+
+        memberAwardCreator.create(memberSpec, awardCreateDTO);
+    }
+
+    /**
+     * 경험
+     */
+    @Transactional
+    public void createExperience(Long memberId, ExperienceRequestDTO experienceRequestDTO) {
+
+        memberSpecificationRepository.insertIgnore(memberId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[createExperience][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        memberExperienceCreator.create(memberSpec, experienceRequestDTO);
     }
 
     /**
      * 스펙 평가
      */
 
-    public Long evaluateSpecification(Long memberId){
+    public Long evaluateSpecification(Long memberId) {
         MemberSpecificationDTO memberSpecificationDTO = memberSpecificationReader.getMemberSpecification(memberId);
 
         // ai 서버에거 갖고 온다.
         MemberSpecEvaluationExternalResponseDTO memberSpecEvaluationExternalResponseDTO = memberSpecEvaluationClient.evaluateSpecification(memberSpecificationDTO);
 
         // score 계산 (일단, 오각형 총합)
-        int score=memberSpecEvaluationExternalResponseDTO.experience()+memberSpecEvaluationExternalResponseDTO.certificate()
-                +memberSpecEvaluationExternalResponseDTO.language()+memberSpecEvaluationExternalResponseDTO.career()
-                +memberSpecEvaluationExternalResponseDTO.education();
+        int score = memberSpecEvaluationExternalResponseDTO.experience() + memberSpecEvaluationExternalResponseDTO.certificate()
+                + memberSpecEvaluationExternalResponseDTO.language() + memberSpecEvaluationExternalResponseDTO.career()
+                + memberSpecEvaluationExternalResponseDTO.education();
 
         // DB 저장.
 
@@ -242,14 +201,14 @@ public class MemberSpecificationService {
     }
 
     /*
-    * r
-    * */
+     * r
+     * */
 
     /**
      * 입력한 스펙 조회
      */
 
-    public MemberSpecificationResponseDTO getMemberSpecification(Long memberId){
+    public MemberSpecificationResponseDTO getMemberSpecification(Long memberId) {
         MemberSpecificationDTO memberSpecification = memberSpecificationReader.getMemberSpecification(memberId);
 
         MemberSpecificationResponseDTO response = MemberSpecificationResponseDTO.of(memberSpecification);
@@ -259,7 +218,7 @@ public class MemberSpecificationService {
     /**
      * 스펙 평가 조회
      */
-    public MemberSpecEvaluationResponseDTO getSpecEvaluation(Long memberId, Long specEvaluationId){
+    public MemberSpecEvaluationResponseDTO getSpecEvaluation(Long memberId, Long specEvaluationId) {
 
         // 스펙 조회
         MemberSpecification memberSpecification = memberSpecificationRepository.findByMemberIdId(memberId)
@@ -277,15 +236,15 @@ public class MemberSpecificationService {
 
         // 본인 거 맞나?
 
-        if(!memberSpecification.getId().equals(specificationEvaluation.getMemberSpecification().getId())){
+        if (!memberSpecification.getId().equals(specificationEvaluation.getMemberSpecification().getId())) {
             log.warn("[getSpecEvaluation][본인 거 아님][본인 스펙 id= {}, 스펙 평가 id= {}]", memberSpecification.getId(), specEvaluationId);
 
             throw new UnauthorizedException(SPEC_EVALUATION_NOT_OWNER_EXCEPTION.getMessage());
         }
 
         /*
-        * 상위 몇 퍼?
-        * */
+         * 상위 몇 퍼?
+         * */
 
         // 전체 개수
         long totalCount = specificationEvaluationRepository.count();
@@ -299,9 +258,120 @@ public class MemberSpecificationService {
         return response;
     }
 
+
     /*
-    * d
-    * */
+     * u
+     * */
+
+    /**
+     * 학력
+     */
+    @Transactional
+    public void updateEducation(Long memberId, Long educationId, EducationRequestDTO educationRequestDTO) {
+        memberEducationDeleter.delete(memberId, educationId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[updateEducation][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+        memberEducationCreator.create(memberSpec, educationRequestDTO);
+
+    }
+
+    /**
+     * 어학
+     */
+    @Transactional
+    public void updateLanguageSkill(Long memberId, Long languageSillId, LanguageSkillRequestDTO.LanguageSkill languageSkillRequestDTO) {
+
+        memberLanguageSkillDeleter.delete(memberId, languageSillId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[updateLanguageSkill][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        memberLanguageSkillCreator.create(memberSpec, languageSkillRequestDTO);
+
+    }
+
+
+    /**
+     * 자격증
+     */
+    @Transactional
+    public void updateCertification(Long memberId, Long certificationId, CertificationRequestDTO.Certification certificationRequestDTO) {
+
+        memberCertificationDeleter.delete(memberId, certificationId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[updateCertification][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        memberCertificationCreator.create(memberSpec, certificationRequestDTO);
+
+    }
+
+    /**
+     * 경력사항
+     */
+    @Transactional
+    public void updateCareer(Long memberId, Long careerId, CareerRequestDTO.Career careerRequestDTO) {
+
+        memberCareerDeleter.delete(memberId, careerId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[updateCareer][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        memberCareerCreator.create(memberSpec, careerRequestDTO);
+    }
+
+    /**
+     * 수상
+     */
+    @Transactional
+    public void updateAward(Long memberId, Long awardId, AwardCreateDTO.Award awardCreateDTO) {
+
+        memberAwardDeleter.delete(memberId, awardId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[updateAward][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        memberAwardCreator.create(memberSpec, awardCreateDTO);
+    }
+
+    /**
+     * 경험
+     */
+    @Transactional
+    public void updateExperience(Long memberId, Long experienceId, ExperienceRequestDTO.Experience experienceRequestDTO) {
+
+        memberExperienceDeleter.delete(memberId, experienceId);
+
+        MemberSpecification memberSpec = memberSpecificationRepository.findByMemberIdId(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[updateExperience][스펙 없음.][memberId= {}]", memberId);
+                    return new NotFoundException(SPEC_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        memberExperienceCreator.create(memberSpec, experienceRequestDTO);
+    }
+
+
+
+    /*
+     * d
+     * */
 
 
     /**
@@ -309,7 +379,7 @@ public class MemberSpecificationService {
      */
 
     @Transactional
-    public void deleteMemberSpecification(Long memberId){
+    public void deleteMemberSpecification(Long memberId) {
 
         MemberSpecification memberSpecification = memberSpecificationRepository.findByMemberIdId(memberId)
                 .orElseThrow(() -> {
@@ -321,48 +391,48 @@ public class MemberSpecificationService {
 
 
         /*
-        * 평가
-        * */
+         * 평가
+         * */
 
         specificationEvaluationRepository.deleteByMemberSpecificationId(memberSpecificationId);
 
         /*
-        * 경험
-        * */
+         * 경험
+         * */
 
         memberExperienceRepository.deleteByMemberSpecificationId(memberSpecificationId);
 
         /*
-        * 수상
-        * */
+         * 수상
+         * */
 
         memberAwardRepository.deleteByMemberSpecificationId(memberSpecificationId);
 
         /*
-        * 경력
-        * */
+         * 경력
+         * */
 
         memberCareerRepository.deleteByMemberSpecificationId(memberSpecificationId);
 
         /*
-        * 자격증 -> 이상함
-        * */
+         * 자격증 -> 이상함
+         * */
 
         memberCertificationRepository.deleteByMemberSpecificationId(memberSpecificationId);
 
         /*
-        * 어학
-        * */
+         * 어학
+         * */
 
         memberLanguageSkillRepository.deleteByMemberSpecificationId(memberSpecificationId);
 
 
         /*
-        * 학력
-        * */
+         * 학력
+         * */
 
         memberEducationRepository.findByMemberSpecificationId(memberSpecificationId)
-                .ifPresent((education)->{
+                .ifPresent((education) -> {
                     Long educationId = education.getId();
 
                     memberMajorRepository.deleteByMemberEducationId(educationId);
@@ -374,12 +444,103 @@ public class MemberSpecificationService {
 
 
         /*
-        * 스펙
-        * */
+         * 스펙
+         * */
 
         memberSpecificationRepository.delete(memberSpecification);
 
     }
 
+    /**
+     * 학력
+     */
+    @Transactional
+    public void deleteEducation(Long memberId, IdsDeleteRequestDTO requestDTO) {
+
+        List<Long> ids = Optional.ofNullable(requestDTO.ids()).orElse(List.of());
+
+        for (Long id : ids) {
+            memberEducationDeleter.delete(memberId, id);
+        }
+
+    }
+
+    /**
+     * 어학
+     */
+    @Transactional
+    public void deleteLanguageSkill(Long memberId, IdsDeleteRequestDTO requestDTO) {
+
+        List<Long> ids = Optional.ofNullable(requestDTO.ids()).orElse(List.of());
+
+
+        for (Long id : ids) {
+            memberLanguageSkillDeleter.delete(memberId, id);
+        }
+
+    }
+
+
+    /**
+     * 자격증
+     */
+    @Transactional
+    public void deleteCertification(Long memberId, IdsDeleteRequestDTO requestDTO) {
+
+        List<Long> ids = Optional.ofNullable(requestDTO.ids()).orElse(List.of());
+
+
+        for (Long id : ids) {
+            memberCertificationDeleter.delete(memberId, id);
+        }
+
+    }
+
+
+    /**
+     * 경력사항
+     */
+    @Transactional
+    public void deleteCareer(Long memberId, IdsDeleteRequestDTO requestDTO) {
+
+        List<Long> ids = Optional.ofNullable(requestDTO.ids()).orElse(List.of());
+
+
+        for (Long id : ids) {
+            memberCareerDeleter.delete(memberId, id);
+        }
+
+    }
+
+
+    /**
+     * 수상
+     */
+    @Transactional
+    public void deleteAward(Long memberId, IdsDeleteRequestDTO requestDTO) {
+
+        List<Long> ids = Optional.ofNullable(requestDTO.ids()).orElse(List.of());
+
+
+        for (Long id : ids) {
+            memberAwardDeleter.delete(memberId, id);
+        }
+
+    }
+
+
+    /**
+     * 경험
+     */
+    @Transactional
+    public void deleteExperience(Long memberId, IdsDeleteRequestDTO requestDTO) {
+
+        List<Long> ids = Optional.ofNullable(requestDTO.ids()).orElse(List.of());
+
+        for (Long id : ids) {
+            memberExperienceDeleter.delete(memberId, id);
+        }
+
+    }
 
 }

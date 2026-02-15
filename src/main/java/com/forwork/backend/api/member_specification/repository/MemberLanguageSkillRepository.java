@@ -8,14 +8,22 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberLanguageSkillRepository extends JpaRepository<MemberLanguageSkill, Long> {
 
     @Query("select l from MemberLanguageSkill l" +
             " where l.memberSpecification.id=:memberSpecificationId")
-    List<MemberLanguageSkill> findByMemberSpecificationId(@Param("memberSpecificationId")Long memberSpecificationId);
+    List<MemberLanguageSkill> findByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 
-    @Modifying @Transactional
+    @Query("select a from MemberLanguageSkill a" +
+            " join fetch a.memberSpecification ms" +
+            " join fetch ms.member" +
+            " where a.id=:id")
+    Optional<MemberLanguageSkill> findByIdWithMember(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
     @Query("delete from MemberLanguageSkill mls where mls.memberSpecification.id=:memberSpecificationId")
     void deleteByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 }

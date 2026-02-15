@@ -16,5 +16,12 @@ public interface MemberEducationRepository extends JpaRepository<MemberEducation
             " limit 1")
     Optional<MemberEducation> findByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 
+    @Query("select a from MemberEducation a" +
+            " join fetch a.memberSpecification ms" +
+            " join fetch ms.member" +
+            " where a.id=:id")
+    Optional<MemberEducation> findByIdWithMember(@Param("id") Long id);
+
+
     List<MemberEducation> findAllByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 }
