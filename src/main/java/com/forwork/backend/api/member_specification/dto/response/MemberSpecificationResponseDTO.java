@@ -28,6 +28,9 @@ public record MemberSpecificationResponseDTO(
 
 
     public record Education(
+            @Schema(description = "학력 id")
+            Long educationId,
+
             @Schema(description = "학교")
             String schoolName,
 
@@ -56,6 +59,7 @@ public record MemberSpecificationResponseDTO(
         public static Education of(MemberSpecificationDTO.Education dto) {
             if (dto == null) return null;
             return new Education(
+                    dto.educationId(),
                     dto.schoolName(),
                     dto.majors(),
                     dto.admissionDate(),
@@ -69,6 +73,9 @@ public record MemberSpecificationResponseDTO(
     }
 
     public record LanguageSkill(
+            @Schema(description = "어학 id")
+            Long languageSkillId,
+
             @Schema(description = "제목")
             String title,
 
@@ -78,6 +85,7 @@ public record MemberSpecificationResponseDTO(
 
         public static LanguageSkill of(MemberSpecificationDTO.LanguageSkill memberLanguageSkill) {
             return new LanguageSkill(
+                    memberLanguageSkill.languageSkillId(),
                     memberLanguageSkill.title(),
                     memberLanguageSkill.score()
             );
@@ -86,6 +94,8 @@ public record MemberSpecificationResponseDTO(
     }
 
     public record Certification(
+            @Schema(description = "certificationId")
+            Long certificationId,
 
             @Schema(description = "자격증 이름")
             String certificationName,
@@ -104,6 +114,7 @@ public record MemberSpecificationResponseDTO(
             if (dto == null) return null;
 
             return new Certification(
+                    dto.certificationId(),
                     dto.certificationName(),
                     dto.acquiredDate(),
                     dto.documentUrl()
@@ -113,6 +124,8 @@ public record MemberSpecificationResponseDTO(
     }
 
     public record Career(
+            @Schema(description = "경력 id")
+            Long careerId,
 
             @Schema(description = "회사명")
             String companyName,
@@ -143,6 +156,7 @@ public record MemberSpecificationResponseDTO(
             if (dto == null) return null;
 
             return new Career(
+                    dto.careerId(),
                     dto.companyName(),
                     dto.position(),
                     dto.startDate(),
@@ -154,6 +168,9 @@ public record MemberSpecificationResponseDTO(
     }
 
     public record Award(
+            @Schema(description = "수상 id")
+            Long awardId,
+
             @Schema(description = "수상명")
             String awardName,
 
@@ -175,6 +192,7 @@ public record MemberSpecificationResponseDTO(
             if (dto == null) return null;
 
             return new Award(
+                    dto.awardId(),
                     dto.awardName(),
                     dto.host(),
                     dto.acquiredDate(),
@@ -185,6 +203,9 @@ public record MemberSpecificationResponseDTO(
     }
 
     public record Experience(
+            @Schema(description = "경험 id")
+            Long experienceId,
+
             @Schema(description = "경험")
             String experience,
 
@@ -214,6 +235,7 @@ public record MemberSpecificationResponseDTO(
             if (dto == null) return null;
 
             return new Experience(
+                    dto.experienceId(),
                     dto.experience(),
                     dto.beforeImprovementRate(),
                     dto.afterImprovementRate(),

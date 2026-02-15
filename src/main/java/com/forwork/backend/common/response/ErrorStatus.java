@@ -122,6 +122,8 @@ public enum ErrorStatus {
     ORDER_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "해당 주문에 접근할 권한이 없습니다."),
     ARCHIVE_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "해당 아카이브에 접근할 권한이 없습니다."),
     RESUME_OWNER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "본인의 이력서만 수정/삭제할 수 있습니다."),
+    SPEC_ACCESS_DENIED_EXCEPTION(HttpStatus.FORBIDDEN, "스펙에 접근할 권한이 없습니다."),
+
 
 
 

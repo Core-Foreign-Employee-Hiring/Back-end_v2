@@ -16,12 +16,13 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Getter
 @Table(
-        name="member_education",
-        indexes = @Index(name="idx_member_specification_id", columnList = "member_specification_id")
+        name = "member_education",
+        indexes = @Index(name = "idx_member_specification_id", columnList = "member_specification_id")
 )
 public class MemberEducation extends BaseTimeEntity {
-    @Id @GeneratedValue(strategy= IDENTITY)
-    @Column(name="member_education_id")
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "member_education_id")
     private Long id;
 
     private String schoolName;        // 학교 이름
@@ -30,7 +31,16 @@ public class MemberEducation extends BaseTimeEntity {
     private Double earnedScore;       // 내 학점
     private Double maxScore;          // 총점
 
-    @ManyToOne(fetch=LAZY)
-    @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_specification_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private MemberSpecification memberSpecification;
+
+
+    void update(String schoolName, String admissionDate, String graduationDate, Double earnedScore, Double maxScore) {
+        this.schoolName = schoolName;
+        this.admissionDate = admissionDate;
+        this.graduationDate = graduationDate;
+        this.earnedScore = earnedScore;
+        this.maxScore = maxScore;
+    }
 }

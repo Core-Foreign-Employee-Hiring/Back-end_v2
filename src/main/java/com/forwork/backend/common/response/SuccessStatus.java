@@ -115,6 +115,8 @@ public enum SuccessStatus {
     DELETE_SPEC_SUCCESS(HttpStatus.OK, "스펙 삭제 성공"),
     RESUME_SELECTION_UPDATE_SUCCESS(HttpStatus.OK, "이력서 항목이 업데이트되었습니다."),
     RESUME_DELETE_SUCCESS(HttpStatus.OK, "이력서가 삭제되었습니다."),
+    UPDATE_SPEC_SUCCESS(HttpStatus.OK, "스펙 수정 성공"),
+
 
 
 

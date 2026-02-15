@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberCertificationRepository extends JpaRepository<MemberCertification, Long> {
 
@@ -15,7 +16,14 @@ public interface MemberCertificationRepository extends JpaRepository<MemberCerti
             " where c.memberSpecification.id=:memberSpecificationId")
     List<MemberCertification> findByMemberSpecification(@Param("memberSpecificationId") Long memberSpecificationId);
 
-    @Modifying @Transactional
+    @Query("select a from MemberCertification a" +
+            " join fetch a.memberSpecification ms" +
+            " join fetch ms.member" +
+            " where a.id=:id")
+    Optional<MemberCertification> findByIdWithMember(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
     @Query("delete from MemberCertification mc where mc.memberSpecification.id=:memberSpecificationId")
     void deleteByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 }

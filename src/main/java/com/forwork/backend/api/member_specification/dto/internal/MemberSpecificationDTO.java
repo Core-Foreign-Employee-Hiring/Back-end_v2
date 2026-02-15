@@ -17,6 +17,7 @@ public record MemberSpecificationDTO(
 
 
     public record Education(
+            Long educationId,
             String schoolName,
             List<String> majors,
             String admissionDate,  // yyyy-MM
@@ -29,6 +30,7 @@ public record MemberSpecificationDTO(
 
 
             return new Education(
+                    education.getId(),
                     education.getSchoolName(),
                     majors,
                     education.getAdmissionDate(),
@@ -41,12 +43,14 @@ public record MemberSpecificationDTO(
     }
 
     public record LanguageSkill(
+            Long languageSkillId,
             String title,
             String score
     ) {
 
         public static LanguageSkill of(MemberLanguageSkill memberLanguageSkill) {
             return new LanguageSkill(
+                    memberLanguageSkill.getId(),
                     memberLanguageSkill.getTitle(),
                     memberLanguageSkill.getScore()
             );
@@ -54,12 +58,14 @@ public record MemberSpecificationDTO(
     }
 
     public record Certification(
+            Long certificationId,
             String certificationName,
             String acquiredDate,
             String documentUrl
     ) {
         public static Certification of(MemberCertification entity) {
             return new Certification(
+                    entity.getId(),
                     entity.getCertificationName(),
                     entity.getAcquiredDate(),
                     entity.getDocumentUrl()
@@ -69,6 +75,7 @@ public record MemberSpecificationDTO(
     }
 
     public record Career(
+            Long careerId,
             String companyName,
             String position,
             String startDate,  // yyyy-MM
@@ -79,6 +86,7 @@ public record MemberSpecificationDTO(
 
         public static Career of(MemberCareer entity) {
             return new Career(
+                    entity.getId(),
                     entity.getCompanyName(),
                     entity.getPosition(),
                     entity.getStartDate(),
@@ -90,6 +98,7 @@ public record MemberSpecificationDTO(
     }
 
     public record Award(
+            Long awardId,
             String awardName,
             String host,
             String acquiredDate,
@@ -98,6 +107,7 @@ public record MemberSpecificationDTO(
     ) {
         public static Award of(MemberAward entity) {
             return new Award(
+                    entity.getId(),
                     entity.getAwardName(),
                     entity.getHost(),
                     entity.getAcquiredDate(),
@@ -108,6 +118,7 @@ public record MemberSpecificationDTO(
     }
 
     public record Experience(
+            Long experienceId,
             String experience,
             Double beforeImprovementRate,
             Double afterImprovementRate,
@@ -117,6 +128,7 @@ public record MemberSpecificationDTO(
     ) {
         public static Experience of(MemberExperience entity) {
             return new Experience(
+                    entity.getId(),
                     entity.getExperience(),
                     entity.getBeforeImprovementRate(),
                     entity.getAfterImprovementRate(),

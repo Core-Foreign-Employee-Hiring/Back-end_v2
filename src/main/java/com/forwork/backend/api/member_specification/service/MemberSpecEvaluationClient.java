@@ -46,7 +46,7 @@ public class MemberSpecEvaluationClient {
         // 3) AI 서버 호출
         ResponseEntity<MemberSpecEvaluationExternalResponseDTO> response =
                 memberSpecRestTemplate.exchange(
-                        baseUrl + "/analysis",
+                        baseUrl + "/specs/analyze ",
                         HttpMethod.POST,
                         entity,
                         MemberSpecEvaluationExternalResponseDTO.class

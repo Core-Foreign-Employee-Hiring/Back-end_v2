@@ -16,15 +16,15 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Builder
 @AllArgsConstructor
 @Getter
-
 public class MemberSpecification extends BaseTimeEntity {
-    @Id @GeneratedValue(strategy= IDENTITY)
-    @Column(name="member_specification_id")
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "member_specification_id")
     private Long id;
 
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name="member_id",
+    @JoinColumn(name = "member_id",
             foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT)
     )
     private Member member;

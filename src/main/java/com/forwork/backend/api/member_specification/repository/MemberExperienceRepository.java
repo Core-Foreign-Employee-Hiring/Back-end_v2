@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberExperienceRepository extends JpaRepository<MemberExperience, Long> {
 
@@ -15,7 +16,14 @@ public interface MemberExperienceRepository extends JpaRepository<MemberExperien
             " where e.memberSpecification.id=:memberSpecificationId")
     List<MemberExperience> findByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 
-    @Modifying @Transactional
+    @Query("select a from MemberExperience a" +
+            " join fetch a.memberSpecification ms" +
+            " join fetch ms.member" +
+            " where a.id=:id")
+    Optional<MemberExperience> findByIdWithMember(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
     @Query("delete from MemberExperience me where me.memberSpecification.id=:memberSpecificationId")
     void deleteByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 }
