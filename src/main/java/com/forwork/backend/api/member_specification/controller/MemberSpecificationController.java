@@ -284,7 +284,7 @@ public class MemberSpecificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "스펙에 접근할 권한이 없습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 정보를 찾을 수 없습니다."),
     })
-    @DeleteMapping("/language-skill")
+    @DeleteMapping("/language")
     public ResponseEntity<ApiResponse<Void>> deleteLanguageSkill(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @RequestBody IdsDeleteRequestDTO requestDTO) {
 
