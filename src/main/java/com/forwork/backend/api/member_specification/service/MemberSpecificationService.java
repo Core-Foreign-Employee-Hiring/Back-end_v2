@@ -2,6 +2,7 @@ package com.forwork.backend.api.member_specification.service;
 
 import com.forwork.backend.api.member_specification.dto.external.response.MemberSpecEvaluationExternalResponseDTO;
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
+import com.forwork.backend.api.member_specification.dto.internal.SpecificationSnapshotDTO;
 import com.forwork.backend.api.member_specification.entity.*;
 import com.forwork.backend.api.member_specification.repository.*;
 import com.forwork.backend.common.exception.NotFoundException;
@@ -185,6 +186,88 @@ public class MemberSpecificationService {
                 .toList();
 
         experienceSnapshotRepository.saveAll(snapshots);
+    }
+
+
+
+    /*
+    * read
+    * */
+
+    public SpecificationSnapshotDTO getSpecSnapshot(Long specEvaluationId) {
+        /*
+         * 학력
+         * */
+
+        SpecificationSnapshotDTO.Education education =
+                educationSnapshotRepository.findBySpecEvaluationId(specEvaluationId)
+                        .map(memberEducation -> {
+                            // 전공 조회
+                            List<String> majors = majorSnapshotRepository.findAllByEducationId(memberEducation.getId());
+                            return SpecificationSnapshotDTO.Education.of(memberEducation, majors);
+                        })
+                        .orElse(null);
+
+        /*
+         * 어학
+         * */
+
+        List<SpecificationSnapshotDTO.LanguageSkill> languageSkills = languageSkillSnapshotRepository.findBySpecEvaluationId(specEvaluationId).stream()
+                .map(SpecificationSnapshotDTO.LanguageSkill::of)
+                .toList();
+
+
+        /*
+         * 자격증
+         * */
+
+        List<CertificationSnapshot> memberCertifications = certificationSnapshotRepository.findBySpecEvaluationId(specEvaluationId);
+
+        List<SpecificationSnapshotDTO.Certification> certifications = memberCertifications.stream()
+                .map(SpecificationSnapshotDTO.Certification::of)
+                .toList();
+
+        /*
+         * 경력
+         * */
+
+        List<CareerSnapshot> memberCareers = careerSnapshotRepository.findBySpecEvaluationId(specEvaluationId);
+
+        List<SpecificationSnapshotDTO.Career> careers = memberCareers.stream()
+                .map(SpecificationSnapshotDTO.Career::of)
+                .toList();
+
+
+        /*
+         * 수상
+         * */
+        List<AwardSnapshot> memberAwards = awardSnapshotRepository.findBySpecEvaluationId(specEvaluationId);
+
+        List<SpecificationSnapshotDTO.Award> awards = memberAwards.stream()
+                .map(SpecificationSnapshotDTO.Award::of)
+                .toList();
+
+        /*
+         * 경험
+         * */
+
+        List<ExperienceSnapshot> memberExperiences = experienceSnapshotRepository.findBySpecEvaluationId(specEvaluationId);
+
+        List<SpecificationSnapshotDTO.Experience> experiences = memberExperiences.stream()
+                .map(SpecificationSnapshotDTO.Experience::of)
+                .toList();
+
+        SpecificationSnapshotDTO response = SpecificationSnapshotDTO.of(
+                specEvaluationId,
+                education,
+                languageSkills,
+                certifications,
+                careers,
+                awards,
+                experiences
+        );
+
+        return response;
     }
 
 }

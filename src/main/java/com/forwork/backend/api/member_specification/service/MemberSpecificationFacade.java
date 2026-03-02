@@ -2,6 +2,7 @@ package com.forwork.backend.api.member_specification.service;
 
 import com.forwork.backend.api.member_specification.dto.external.response.MemberSpecEvaluationExternalResponseDTO;
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
+import com.forwork.backend.api.member_specification.dto.internal.SpecificationSnapshotDTO;
 import com.forwork.backend.api.member_specification.dto.projection.SpecificationEvaluationRankProjection;
 import com.forwork.backend.api.member_specification.dto.request.*;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecEvaluationResponseDTO;
@@ -280,6 +281,32 @@ public class MemberSpecificationFacade {
 
         PageResponseDTO<SpecEvaluationPageResponse> response = PageResponseDTO.of(map);
 
+        return response;
+    }
+
+    /**
+     * 스펙 평가 id로 스펙 조회
+     */
+    public MemberSpecificationResponseDTO getSpecSnapshot(Long memberId, Long specEvaluationId) {
+        SpecificationEvaluation specificationEvaluation = specificationEvaluationRepository.findBySpecificationEvaluationIdWithMember(specEvaluationId)
+                .orElseThrow(() -> {
+                    log.warn("[getSpecSnapshot][스펙 평가 없음.][specEvaluationId= {}]", specEvaluationId);
+                    return new NotFoundException(SPEC_EVALUATION_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        Long specOwnerId = specificationEvaluation.getMemberSpecification().getMember().getId();
+        if (!memberId.equals(specOwnerId)) {
+
+            log.warn("[getSpecSnapshot][접근 권한 없음.][요청자(memberId={}) ≠ 소유자(specEvaluationId={}, specOwnerId={})]",
+                    memberId, specEvaluationId, specOwnerId);
+            throw new UnauthorizedException(SPEC_EVALUATION_NOT_OWNER_EXCEPTION.getMessage());
+        }
+
+
+        SpecificationSnapshotDTO specSnapshot = memberSpecificationService.getSpecSnapshot(specEvaluationId);
+
+        MemberSpecificationResponseDTO response = MemberSpecificationResponseDTO.of(specSnapshot);
         return response;
     }
 
