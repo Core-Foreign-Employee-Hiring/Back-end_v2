@@ -34,6 +34,7 @@ public class SpecificationEvaluation {
     private Integer score;
     @Column(columnDefinition = "LONGTEXT")
     private String analysis;
+    private String specName;
 
     @ManyToOne(fetch=LAZY)
     @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
