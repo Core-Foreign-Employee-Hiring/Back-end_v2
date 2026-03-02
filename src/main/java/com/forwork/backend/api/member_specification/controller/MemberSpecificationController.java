@@ -3,7 +3,7 @@ package com.forwork.backend.api.member_specification.controller;
 import com.forwork.backend.api.member_specification.dto.request.*;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecEvaluationResponseDTO;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecificationResponseDTO;
-import com.forwork.backend.api.member_specification.service.MemberSpecificationService;
+import com.forwork.backend.api.member_specification.service.MemberSpecificationFacade;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.SuccessStatus;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/member/specification")
 @RequiredArgsConstructor
 public class MemberSpecificationController {
-    private final MemberSpecificationService memberSpecificationService;
+    private final MemberSpecificationFacade memberSpecificationFacade;
 
     /*
      * 스펙
@@ -42,7 +42,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> createEducation(@AuthenticationPrincipal SecurityMember securityMember,
                                                              @Valid @RequestBody EducationRequestDTO requestDTO) {
 
-        memberSpecificationService.createEducation(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.createEducation(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
@@ -57,7 +57,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> createLanguageSkill(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @Valid @RequestBody LanguageSkillRequestDTO requestDTO) {
 
-        memberSpecificationService.createLanguageSkill(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.createLanguageSkill(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
@@ -72,7 +72,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> createCertification(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @Valid @RequestBody CertificationRequestDTO requestDTO) {
 
-        memberSpecificationService.createCertification(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.createCertification(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
@@ -87,7 +87,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> createCareer(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @Valid @RequestBody CareerRequestDTO requestDTO) {
 
-        memberSpecificationService.createCareer(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.createCareer(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
@@ -102,7 +102,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> createAward(@AuthenticationPrincipal SecurityMember securityMember,
                                                          @Valid @RequestBody AwardCreateDTO requestDTO) {
 
-        memberSpecificationService.createAward(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.createAward(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
@@ -117,7 +117,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> createExperience(@AuthenticationPrincipal SecurityMember securityMember,
                                                               @Valid @RequestBody ExperienceRequestDTO requestDTO) {
 
-        memberSpecificationService.createExperience(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.createExperience(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.CREATE_SPEC_SUCCESS);
     }
 
@@ -135,7 +135,7 @@ public class MemberSpecificationController {
     @GetMapping
     public ResponseEntity<ApiResponse<MemberSpecificationResponseDTO>> getMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember) {
 
-        MemberSpecificationResponseDTO response = memberSpecificationService.getMemberSpecification(securityMember.getId());
+        MemberSpecificationResponseDTO response = memberSpecificationFacade.getMemberSpecification(securityMember.getId());
 
         return ApiResponse.success(SuccessStatus.GET_MEMBER_SPECIFICATION_SUCCESS, response);
     }
@@ -156,7 +156,7 @@ public class MemberSpecificationController {
                                                              @PathVariable("educationId") Long educationId,
                                                              @Valid @RequestBody EducationRequestDTO requestDTO) {
 
-        memberSpecificationService.updateEducation(securityMember.getId(), educationId, requestDTO);
+        memberSpecificationFacade.updateEducation(securityMember.getId(), educationId, requestDTO);
         return ApiResponse.success_only(SuccessStatus.UPDATE_SPEC_SUCCESS);
     }
 
@@ -172,7 +172,7 @@ public class MemberSpecificationController {
                                                                  @PathVariable("languageSkillId") Long languageSkillId,
                                                                  @Valid @RequestBody LanguageSkillRequestDTO.LanguageSkill requestDTO) {
 
-        memberSpecificationService.updateLanguageSkill(securityMember.getId(), languageSkillId, requestDTO);
+        memberSpecificationFacade.updateLanguageSkill(securityMember.getId(), languageSkillId, requestDTO);
         return ApiResponse.success_only(SuccessStatus.UPDATE_SPEC_SUCCESS);
     }
 
@@ -188,7 +188,7 @@ public class MemberSpecificationController {
                                                                  @PathVariable("certificationId") Long certificationId,
                                                                  @Valid @RequestBody CertificationRequestDTO.Certification requestDTO) {
 
-        memberSpecificationService.updateCertification(securityMember.getId(), certificationId, requestDTO);
+        memberSpecificationFacade.updateCertification(securityMember.getId(), certificationId, requestDTO);
         return ApiResponse.success_only(SuccessStatus.UPDATE_SPEC_SUCCESS);
     }
 
@@ -204,7 +204,7 @@ public class MemberSpecificationController {
                                                           @PathVariable("careerId") Long careerId,
                                                           @Valid @RequestBody CareerRequestDTO.Career requestDTO) {
 
-        memberSpecificationService.updateCareer(securityMember.getId(), careerId, requestDTO);
+        memberSpecificationFacade.updateCareer(securityMember.getId(), careerId, requestDTO);
         return ApiResponse.success_only(SuccessStatus.UPDATE_SPEC_SUCCESS);
     }
 
@@ -220,7 +220,7 @@ public class MemberSpecificationController {
                                                          @PathVariable("awardId") Long awardId,
                                                          @Valid @RequestBody AwardCreateDTO.Award requestDTO) {
 
-        memberSpecificationService.updateAward(securityMember.getId(), awardId, requestDTO);
+        memberSpecificationFacade.updateAward(securityMember.getId(), awardId, requestDTO);
         return ApiResponse.success_only(SuccessStatus.UPDATE_SPEC_SUCCESS);
     }
 
@@ -236,7 +236,7 @@ public class MemberSpecificationController {
                                                               @PathVariable("experienceId") Long experienceId,
                                                               @Valid @RequestBody ExperienceRequestDTO.Experience requestDTO) {
 
-        memberSpecificationService.updateExperience(securityMember.getId(), experienceId, requestDTO);
+        memberSpecificationFacade.updateExperience(securityMember.getId(), experienceId, requestDTO);
         return ApiResponse.success_only(SuccessStatus.UPDATE_SPEC_SUCCESS);
     }
 
@@ -255,7 +255,7 @@ public class MemberSpecificationController {
     @DeleteMapping
     public ResponseEntity<ApiResponse<Void>> deleteMemberSpecification(@AuthenticationPrincipal SecurityMember securityMember) {
 
-        memberSpecificationService.deleteMemberSpecification(securityMember.getId());
+        memberSpecificationFacade.deleteMemberSpecification(securityMember.getId());
 
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
@@ -272,7 +272,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> deleteEducation(@AuthenticationPrincipal SecurityMember securityMember,
                                                              @RequestBody IdsDeleteRequestDTO requestDTO) {
 
-        memberSpecificationService.deleteEducation(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.deleteEducation(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
 
@@ -288,7 +288,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> deleteLanguageSkill(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @RequestBody IdsDeleteRequestDTO requestDTO) {
 
-        memberSpecificationService.deleteLanguageSkill(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.deleteLanguageSkill(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
 
@@ -305,7 +305,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> deleteCertification(@AuthenticationPrincipal SecurityMember securityMember,
                                                                  @RequestBody IdsDeleteRequestDTO requestDTO) {
 
-        memberSpecificationService.deleteCertification(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.deleteCertification(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
 
@@ -321,7 +321,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> deleteCareer(@AuthenticationPrincipal SecurityMember securityMember,
                                                           @RequestBody IdsDeleteRequestDTO requestDTO) {
 
-        memberSpecificationService.deleteCareer(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.deleteCareer(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
 
@@ -337,7 +337,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> deleteAward(@AuthenticationPrincipal SecurityMember securityMember,
                                                          @RequestBody IdsDeleteRequestDTO requestDTO) {
 
-        memberSpecificationService.deleteAward(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.deleteAward(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
 
@@ -353,7 +353,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<Void>> deleteExperience(@AuthenticationPrincipal SecurityMember securityMember,
                                                               @RequestBody IdsDeleteRequestDTO requestDTO) {
 
-        memberSpecificationService.deleteExperience(securityMember.getId(), requestDTO);
+        memberSpecificationFacade.deleteExperience(securityMember.getId(), requestDTO);
         return ApiResponse.success_only(SuccessStatus.DELETE_SPEC_SUCCESS);
     }
 
@@ -375,9 +375,10 @@ public class MemberSpecificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "스펙 평가 완료"),
     })
     @PostMapping("/evaluation")
-    public ResponseEntity<ApiResponse<Long>> evaluate(@AuthenticationPrincipal SecurityMember securityMember) {
+    public ResponseEntity<ApiResponse<Long>> evaluate(@AuthenticationPrincipal SecurityMember securityMember,
+                                                      @Valid @RequestBody SpecificationEvaluationRequestDTO request) {
 
-        Long response = memberSpecificationService.evaluateSpecification(securityMember.getId());
+        Long response = memberSpecificationFacade.evaluateSpecification(securityMember.getId(), request);
 
         return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_SUCCESS, response);
     }
@@ -400,7 +401,7 @@ public class MemberSpecificationController {
     public ResponseEntity<ApiResponse<MemberSpecEvaluationResponseDTO>> getSpecEvaluation(@AuthenticationPrincipal SecurityMember securityMember,
                                                                                           @PathVariable("spec-evaluation-id") Long specEvaluationId) {
 
-        MemberSpecEvaluationResponseDTO response = memberSpecificationService.getSpecEvaluation(securityMember.getId(), specEvaluationId);
+        MemberSpecEvaluationResponseDTO response = memberSpecificationFacade.getSpecEvaluation(securityMember.getId(), specEvaluationId);
 
         return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_FIND_SUCCESS, response);
     }
