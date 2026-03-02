@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static com.forwork.backend.common.response.ErrorStatus.SPEC_NOT_FOUND_EXCEPTION;
@@ -58,6 +60,7 @@ public class MemberSpecificationService {
                 .score(score)
                 .analysis(memberSpecEvaluationExternalResponseDTO.analysis())
                 .specName(specName)
+                .evaluatedDate(LocalDate.now(ZoneId.of("Asia/Seoul")))
                 .memberSpecification(memberSpecification)
                 .build();
 
