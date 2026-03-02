@@ -2,21 +2,29 @@ package com.forwork.backend.api.member_specification.service;
 
 import com.forwork.backend.api.member_specification.dto.external.response.MemberSpecEvaluationExternalResponseDTO;
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
+import com.forwork.backend.api.member_specification.dto.projection.SpecificationEvaluationRankProjection;
 import com.forwork.backend.api.member_specification.dto.request.*;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecEvaluationResponseDTO;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecificationResponseDTO;
+import com.forwork.backend.api.member_specification.dto.response.SpecEvaluationPageResponse;
 import com.forwork.backend.api.member_specification.entity.MemberSpecification;
 import com.forwork.backend.api.member_specification.entity.SpecificationEvaluation;
 import com.forwork.backend.api.member_specification.repository.*;
+import com.forwork.backend.common.dto.PageResponseDTO;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.forwork.backend.common.response.ErrorStatus.*;
 
@@ -232,6 +240,45 @@ public class MemberSpecificationFacade {
         double topPercent = 100.0 * ((double) higherThan / totalCount);
 
         MemberSpecEvaluationResponseDTO response = MemberSpecEvaluationResponseDTO.of(specificationEvaluation, topPercent);
+
+        return response;
+    }
+
+    /**
+     * 스펙 평가 리스트 조회
+     */
+    public PageResponseDTO<SpecEvaluationPageResponse> getSpecEvaluations(Long memberId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<SpecificationEvaluation> specs = specificationEvaluationRepository.findSpecByMemberId(memberId, pageable);
+
+
+        /*
+         * 상위 몇 퍼?
+         * */
+
+        List<Integer> scores = specs.getContent().stream().map(SpecificationEvaluation::getScore).toList();
+
+        List<SpecificationEvaluationRankProjection> ranksWithPercent = specificationEvaluationRepository.countHigherThan(scores);
+
+        // 로그 찍기
+        ranksWithPercent.forEach(p ->
+                log.info("score={}, count={}", p.getScore(), p.getCount())
+        );
+
+        long totalCount = specificationEvaluationRepository.count();
+
+
+        Map<Integer, Double> topPercentMap = ranksWithPercent.stream()
+                .collect(Collectors.toMap(
+                        SpecificationEvaluationRankProjection::getScore,
+                        p -> 100.0 * ((double) (p.getCount()) / totalCount)
+                ));
+
+
+        Page<SpecEvaluationPageResponse> map = specs.map(p -> SpecEvaluationPageResponse.of(p, topPercentMap.get(p.getScore())));
+
+        PageResponseDTO<SpecEvaluationPageResponse> response = PageResponseDTO.of(map);
 
         return response;
     }
