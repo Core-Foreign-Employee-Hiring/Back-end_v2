@@ -12,7 +12,7 @@ public interface MemberEducationRepository extends JpaRepository<MemberEducation
 
     @Query("select e from MemberEducation e" +
             " where e.memberSpecification.id=:memberSpecificationId" +
-            " order by e.id asc" +
+            " order by e.id desc" +
             " limit 1")
     Optional<MemberEducation> findByMemberSpecificationId(@Param("memberSpecificationId") Long memberSpecificationId);
 

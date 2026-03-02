@@ -1,6 +1,7 @@
 package com.forwork.backend.api.member_specification.dto.response;
 
 import com.forwork.backend.api.member_specification.dto.internal.MemberSpecificationDTO;
+import com.forwork.backend.api.member_specification.dto.internal.SpecificationSnapshotDTO;
 import com.forwork.backend.api.recruit.enums.ContractType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -69,6 +70,19 @@ public record MemberSpecificationResponseDTO(
             );
         }
 
+        public static Education of(SpecificationSnapshotDTO.Education dto) {
+            if (dto == null) return null;
+            return new Education(
+                    dto.educationId(),
+                    dto.schoolName(),
+                    dto.majors(),
+                    dto.admissionDate(),
+                    dto.graduationDate(),
+                    dto.earnedScore(),
+                    dto.maxScore()
+            );
+        }
+
 
     }
 
@@ -84,6 +98,14 @@ public record MemberSpecificationResponseDTO(
     ) {
 
         public static LanguageSkill of(MemberSpecificationDTO.LanguageSkill memberLanguageSkill) {
+            return new LanguageSkill(
+                    memberLanguageSkill.languageSkillId(),
+                    memberLanguageSkill.title(),
+                    memberLanguageSkill.score()
+            );
+        }
+
+        public static LanguageSkill of(SpecificationSnapshotDTO.LanguageSkill memberLanguageSkill) {
             return new LanguageSkill(
                     memberLanguageSkill.languageSkillId(),
                     memberLanguageSkill.title(),
@@ -111,6 +133,17 @@ public record MemberSpecificationResponseDTO(
     ) {
 
         public static Certification of(MemberSpecificationDTO.Certification dto) {
+            if (dto == null) return null;
+
+            return new Certification(
+                    dto.certificationId(),
+                    dto.certificationName(),
+                    dto.acquiredDate(),
+                    dto.documentUrl()
+            );
+        }
+
+        public static Certification of(SpecificationSnapshotDTO.Certification dto) {
             if (dto == null) return null;
 
             return new Certification(
@@ -165,6 +198,20 @@ public record MemberSpecificationResponseDTO(
                     dto.highlight()
             );
         }
+
+        public static Career of(SpecificationSnapshotDTO.Career dto) {
+            if (dto == null) return null;
+
+            return new Career(
+                    dto.careerId(),
+                    dto.companyName(),
+                    dto.position(),
+                    dto.startDate(),
+                    dto.endDate(),
+                    dto.contractType(),
+                    dto.highlight()
+            );
+        }
     }
 
     public record Award(
@@ -189,6 +236,19 @@ public record MemberSpecificationResponseDTO(
     ) {
 
         public static Award of(MemberSpecificationDTO.Award dto) {
+            if (dto == null) return null;
+
+            return new Award(
+                    dto.awardId(),
+                    dto.awardName(),
+                    dto.host(),
+                    dto.acquiredDate(),
+                    dto.description(),
+                    dto.documentUrl()
+            );
+        }
+
+        public static Award of(SpecificationSnapshotDTO.Award dto) {
             if (dto == null) return null;
 
             return new Award(
@@ -244,10 +304,46 @@ public record MemberSpecificationResponseDTO(
                     dto.endDate()
             );
         }
+
+        public static Experience of(SpecificationSnapshotDTO.Experience dto) {
+            if (dto == null) return null;
+
+            return new Experience(
+                    dto.experienceId(),
+                    dto.experience(),
+                    dto.beforeImprovementRate(),
+                    dto.afterImprovementRate(),
+                    dto.description(),
+                    dto.startDate(),
+                    dto.endDate()
+            );
+        }
     }
 
 
     public static MemberSpecificationResponseDTO of(MemberSpecificationDTO dto) {
+        return new MemberSpecificationResponseDTO(
+
+                Education.of(dto.education()),
+                dto.languageSkills().stream()
+                        .map(LanguageSkill::of)
+                        .toList(),
+                dto.certifications().stream()
+                        .map(Certification::of)
+                        .toList(),
+                dto.careers().stream()
+                        .map(Career::of)
+                        .toList(),
+                dto.awards().stream()
+                        .map(Award::of)
+                        .toList(),
+                dto.experiences().stream()
+                        .map(Experience::of)
+                        .toList()
+        );
+    }
+
+    public static MemberSpecificationResponseDTO of(SpecificationSnapshotDTO dto) {
         return new MemberSpecificationResponseDTO(
 
                 Education.of(dto.education()),

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -22,8 +24,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
         }
 )
 public class SpecificationEvaluation {
-    @Id @GeneratedValue(strategy= IDENTITY)
-    @Column(name="specification_evaluation_id")
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "specification_evaluation_id")
     private Long id;
 
     private Integer experience;
@@ -34,8 +37,10 @@ public class SpecificationEvaluation {
     private Integer score;
     @Column(columnDefinition = "LONGTEXT")
     private String analysis;
+    private String specName;
+    private LocalDate evaluatedDate;
 
-    @ManyToOne(fetch=LAZY)
-    @JoinColumn(name = "member_specification_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_specification_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private MemberSpecification memberSpecification;
 }
