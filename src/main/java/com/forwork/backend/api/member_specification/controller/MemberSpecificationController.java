@@ -3,11 +3,15 @@ package com.forwork.backend.api.member_specification.controller;
 import com.forwork.backend.api.member_specification.dto.request.*;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecEvaluationResponseDTO;
 import com.forwork.backend.api.member_specification.dto.response.MemberSpecificationResponseDTO;
+import com.forwork.backend.api.member_specification.dto.response.SpecEvaluationPageResponse;
 import com.forwork.backend.api.member_specification.service.MemberSpecificationFacade;
 import com.forwork.backend.common.config.security.SecurityMember;
+import com.forwork.backend.common.dto.PageResponseDTO;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -402,6 +406,28 @@ public class MemberSpecificationController {
                                                                                           @PathVariable("spec-evaluation-id") Long specEvaluationId) {
 
         MemberSpecEvaluationResponseDTO response = memberSpecificationFacade.getSpecEvaluation(securityMember.getId(), specEvaluationId);
+
+        return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_FIND_SUCCESS, response);
+    }
+
+    @Operation(
+            summary = "스펙 평가 리스트 조회 API (용범)",
+            description = "출력= MemberSpecEvaluationResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 평가 조회 성공"),
+    })
+    @GetMapping("/evaluation")
+    public ResponseEntity<ApiResponse<PageResponseDTO<SpecEvaluationPageResponse>>> getSpecEvaluation(
+            @AuthenticationPrincipal SecurityMember securityMember,
+
+            @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+
+            @Parameter(description = "페이지 크기", in = ParameterIn.QUERY)
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+
+        PageResponseDTO<SpecEvaluationPageResponse> response = memberSpecificationFacade.getSpecEvaluations(securityMember.getId(), page, size);
 
         return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_FIND_SUCCESS, response);
     }
