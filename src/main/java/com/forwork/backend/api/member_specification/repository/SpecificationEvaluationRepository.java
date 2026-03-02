@@ -22,6 +22,13 @@ public interface SpecificationEvaluationRepository extends JpaRepository<Specifi
 
 
     @Query("select se from SpecificationEvaluation se" +
+            " join fetch se.memberSpecification ms" +
+            " join fetch ms.member" +
+            " where se.id=:specEvaluationId")
+    Optional<SpecificationEvaluation> findBySpecificationEvaluationIdWithMember(@Param("specEvaluationId") Long specEvaluationId);
+
+
+    @Query("select se from SpecificationEvaluation se" +
             " join se.memberSpecification ms" +
             " join ms.member m" +
             " where m.id=:memberId" +
