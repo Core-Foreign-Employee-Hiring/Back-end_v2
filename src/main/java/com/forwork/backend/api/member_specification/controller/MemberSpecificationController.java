@@ -412,7 +412,7 @@ public class MemberSpecificationController {
 
     @Operation(
             summary = "스펙 평가 리스트 조회 API (용범)",
-            description = "출력= MemberSpecEvaluationResponseDTO"
+            description = "출력= SpecEvaluationPageResponse"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 평가 조회 성공"),
@@ -430,5 +430,23 @@ public class MemberSpecificationController {
         PageResponseDTO<SpecEvaluationPageResponse> response = memberSpecificationFacade.getSpecEvaluations(securityMember.getId(), page, size);
 
         return ApiResponse.success(SuccessStatus.SPEC_EVALUATION_FIND_SUCCESS, response);
+    }
+
+    @Operation(
+            summary = "스펙 평가에 해당하는 스펙 조회 API (용범)",
+            description = "출력= MemberSpecificationResponseDTO"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스펙 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "본인 스펙 평가가 아닙니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "스펙 평가 정보를 찾을 수 없습니다."),
+    })
+    @GetMapping("/evaluation/{spec-evaluation-id}/spec")
+    public ResponseEntity<ApiResponse<MemberSpecificationResponseDTO>> getSpecSnapshot(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                                          @PathVariable("spec-evaluation-id") Long specEvaluationId) {
+
+        MemberSpecificationResponseDTO response = memberSpecificationFacade.getSpecSnapshot(securityMember.getId(), specEvaluationId);
+
+        return ApiResponse.success(SuccessStatus.GET_MEMBER_SPECIFICATION_SUCCESS, response);
     }
 }
