@@ -32,14 +32,14 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final PassArchiveRepository passArchiveRepository;
     private final OrderPassArchiveRepository orderPassArchiveRepository;
-    private static final int MERCHANT_ORDER_THRESHOLD =10;
+    private static final int MERCHANT_ORDER_THRESHOLD = 10;
 
     /*
-    * c
-    * */
+     * c
+     * */
 
     @Transactional
-    public String createOrder(Long buyerId, OrderRequestDTO orderRequestDTO) {
+    public OrderResponseDTO createOrder(Long buyerId, OrderRequestDTO orderRequestDTO) {
         Member buyer = memberRepository.findById(buyerId)
                 .orElseThrow(() -> {
                     log.warn("[createOrder][멤버 없음.][buyerId={}]", buyerId);
@@ -71,11 +71,10 @@ public class OrderService {
         // merchantOrderId 생성
         String merchantOrderId = MerchantOrderIdGenerator.generate();
 
-        for(int i = 0; i< MERCHANT_ORDER_THRESHOLD; i++){
-            if(orderRepository.existsByMerchantOrderId(merchantOrderId)){
+        for (int i = 0; i < MERCHANT_ORDER_THRESHOLD; i++) {
+            if (orderRepository.existsByMerchantOrderId(merchantOrderId)) {
                 merchantOrderId = MerchantOrderIdGenerator.generate();
-            }
-            else{
+            } else {
                 break;
             }
         }
@@ -119,7 +118,10 @@ public class OrderService {
                     orderPassArchiveRepository.save(orderPassArchive);
                 });
 
-        return merchantOrderId;
+
+        OrderResponseDTO response = getOrder(buyerId, merchantOrderId);
+
+        return response;
     }
 
     private String createOrderName(List<PassArchive> passArchives) {
@@ -143,8 +145,8 @@ public class OrderService {
     }
 
     /*
-    * r
-    * */
+     * r
+     * */
 
     /**
      * 주문 정보 조회
@@ -164,7 +166,7 @@ public class OrderService {
                 });
 
         // 소유자 검증
-        if(!order.getBuyer().getId().equals(memberId)) {
+        if (!order.getBuyer().getId().equals(memberId)) {
             log.warn("[getOrder][소유자 이상해][memberId={}, buyerId= {}]", memberId, order.getBuyer().getId());
             throw new BadRequestException(ORDER_ACCESS_DENIED_EXCEPTION.getMessage());
         }
