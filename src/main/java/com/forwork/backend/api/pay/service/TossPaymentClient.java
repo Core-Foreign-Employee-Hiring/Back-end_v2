@@ -15,7 +15,6 @@ import com.forwork.backend.api.pay.exception.PaymentTimeoutException;
 import com.forwork.backend.api.pay.exception.PaymentUnknownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -33,33 +32,26 @@ import java.util.List;
 /**
  * 연결 타임아웃: 재시도 가능
  * 읽기 타임아웃: 읽기 작업, 멱등성이 보장된 갱신만 할 것.
- *
+ * <p>
  * 재시도 횟수: 계속 x 응답 시간도 길어짐. 1 ~ 2회 정도 그 이상이면 외부 시스템 문제 있다고 판단.
  * 재시도 간격: 즉시 할 경우 똑같은 문제로 타임아웃 -> 조금 기달렸다가 시도.
- *
+ * <p>
  * 재시도 요청이 많을 경우 외부 서비스 부하 -> 우리도 같이 느려짐. -> 동시 요청 제한 고려(벌크헤드 패턴 등).
  */
 
 @Slf4j
 @Component
-public class TossPaymentClient {
+public class TossPaymentClient extends TossClient {
     private static final String TOSS_PAYMENT_CONFIRM_URL = "/v1/payments/confirm";
     private static final String TOSS_PAYMENT_GET_URL = "/v1/payments/{paymentKey}";
     private static final String TOSS_PAYMENT_CANCEL_URL = "/v1/payments/{paymentKey}/cancel";
-    private final RestTemplate tossRestTemplate;
     private final ObjectMapper objectMapper;
-
-    @Value("${toss.payments.secret-key}")
-    private String secretKey;
-
-    @Value("${toss.payments.base-url}")
-    private String baseUrl;
 
     public TossPaymentClient(
             @Qualifier("tossRestTemplate") RestTemplate tossRestTemplate,
             ObjectMapper objectMapper
     ) {
-        this.tossRestTemplate = tossRestTemplate;
+        super(tossRestTemplate);
         this.objectMapper = objectMapper;
     }
 
@@ -68,7 +60,7 @@ public class TossPaymentClient {
      */
 
     @Retryable(
-            retryFor = { ResourceAccessException.class, HttpServerErrorException.class },
+            retryFor = {ResourceAccessException.class, HttpServerErrorException.class},
             maxAttempts = 3,
             backoff = @Backoff(
                     delay = 1000,
@@ -113,8 +105,8 @@ public class TossPaymentClient {
             String message;
             try {
                 JsonNode json = objectMapper.readTree(responseBody);
-                code= json.path("code").asText();
-                message= json.path("message").asText();
+                code = json.path("code").asText();
+                message = json.path("message").asText();
             } catch (Exception parseEx) {
                 // 파싱 실패 시에도 알 수 없는 예외 던짐
                 throw new PaymentUnknownException(status, "Failed to parse error response");
@@ -154,6 +146,7 @@ public class TossPaymentClient {
         }
         throw new PaymentTimeoutException(HttpStatus.resolve(e.getStatusCode().value()), message);
     }
+
     @Recover
     public PaymentDTO recoverConfirmPayment(PaymentException e, String paymentKey, String orderId, Long amount) {
         throw e;
@@ -162,11 +155,11 @@ public class TossPaymentClient {
 
     /**
      * 결제 조회 요청
-     *
+     * <p>
      * IN_PROGRESS: 승인 요청 x인 겨
      */
     @Retryable(
-            retryFor = { ResourceAccessException.class, HttpServerErrorException.class },
+            retryFor = {ResourceAccessException.class, HttpServerErrorException.class},
             maxAttempts = 3,
             backoff = @Backoff(
                     delay = 1000,
@@ -200,12 +193,12 @@ public class TossPaymentClient {
 
             String responseBody = e.getResponseBodyAsString();
             HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
-            String code ;
+            String code;
             String message;
             try {
                 JsonNode json = objectMapper.readTree(responseBody);
-                 code = json.path("code").asText();
-                 message = json.path("message").asText();
+                code = json.path("code").asText();
+                message = json.path("message").asText();
 
 
             } catch (Exception parseEx) {
@@ -256,7 +249,7 @@ public class TossPaymentClient {
      * TossPaymentStatus: CANCELED, ALREADY_CANCELED, RETRY
      */
     @Retryable(
-            retryFor = { ResourceAccessException.class, HttpServerErrorException.class },
+            retryFor = {ResourceAccessException.class, HttpServerErrorException.class},
             maxAttempts = 3,
             backoff = @Backoff(
                     delay = 1000,
