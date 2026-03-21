@@ -43,14 +43,12 @@ public class TossPaymentClient extends TossClient {
     private static final String TOSS_PAYMENT_CONFIRM_URL = "/v1/payments/confirm";
     private static final String TOSS_PAYMENT_GET_URL = "/v1/payments/{paymentKey}";
     private static final String TOSS_PAYMENT_CANCEL_URL = "/v1/payments/{paymentKey}/cancel";
-    private final ObjectMapper objectMapper;
 
     public TossPaymentClient(
             @Qualifier("tossRestTemplate") RestTemplate tossRestTemplate,
             ObjectMapper objectMapper
     ) {
-        super(tossRestTemplate);
-        this.objectMapper = objectMapper;
+        super(tossRestTemplate, objectMapper);
     }
 
     /**
