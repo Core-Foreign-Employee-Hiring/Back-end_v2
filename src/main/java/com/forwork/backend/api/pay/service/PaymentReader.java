@@ -49,4 +49,14 @@ public class PaymentReader {
 
         return totalSalesRevenue;
     }
+
+
+    /**
+     * 결제 내역 조회
+     */
+    public Page<Payment> getPaymentHistory(Long memberId, Pageable pageable) {
+        Page<Payment> response = paymentRepository.findByBuyerIdWithOrder(memberId, pageable);
+
+        return response;
+    }
 }

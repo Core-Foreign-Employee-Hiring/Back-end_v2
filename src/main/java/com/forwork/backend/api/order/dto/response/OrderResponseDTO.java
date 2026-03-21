@@ -30,23 +30,27 @@ public record OrderResponseDTO(
         @Schema(description = "이름")
         String name,
 
+        @Schema(description = "휴대폰 번호")
+        String phoneNumber,
+
         @Schema(description = "이메일")
         String email
 
 ) {
-        public static OrderResponseDTO of(Member buyer, Order order, PassArchive passArchive) {
-                String thumbnailUrl = passArchive.getThumbnail() == null ? null : passArchive.getThumbnail().getFileUrl();
-                return new OrderResponseDTO(
-                        order.getMerchantOrderId(),
-                        order.getOrderName(),
-                        thumbnailUrl,
-                        passArchive.getTitle(),
-                        passArchive.getOneLineReview(),
-                        1L,
-                        order.getAmount(),
-                        buyer.getName(),
-                        buyer.getEmail()
+    public static OrderResponseDTO of(Member buyer, Order order, PassArchive passArchive) {
+        String thumbnailUrl = passArchive.getThumbnail() == null ? null : passArchive.getThumbnail().getFileUrl();
+        return new OrderResponseDTO(
+                order.getMerchantOrderId(),
+                order.getOrderName(),
+                thumbnailUrl,
+                passArchive.getTitle(),
+                passArchive.getOneLineReview(),
+                1L,
+                order.getAmount(),
+                buyer.getName(),
+                buyer.getPhoneNumber(),
+                buyer.getEmail()
 
-                );
-        }
+        );
+    }
 }

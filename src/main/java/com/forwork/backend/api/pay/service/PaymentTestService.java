@@ -3,6 +3,7 @@ package com.forwork.backend.api.pay.service;
 import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
+import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.order.service.OrderService;
@@ -42,7 +43,7 @@ public class PaymentTestService {
      */
 
     @Transactional
-    public void requestConfirm(Long buyerId, Long archiveId){
+    public OrderResponseDTO requestConfirm(Long buyerId, Long archiveId) {
         // 멤버 조회
         Member buyer = memberRepository.findById(buyerId)
                 .orElseThrow(() -> {
@@ -58,17 +59,17 @@ public class PaymentTestService {
                 });
 
         /*
-        * 주문
-        * */
+         * 주문
+         * */
 
         // 주문 생성
-        String merchantOrderId = orderService.createOrder(buyerId, new OrderRequestDTO(List.of(archiveId)));
+        OrderResponseDTO order = orderService.createOrder(buyerId, new OrderRequestDTO(List.of(archiveId)));
+        String merchantOrderId = order.merchantOrderId();
 
 
         /*
-        * 결제
-        * */
-
+         * 결제
+         * */
 
 
         // 초기 결제 생성
@@ -97,5 +98,7 @@ public class PaymentTestService {
         );
 
         paymentProcessor.completePayment(paymentDTO);
+
+        return order;
     }
 }
