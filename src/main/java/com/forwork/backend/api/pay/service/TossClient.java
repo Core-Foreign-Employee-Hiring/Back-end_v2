@@ -23,7 +23,7 @@ public abstract class TossClient {
         this.objectMapper = objectMapper;
     }
 
-    public HttpHeaders createAuthHeaders() {
+    protected HttpHeaders createAuthHeaders() {
         String encodedAuth = Base64.getEncoder()
                 .encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
 
