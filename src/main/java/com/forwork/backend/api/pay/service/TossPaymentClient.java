@@ -25,8 +25,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -72,9 +70,7 @@ public class TossPaymentClient extends TossClient {
     public PaymentDTO confirmPayment(String paymentKey, String orderId, Long amount) {
         log.info("[confirmPayment][call]");
 
-        String encodedAuth = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic " + encodedAuth);
+        HttpHeaders headers = createAuthHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
 //        headers.set("TossPayments-Test-Code", "UNKNOWN_PAYMENT_ERROR");
@@ -171,9 +167,7 @@ public class TossPaymentClient extends TossClient {
     public PaymentDTO getPaymentByPaymentKey(String paymentKey) {
         log.info("[getPayment][call]");
 
-        String encodedAuth = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic " + encodedAuth);
+        HttpHeaders headers = createAuthHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
@@ -259,11 +253,7 @@ public class TossPaymentClient extends TossClient {
             )
     )
     public List<PaymentCancelDTO> cancelPayment(String paymentKey, String cancelReason) {
-        String encodedAuth = Base64.getEncoder()
-                .encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic " + encodedAuth);
+        HttpHeaders headers = createAuthHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         TossPaymentCancelRequestDTO request = new TossPaymentCancelRequestDTO(cancelReason, null);
