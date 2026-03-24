@@ -5,6 +5,7 @@ import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.order.dto.request.CashReceiptIssueRequest;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
+import com.forwork.backend.api.order.dto.response.CashReceiptResponse;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.entity.Order;
 import com.forwork.backend.api.order.entity.OrderPassArchive;
@@ -233,6 +234,40 @@ public class OrderService {
                 });
 
         OrderResponseDTO response = OrderResponseDTO.of(member, order, passArchive);
+
+        return response;
+    }
+
+    /**
+     * 현금영수증 조회
+     */
+
+    public CashReceiptResponse getCashReceipt(Long memberId, String merchantOrderId){
+        // 소유자 검증
+        Order order = orderRepository.findByMerchantOrderIdWithBuyer(merchantOrderId)
+                .orElseThrow(() -> {
+                    log.warn("[getCashReceipt][주문 없음.][merchantOrderId={}]", merchantOrderId);
+                    return new NotFoundException(ORDER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Member buyer = order.getBuyer();
+
+        if (buyer == null || !Objects.equals(buyer.getId(), memberId)) {
+            Long buyerId = Optional.ofNullable(buyer).map(Member::getId).orElse(null);
+
+            log.warn("[getCashReceipt][소유자 검증 실패][buyerId= {}]", buyerId);
+            throw new ForbiddenException(ORDER_ACCESS_DENIED_EXCEPTION.getMessage());
+        }
+
+
+        CashReceipt cashReceipt = cashReceiptRepository.findByMerchantOrderId(merchantOrderId)
+                .orElseThrow(() -> {
+                    log.warn("[getCashReceipt][현금영수증 우리 DB에 없음.][merchantOrderId={}]", merchantOrderId);
+                    return new NotFoundException(CASH_RECEIPT_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        CashReceiptResponse response = new CashReceiptResponse(cashReceipt.getReceiptUrl());
 
         return response;
     }
