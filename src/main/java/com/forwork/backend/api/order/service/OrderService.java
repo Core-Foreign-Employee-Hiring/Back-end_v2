@@ -3,7 +3,9 @@ package com.forwork.backend.api.order.service;
 
 import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
+import com.forwork.backend.api.order.dto.request.CashReceiptIssueRequest;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
+import com.forwork.backend.api.order.dto.response.CashReceiptResponse;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.entity.Order;
 import com.forwork.backend.api.order.entity.OrderPassArchive;
@@ -11,7 +13,13 @@ import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
+import com.forwork.backend.api.pay.dto.external.request.CashReceiptRequest;
+import com.forwork.backend.api.pay.dto.external.response.TossCashReceiptResponse;
+import com.forwork.backend.api.pay.entity.CashReceipt;
+import com.forwork.backend.api.pay.repository.CashReceiptRepository;
+import com.forwork.backend.api.pay.service.TossCashReceiptClient;
 import com.forwork.backend.common.exception.BadRequestException;
+import com.forwork.backend.common.exception.ForbiddenException;
 import com.forwork.backend.common.exception.InternalServerException;
 import com.forwork.backend.common.exception.NotFoundException;
 import jakarta.transaction.Transactional;
@@ -21,6 +29,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.forwork.backend.common.response.ErrorStatus.*;
 
@@ -33,6 +43,9 @@ public class OrderService {
     private final PassArchiveRepository passArchiveRepository;
     private final OrderPassArchiveRepository orderPassArchiveRepository;
     private static final int MERCHANT_ORDER_THRESHOLD = 10;
+    private final TossCashReceiptClient tossCashReceiptClient;
+    private final CashReceiptRepository cashReceiptRepository;
+
 
     /*
      * c
@@ -144,6 +157,42 @@ public class OrderService {
         return text.substring(0, maxLength);
     }
 
+    /**
+     * 현금영수증 발급
+     */
+
+    public void issueCashReceipt(Long memberId, CashReceiptIssueRequest request, String orderId) {
+
+        // 소유자 검증
+        Order order = orderRepository.findByMerchantOrderIdWithBuyer(orderId)
+                .orElseThrow(() -> {
+                    log.warn("[issueCashReceipt][주문 없음.][merchantOrderId={}]", orderId);
+                    return new NotFoundException(ORDER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Member buyer = order.getBuyer();
+
+        if (buyer == null || !Objects.equals(buyer.getId(), memberId)) {
+            Long buyerId = Optional.ofNullable(buyer).map(Member::getId).orElse(null);
+
+            log.warn("[issueCashReceipt][소유자 검증 실패][buyerId= {}]", buyerId);
+            throw new ForbiddenException(ORDER_ACCESS_DENIED_EXCEPTION.getMessage());
+        }
+
+        // 현금영수증 발급
+        CashReceiptRequest cashReceiptRequest = CashReceiptRequest.of(order, request.type(), request.customerIdentityNumber(), null);
+
+        TossCashReceiptResponse tossCashReceiptResponse = tossCashReceiptClient.issueCashReceipt(cashReceiptRequest);
+
+
+        // db 저장
+        CashReceipt entity = tossCashReceiptResponse.toEntity();
+
+
+        cashReceiptRepository.save(entity);
+
+    }
+
     /*
      * r
      * */
@@ -185,6 +234,40 @@ public class OrderService {
                 });
 
         OrderResponseDTO response = OrderResponseDTO.of(member, order, passArchive);
+
+        return response;
+    }
+
+    /**
+     * 현금영수증 조회
+     */
+
+    public CashReceiptResponse getCashReceipt(Long memberId, String merchantOrderId){
+        // 소유자 검증
+        Order order = orderRepository.findByMerchantOrderIdWithBuyer(merchantOrderId)
+                .orElseThrow(() -> {
+                    log.warn("[getCashReceipt][주문 없음.][merchantOrderId={}]", merchantOrderId);
+                    return new NotFoundException(ORDER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+        Member buyer = order.getBuyer();
+
+        if (buyer == null || !Objects.equals(buyer.getId(), memberId)) {
+            Long buyerId = Optional.ofNullable(buyer).map(Member::getId).orElse(null);
+
+            log.warn("[getCashReceipt][소유자 검증 실패][buyerId= {}]", buyerId);
+            throw new ForbiddenException(ORDER_ACCESS_DENIED_EXCEPTION.getMessage());
+        }
+
+
+        CashReceipt cashReceipt = cashReceiptRepository.findByMerchantOrderId(merchantOrderId)
+                .orElseThrow(() -> {
+                    log.warn("[getCashReceipt][현금영수증 우리 DB에 없음.][merchantOrderId={}]", merchantOrderId);
+                    return new NotFoundException(CASH_RECEIPT_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        CashReceiptResponse response = new CashReceiptResponse(cashReceipt.getReceiptUrl());
 
         return response;
     }
