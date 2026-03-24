@@ -117,6 +117,8 @@ public enum SuccessStatus {
     RESUME_DELETE_SUCCESS(HttpStatus.OK, "이력서가 삭제되었습니다."),
     UPDATE_SPEC_SUCCESS(HttpStatus.OK, "스펙 수정 성공"),
     PAYMENT_HISTORY_SUCCESS(HttpStatus.OK, "결제 내역 조회 성공"),
+    CASH_RECEIPT_GET_SUCCESS(HttpStatus.OK, "현금영수증 조회 성공"),
+
 
 
 

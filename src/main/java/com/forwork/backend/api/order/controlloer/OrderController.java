@@ -2,6 +2,7 @@ package com.forwork.backend.api.order.controlloer;
 
 import com.forwork.backend.api.order.dto.request.CashReceiptIssueRequest;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
+import com.forwork.backend.api.order.dto.response.CashReceiptResponse;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.service.OrderService;
 import com.forwork.backend.common.config.security.SecurityMember;
@@ -49,7 +50,7 @@ public class OrderController {
         return ApiResponse.success(SuccessStatus.ORDER_CREATE_SUCCESS, response);
     }
 
-    @Operation(summary = "현금영수증 발행  (용범)", description =
+    @Operation(summary = "현금영수증 발행 (용범)", description =
             "입력: CashReceiptIssueRequest" +
                     "<p>" +
                     "참고: <a href=\"https://docs.tosspayments.com/reference#현금영수증-발급-요청\" target=\"_blank\">현금영수증 발급 요청</a>" +
@@ -58,6 +59,8 @@ public class OrderController {
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "현금영수증 발급 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "해당 주문에 접근할 권한이 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없습니다."),
     })
     @PostMapping("/{merchant-order-id}/cash-receipt")
     public ResponseEntity<ApiResponse<Void>> issueCashReceipt(@Valid @RequestBody CashReceiptIssueRequest request,
@@ -89,5 +92,23 @@ public class OrderController {
         OrderResponseDTO response = orderService.getOrder(securityMember.getId(), merchantOrderId);
 
         return ApiResponse.success(SuccessStatus.ORDER_GET_SUCCESS, response);
+    }
+
+    @Operation(summary = "현금영수증 조회 (용범)", description =
+            "출력: CashReceiptResponse"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "현금영수증 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "해당 주문에 접근할 권한이 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "현금영수증을 찾을 수 없습니다."),
+    })
+    @GetMapping("/{merchant-order-id}/cash-receipt")
+    public ResponseEntity<ApiResponse<CashReceiptResponse>> getCashReceipt(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                           @PathVariable("merchant-order-id") String merchantOrderId) {
+
+        CashReceiptResponse response = orderService.getCashReceipt(securityMember.getId(), merchantOrderId);
+
+        return ApiResponse.success(SuccessStatus.CASH_RECEIPT_GET_SUCCESS, response);
     }
 }
