@@ -25,6 +25,15 @@ public class ApiResponse<T> {
         return ResponseEntity.status(status.getStatusCode()).body(response);
     }
 
+    public static ResponseEntity<ApiResponse<Void>> success(SuccessStatus status) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status(status.getStatusCode())
+                .success(true)
+                .message(status.getMessage())
+                .build();
+        return ResponseEntity.status(status.getStatusCode()).body(response);
+    }
+
     public static ResponseEntity<ApiResponse<Void>> success_only(SuccessStatus status) {
         ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .status(status.getStatusCode())
