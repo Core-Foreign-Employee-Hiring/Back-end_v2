@@ -1,5 +1,6 @@
 package com.forwork.backend.api.order.controlloer;
 
+import com.forwork.backend.api.order.dto.request.CashReceiptIssueRequest;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.service.OrderService;
@@ -46,6 +47,26 @@ public class OrderController {
         OrderResponseDTO response = orderService.createOrder(securityMember.getId(), orderRequestDTO);
 
         return ApiResponse.success(SuccessStatus.ORDER_CREATE_SUCCESS, response);
+    }
+
+    @Operation(summary = "현금영수증 발행  (용범)", description =
+            "입력: CashReceiptIssueRequest" +
+                    "<p>" +
+                    "참고: <a href=\"https://docs.tosspayments.com/reference#현금영수증-발급-요청\" target=\"_blank\">현금영수증 발급 요청</a>" +
+                    "<p>" +
+                    "예외: <a href=\"https://docs.tosspayments.com/reference/error-codes#%ED%98%84%EA%B8%88%EC%98%81%EC%88%98%EC%A6%9D-%EB%B0%9C%EA%B8%89-%EC%9A%94%EC%B2%AD\" target=\"_blank\">이동하기</a>"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "현금영수증 발급 성공"),
+    })
+    @PostMapping("/{merchant-order-id}/cash-receipt")
+    public ResponseEntity<ApiResponse<Void>> issueCashReceipt(@Valid @RequestBody CashReceiptIssueRequest request,
+                                                              @AuthenticationPrincipal SecurityMember securityMember,
+                                                              @PathVariable("merchant-order-id") String merchantOrderId) {
+
+        orderService.issueCashReceipt(securityMember.getId(), request, merchantOrderId);
+
+        return ApiResponse.success(SuccessStatus.CASH_RECEIPT_ISSUE_SUCCESS);
     }
 
 

@@ -151,6 +151,8 @@ public enum SuccessStatus {
     CREATE_SPEC_SUCCESS(HttpStatus.CREATED, "스펙 등록 성공"),
     SPEC_EVALUATION_SUCCESS(HttpStatus.CREATED, "스펙 평가 완료"),
     ORDER_GET_SUCCESS(HttpStatus.OK, "주문 조회 성공"),
+    CASH_RECEIPT_ISSUE_SUCCESS(HttpStatus.CREATED, "현금영수증 발급 성공"),
+
 
 
     ;
