@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 
 public record PaymentHistoryResponse(
+        @Schema(description = "아카이브 id")
+        Long passArchiveId,
         @Schema(description = "썸네일")
         String thumbnailUrl,
         @Schema(description = "콘텐츠명")
@@ -26,6 +28,7 @@ public record PaymentHistoryResponse(
 
     public static PaymentHistoryResponse of(Payment payment, PassArchive archive, boolean downloaded) {
         return new PaymentHistoryResponse(
+                archive.getPassArchiveId(),
                 archive.getThumbnail().getFileUrl(),
                 archive.getTitle(),
                 payment.getOrder().getMerchantOrderId(),
