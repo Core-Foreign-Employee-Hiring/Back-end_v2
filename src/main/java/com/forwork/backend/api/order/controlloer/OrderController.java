@@ -3,6 +3,7 @@ package com.forwork.backend.api.order.controlloer;
 import com.forwork.backend.api.order.dto.request.CashReceiptIssueRequest;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
 import com.forwork.backend.api.order.dto.response.CashReceiptResponse;
+import com.forwork.backend.api.order.dto.response.OrderPreviewResponse;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.service.OrderService;
 import com.forwork.backend.common.config.security.SecurityMember;
@@ -98,7 +99,7 @@ public class OrderController {
             "출력: CashReceiptResponse"
     )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "현금영수증 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "현금영수증 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "해당 주문에 접근할 권한이 없습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "현금영수증을 찾을 수 없습니다."),
@@ -110,5 +111,22 @@ public class OrderController {
         CashReceiptResponse response = orderService.getCashReceipt(securityMember.getId(), merchantOrderId);
 
         return ApiResponse.success(SuccessStatus.CASH_RECEIPT_GET_SUCCESS, response);
+    }
+
+    @Operation(summary = "주문 미리보기 조회 (용범)", description =
+            "출력: OrderPreviewResponse"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "주문 미리보기 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "합격 아카이브를 찾을 수 없습니다."),
+    })
+    @GetMapping("/preview")
+    public ResponseEntity<ApiResponse<OrderPreviewResponse>> getOrderPreview(@AuthenticationPrincipal SecurityMember securityMember,
+                                                                             @RequestParam("passArchiveId") Long passArchiveId) {
+
+        OrderPreviewResponse response = orderService.getOrderPreview(securityMember.getId(), passArchiveId);
+
+        return ApiResponse.success(SuccessStatus.ORDER_PREVIEW_SUCCESS, response);
     }
 }
