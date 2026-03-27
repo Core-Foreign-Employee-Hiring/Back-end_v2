@@ -6,6 +6,7 @@ import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.order.dto.request.CashReceiptIssueRequest;
 import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
 import com.forwork.backend.api.order.dto.response.CashReceiptResponse;
+import com.forwork.backend.api.order.dto.response.OrderPreviewResponse;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.entity.Order;
 import com.forwork.backend.api.order.entity.OrderPassArchive;
@@ -242,7 +243,7 @@ public class OrderService {
      * 현금영수증 조회
      */
 
-    public CashReceiptResponse getCashReceipt(Long memberId, String merchantOrderId){
+    public CashReceiptResponse getCashReceipt(Long memberId, String merchantOrderId) {
         // 소유자 검증
         Order order = orderRepository.findByMerchantOrderIdWithBuyer(merchantOrderId)
                 .orElseThrow(() -> {
@@ -272,4 +273,27 @@ public class OrderService {
         return response;
     }
 
+    /**
+     * 주문 미리보기 조회
+     */
+
+    public OrderPreviewResponse getOrderPreview(Long memberId, Long passArchiveId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    log.warn("[getOrderPreview][멤버 없음.][memberId={}]", memberId);
+                    return new NotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        PassArchive passArchive = passArchiveRepository.findArchiveByPassArchiveIdWithThumbnail(passArchiveId)
+                .orElseThrow(() -> {
+                    log.warn("[getOrderPreview][아카이브 없음][passArchiveId={}]", passArchiveId);
+                    return new NotFoundException(PASS_ARCHIVE_NOT_FOUND_EXCEPTION.getMessage());
+                });
+
+
+        OrderPreviewResponse response = OrderPreviewResponse.of(passArchive, member);
+
+        return response;
+    }
 }
