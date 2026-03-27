@@ -118,6 +118,8 @@ public enum SuccessStatus {
     UPDATE_SPEC_SUCCESS(HttpStatus.OK, "스펙 수정 성공"),
     PAYMENT_HISTORY_SUCCESS(HttpStatus.OK, "결제 내역 조회 성공"),
     CASH_RECEIPT_GET_SUCCESS(HttpStatus.OK, "현금영수증 조회 성공"),
+    ORDER_PREVIEW_SUCCESS(HttpStatus.OK, "주문 미리보기 조회 성공"),
+
 
 
 
