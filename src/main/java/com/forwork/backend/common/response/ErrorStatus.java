@@ -154,6 +154,7 @@ public enum ErrorStatus {
     SPEC_EVALUATION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "스펙 평가 정보를 찾을 수 없습니다."),
     ORDER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 주문을 찾을 수 없습니다."),
     CASH_RECEIPT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "현금영수증을 찾을 수 없습니다."),
+    PLAN_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "플랜 정보를 찾을 수 없습니다."),
 
 
 

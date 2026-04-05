@@ -4,6 +4,7 @@ import com.forwork.backend.api.member.dto.*;
 import com.forwork.backend.api.member.entity.*;
 import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.repository.*;
+import com.forwork.backend.api.plan.service.SubscriptionCreator;
 import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.NotFoundException;
 import com.forwork.backend.common.exception.UnauthorizedException;
@@ -34,6 +35,7 @@ public class MemberService {
     private final PasswordResetRepository passwordResetRepository;
     private final JobRoleEntityRepository jobRoleEntityRepository;
     private final MemberJobRoleRepository memberJobRoleRepository;
+    private final SubscriptionCreator subscriptionCreator;
 
     // 회원가입
     @Transactional
@@ -112,6 +114,9 @@ public class MemberService {
         }
 
         memberJobRoleRepository.saveAll(recruitJobRoles);
+
+        // FREE 플랜
+        subscriptionCreator.createInitialSubscription(member);
     }
 
     // 로그인
@@ -172,7 +177,7 @@ public class MemberService {
         // 실제 회원이 존재하는지 체크
         memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.USER_NOT_FOUND_EXCEPTION.getMessage()));
-        
+
         memberRepository.updateUserId(memberId, newUserId);
     }
 
