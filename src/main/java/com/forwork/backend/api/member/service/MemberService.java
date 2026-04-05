@@ -49,7 +49,7 @@ public class MemberService {
         if (memberRepository.findByEmail(memberRegisterRequestDTO.getEmail()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_EMAIL_EXCPETION.getMessage());
         }
-       /* // 핸드폰번호 중복 검증
+        // 핸드폰번호 중복 검증
         if (memberRepository.findByPhoneNumber(memberRegisterRequestDTO.getPhoneNumber()).isPresent()) {
             throw new BadRequestException(ErrorStatus.ALREADY_REGISTER_PHONENUMBER_EXCPETION.getMessage());
         }
@@ -66,7 +66,7 @@ public class MemberService {
                 .orElseThrow(() -> new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage()));
         if (!phoneNumberVerification.isVerified()) {
             throw new BadRequestException(ErrorStatus.MISSING_PHONENUMBER_VERIFICATION_EXCEPTION.getMessage());
-        }*/
+        }
 
         Address address = new Address(
                 memberRegisterRequestDTO.getZipcode(),
