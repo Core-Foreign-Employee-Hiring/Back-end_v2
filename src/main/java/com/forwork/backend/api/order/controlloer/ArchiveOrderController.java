@@ -5,7 +5,7 @@ import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
 import com.forwork.backend.api.order.dto.response.CashReceiptResponse;
 import com.forwork.backend.api.order.dto.response.OrderPreviewResponse;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
-import com.forwork.backend.api.order.service.OrderService;
+import com.forwork.backend.api.order.service.ArchiveOrderService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.response.ApiResponse;
 import com.forwork.backend.common.response.SuccessStatus;
@@ -18,19 +18,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Order", description = "주문 관련 API 입니다.")
+@Tag(name = "ArchiveOrder", description = "아카이브 주문 관련 API 입니다.")
 @RestController
 @RequestMapping("/api/v2/order")
 @RequiredArgsConstructor
-public class OrderController {
-    private final OrderService orderService;
+public class ArchiveOrderController {
+    private final ArchiveOrderService orderService;
 
 
     /*
      * c
      * */
 
-    @Operation(summary = "주문 생성 (용범)", description =
+    @Operation(summary = "아카이브 주문 생성 (용범)", description =
             "결제 전 주문 생성 api<p>" +
                     "입력: OrderRequestDTO" +
                     "<p>" +
@@ -78,7 +78,7 @@ public class OrderController {
      * r
      * */
 
-    @Operation(summary = "주문 조회 (용범)", description = "출력: OrderResponseDTO"
+    @Operation(summary = "아카이브 주문 조회 (용범)", description = "출력: OrderResponseDTO"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "주문 조회 성공"),
@@ -113,7 +113,7 @@ public class OrderController {
         return ApiResponse.success(SuccessStatus.CASH_RECEIPT_GET_SUCCESS, response);
     }
 
-    @Operation(summary = "주문 미리보기 조회 (용범)", description =
+    @Operation(summary = "아카이브 주문 미리보기 조회 (용범)", description =
             "출력: OrderPreviewResponse"
     )
     @ApiResponses({

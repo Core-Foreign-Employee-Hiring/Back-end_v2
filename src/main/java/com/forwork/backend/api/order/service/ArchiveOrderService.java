@@ -38,7 +38,7 @@ import static com.forwork.backend.common.response.ErrorStatus.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OrderService {
+public class ArchiveOrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final PassArchiveRepository passArchiveRepository;
