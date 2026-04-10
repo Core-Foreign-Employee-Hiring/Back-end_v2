@@ -6,7 +6,7 @@ import com.forwork.backend.api.order.dto.request.OrderRequestDTO;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
 import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
-import com.forwork.backend.api.order.service.OrderService;
+import com.forwork.backend.api.order.service.ArchiveOrderService;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.PassArchiveRepository;
 import com.forwork.backend.api.pay.dto.internal.PaymentDTO;
@@ -35,7 +35,7 @@ public class PaymentTestService {
     private final OrderPassArchiveRepository orderPassArchiveRepository;
     private final PaymentProcessor paymentProcessor;
     private final PaymentCreator paymentCreator;
-    private final OrderService orderService;
+    private final ArchiveOrderService archiveOrderService;
 
 
     /**
@@ -63,7 +63,7 @@ public class PaymentTestService {
          * */
 
         // 주문 생성
-        OrderResponseDTO order = orderService.createOrder(buyerId, new OrderRequestDTO(List.of(archiveId)));
+        OrderResponseDTO order = archiveOrderService.createOrder(buyerId, new OrderRequestDTO(List.of(archiveId)));
         String merchantOrderId = order.merchantOrderId();
 
 

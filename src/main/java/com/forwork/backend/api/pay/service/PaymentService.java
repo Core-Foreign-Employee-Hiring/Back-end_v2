@@ -2,12 +2,14 @@ package com.forwork.backend.api.pay.service;
 
 import com.forwork.backend.api.order.entity.Order;
 import com.forwork.backend.api.order.entity.OrderPassArchive;
+import com.forwork.backend.api.order.enums.ItemType;
 import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;
 import com.forwork.backend.api.pass_archive.repository.ArchiveDownloadHistoryRepository;
 import com.forwork.backend.api.pay.dto.internal.PaymentDTO;
 import com.forwork.backend.api.pay.dto.request.PaymentConfirmRequestDTO;
+import com.forwork.backend.api.pay.dto.response.ArchivePaymentHistoryResponse;
 import com.forwork.backend.api.pay.dto.response.PaymentHistoryResponse;
 import com.forwork.backend.api.pay.entity.Payment;
 import com.forwork.backend.api.pay.enums.PaymentStatus;
@@ -18,6 +20,7 @@ import com.forwork.backend.api.pay.exception.confirm.PaymentExpiredException;
 import com.forwork.backend.api.pay.repository.PaymentRepository;
 import com.forwork.backend.common.dto.PageResponseDTO;
 import com.forwork.backend.common.exception.BadRequestException;
+import com.forwork.backend.common.exception.InternalServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,8 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.forwork.backend.common.response.ErrorStatus.ALREADY_DONE_PAYMENT_BEFORE_ORDER_EXCEPTION;
-import static com.forwork.backend.common.response.ErrorStatus.PAYMENT_ALREADY_EXISTS_EXCEPTION;
+import static com.forwork.backend.common.response.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class PaymentService {
     private final PaymentReader paymentReader;
     private final ArchiveDownloadHistoryRepository archiveDownloadHistoryRepository;
     private final OrderPassArchiveRepository orderPassArchiveRepository;
+    private final List<PaymentHistoryStrategy> paymentHistoryStrategies;
 
     /**
      * 결제 상태는 반드시 IN_PROGRESS 로 시작하여 성공(DONE), 실패(ABORTED, EXPIRED), 타임아웃(TIMEOUT) 중 하나로 끝나야 한다.
@@ -137,10 +140,15 @@ public class PaymentService {
     }
 
 
+    /*
+     * read
+     * */
+
+
     /**
-     * 결제 내역 조회
+     * 아카이브 결제 내역 조회
      */
-    public PageResponseDTO<PaymentHistoryResponse> getPaymentHistory(Long memberId, Integer page, Integer size) {
+    public PageResponseDTO<ArchivePaymentHistoryResponse> getArchivePaymentHistory(Long memberId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
 
         // 결제 내역 조회
@@ -169,7 +177,7 @@ public class PaymentService {
         Set<Long> downloadedArchiveIdSet = new HashSet<>(archiveIds);
 
         // dto 변환
-        Page<PaymentHistoryResponse> paymentHistoryResponses = paymentHistory.map((h) -> {
+        Page<ArchivePaymentHistoryResponse> paymentHistoryResponses = paymentHistory.map((h) -> {
             Long orderId = h.getOrder().getId();
             PassArchive archive = orderIdToPassArchiveMap.get(orderId);
 
@@ -178,10 +186,40 @@ public class PaymentService {
             );
 
 
-            return PaymentHistoryResponse.of(h, archive, downloaded);
+            return ArchivePaymentHistoryResponse.of(h, archive, downloaded);
         });
 
-        PageResponseDTO<PaymentHistoryResponse> response = PageResponseDTO.of(paymentHistoryResponses);
+        PageResponseDTO<ArchivePaymentHistoryResponse> response = PageResponseDTO.of(paymentHistoryResponses);
+
+        return response;
+    }
+
+
+    /**
+     * 결제 내역 조회
+     */
+    public PageResponseDTO<PaymentHistoryResponse> getPaymentHistory(Long memberId, ItemType itemType, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Long> paymentIdPage = paymentRepository.findPaymentIdsByBuyerIdAndItemType(memberId, itemType.getValue(), pageable);
+        List<Long> paymentIds = paymentIdPage.getContent();
+
+        List<Payment> payments = paymentRepository.findWithOrderByIds(paymentIds);
+
+
+        PaymentHistoryStrategy paymentHistoryStrategy = paymentHistoryStrategies.stream()
+                .filter(s -> s.supports(itemType))
+                .findFirst()
+                .orElseThrow(() -> {
+                    log.error("[getPaymentHistory][전략 없음][itemType= {}]", itemType);
+                    return new InternalServerException(INTERNAL_SERVER_EXCEPTION.getMessage());
+                });
+
+
+        List<PaymentHistoryResponse> map = paymentHistoryStrategy.map(payments);
+
+
+        PageResponseDTO<PaymentHistoryResponse> response = PageResponseDTO.of(paymentIdPage, map);
 
         return response;
     }
