@@ -30,7 +30,7 @@ public class Subscription extends BaseTimeEntity {
     @Column(name = "subscription_id")
     private Long id;
 
-    private String subscriptionType;
+    private String subscriptionStatus;
 
     private LocalDate startDate;
     private LocalDate endDate;
