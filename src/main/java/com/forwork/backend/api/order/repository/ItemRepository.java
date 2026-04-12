@@ -13,4 +13,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " where i.id in :itemIds and i.active=true")
     List<Item> findActiveItemsByIds(@Param("itemIds") List<Long> itemIds);
 
+    @Query("select i from OrderItem oi" +
+            " join oi.item i" +
+            " where oi.order.merchantOrderId=:merchantOrderId")
+    List<Item> findItemsByMerchantOrderId(@Param("merchantOrderId") String merchantOrderId);
 }
