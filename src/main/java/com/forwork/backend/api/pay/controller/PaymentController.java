@@ -58,7 +58,7 @@ public class PaymentController {
     @PostMapping("/confirm")
     public ResponseEntity<ApiResponse<Void>> confirmPayment(@Valid @RequestBody PaymentConfirmRequestDTO paymentConfirmRequestDTO,
                                                             @AuthenticationPrincipal SecurityMember securityMember) {
-        paymentService.requestConfirm(paymentConfirmRequestDTO);
+        paymentService.requestConfirm(securityMember.getId(), paymentConfirmRequestDTO);
 
         return ApiResponse.success_only(SuccessStatus.SEND_PAY_SUCCESS);
     }

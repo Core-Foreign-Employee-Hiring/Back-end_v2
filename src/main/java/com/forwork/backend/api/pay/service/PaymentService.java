@@ -13,6 +13,7 @@ import com.forwork.backend.api.pay.dto.response.ArchivePaymentHistoryResponse;
 import com.forwork.backend.api.pay.dto.response.PaymentHistoryResponse;
 import com.forwork.backend.api.pay.entity.Payment;
 import com.forwork.backend.api.pay.enums.PaymentStatus;
+import com.forwork.backend.api.pay.event.PaymentCompletedEvent;
 import com.forwork.backend.api.pay.exception.PaymentTimeoutException;
 import com.forwork.backend.api.pay.exception.confirm.PaymentAbortedException;
 import com.forwork.backend.api.pay.exception.confirm.PaymentAlreadyDoneException;
@@ -23,6 +24,7 @@ import com.forwork.backend.common.exception.BadRequestException;
 import com.forwork.backend.common.exception.InternalServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,8 @@ public class PaymentService {
     private final ArchiveDownloadHistoryRepository archiveDownloadHistoryRepository;
     private final OrderPassArchiveRepository orderPassArchiveRepository;
     private final List<PaymentHistoryStrategy> paymentHistoryStrategies;
+    private final ApplicationEventPublisher eventPublisher;
+
 
     /**
      * 결제 상태는 반드시 IN_PROGRESS 로 시작하여 성공(DONE), 실패(ABORTED, EXPIRED), 타임아웃(TIMEOUT) 중 하나로 끝나야 한다.
@@ -74,7 +78,7 @@ public class PaymentService {
      * 결제 승인 성공은 반드시 이 api 를 통해서만 할 것.
      */
 
-    public void requestConfirm(PaymentConfirmRequestDTO paymentConfirmRequestDTO) {
+    public void requestConfirm(Long memberId, PaymentConfirmRequestDTO paymentConfirmRequestDTO) {
         String paymentKey = paymentConfirmRequestDTO.paymentKey();
         String merchantOrderId = paymentConfirmRequestDTO.merchantOrderId();
         String amount = paymentConfirmRequestDTO.amount();
@@ -123,6 +127,8 @@ public class PaymentService {
             log.error("[requestConfirm][알 수 없는 오류]", e);
             throw e;
         }
+
+        eventPublisher.publishEvent(new PaymentCompletedEvent(memberId, paymentConfirmRequestDTO.merchantOrderId()));
     }
 
     private void amountValidate(String amount, String merchantOrderId) {
