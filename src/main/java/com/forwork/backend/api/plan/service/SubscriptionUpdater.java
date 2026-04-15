@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -24,5 +26,16 @@ public class SubscriptionUpdater {
 
     private long updateStatus(Long memberId, SubscriptionStatus from, SubscriptionStatus to) {
         return subscriptionRepository.updateStatus(memberId, from.getValue(), to.getValue());
+    }
+
+    /**
+     * 해당 구독들 비활성화
+     */
+    public long processExpiration(List<Long> subscriptionIds) {
+        return updateStatus(subscriptionIds, SubscriptionStatus.EXPIRED);
+    }
+
+    private long updateStatus(List<Long> subscriptionIds, SubscriptionStatus toStatus) {
+        return subscriptionRepository.updateStatus(subscriptionIds, toStatus.getValue());
     }
 }
