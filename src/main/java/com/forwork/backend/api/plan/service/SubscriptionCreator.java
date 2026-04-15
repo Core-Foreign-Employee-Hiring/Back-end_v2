@@ -80,4 +80,18 @@ public class SubscriptionCreator {
         subscriptionRepository.save(subscription);
     }
 
+    public void createSubscription(Member member, PlanVersion planVersion) {
+        OffsetDateTime now = OffsetDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        Subscription subscription = Subscription.builder()
+                .subscriptionStatus(SubscriptionStatus.ACTIVE.getValue())
+                .startDate(now.toLocalDate())
+                .endDate(null)
+                .member(member)
+                .planVersion(planVersion)
+                .build();
+
+        subscriptionRepository.save(subscription);
+    }
+
 }
