@@ -1,7 +1,9 @@
 package com.forwork.backend.api.pay.controller;
 
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
+import com.forwork.backend.api.order.enums.ItemType;
 import com.forwork.backend.api.pay.dto.request.PaymentConfirmRequestDTO;
+import com.forwork.backend.api.pay.dto.response.ArchivePaymentHistoryResponse;
 import com.forwork.backend.api.pay.dto.response.PaymentHistoryResponse;
 import com.forwork.backend.api.pay.service.PaymentService;
 import com.forwork.backend.api.pay.service.PaymentTestService;
@@ -56,7 +58,7 @@ public class PaymentController {
     @PostMapping("/confirm")
     public ResponseEntity<ApiResponse<Void>> confirmPayment(@Valid @RequestBody PaymentConfirmRequestDTO paymentConfirmRequestDTO,
                                                             @AuthenticationPrincipal SecurityMember securityMember) {
-        paymentService.requestConfirm(paymentConfirmRequestDTO);
+        paymentService.requestConfirm(securityMember.getId(), paymentConfirmRequestDTO);
 
         return ApiResponse.success_only(SuccessStatus.SEND_PAY_SUCCESS);
     }
@@ -68,14 +70,14 @@ public class PaymentController {
 
 
     @Operation(
-            summary = "결제 내역 조회 API (용범)",
-            description = "출력: PaymentHistoryResponse"
+            summary = "아카이브 결제 내역 조회 API (용범)",
+            description = "출력: ArchivePaymentHistoryResponse"
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 내역 조회 성공"),
     })
     @GetMapping("/history")
-    public ResponseEntity<ApiResponse<PageResponseDTO<PaymentHistoryResponse>>> getPaymentHistory(
+    public ResponseEntity<ApiResponse<PageResponseDTO<ArchivePaymentHistoryResponse>>> getArchivePaymentHistory(
             @AuthenticationPrincipal SecurityMember securityMember,
 
             @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
@@ -85,7 +87,34 @@ public class PaymentController {
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
 
 
-        PageResponseDTO<PaymentHistoryResponse> response = paymentService.getPaymentHistory(securityMember.getId(), page, size);
+        PageResponseDTO<ArchivePaymentHistoryResponse> response = paymentService.getArchivePaymentHistory(securityMember.getId(), page, size);
+
+        return ApiResponse.success(SuccessStatus.PAYMENT_HISTORY_SUCCESS, response);
+    }
+
+
+    @Operation(
+            summary = "결제 내역 조회 API (용범)",
+            description = ""
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 내역 조회 성공"),
+    })
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponseDTO<PaymentHistoryResponse>>> getPaymentHistory(
+            @AuthenticationPrincipal SecurityMember securityMember,
+
+            @Parameter(description = "itemType", in = ParameterIn.QUERY)
+            @RequestParam(value = "itemType") ItemType itemType,
+
+            @Parameter(description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY)
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+
+            @Parameter(description = "페이지 크기", in = ParameterIn.QUERY)
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+
+
+        PageResponseDTO<PaymentHistoryResponse> response = paymentService.getPaymentHistory(securityMember.getId(), itemType, page, size);
 
         return ApiResponse.success(SuccessStatus.PAYMENT_HISTORY_SUCCESS, response);
     }

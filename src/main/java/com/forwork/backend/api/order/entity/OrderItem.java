@@ -1,6 +1,6 @@
-package com.forwork.backend.api.plan.entity;
+package com.forwork.backend.api.order.entity;
 
-import com.forwork.backend.api.order.entity.Item;
+
 import com.forwork.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,24 +18,23 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Table(
         indexes = {
-                @Index(name = "idx_plan_version_plan_id", columnList = "plan_id"),
-                @Index(name = "idx_plan_version_item_id", columnList = "item_id"),
+                @Index(name = "idx_order_item_order_id", columnList = "order_id"),
+                @Index(name = "idx_order_item_item_id", columnList = "item_id"),
         }
 )
-public class PlanVersion extends BaseTimeEntity {
+public class OrderItem extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "plan_version_id")
+    @Column(name = "order_item_id")
     private Long id;
 
     private Long price;
-    private boolean active;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "plan_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Plan plan;
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Order order;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Item item;
 }

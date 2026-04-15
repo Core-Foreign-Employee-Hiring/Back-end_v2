@@ -62,6 +62,19 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Page<Payment> findByBuyerIdWithOrder(@Param("buyerId") Long buyerId, Pageable pageable);
 
 
+    @Query("select distinct p.id from Payment p" +
+            " join p.order o" +
+            " join OrderItem oi on oi.order=o" +
+            " join oi.item i" +
+            " where o.buyer.id=:buyerId and i.type=:itemType")
+    Page<Long> findPaymentIdsByBuyerIdAndItemType(@Param("buyerId") Long buyerId, @Param("itemType") String itemType, Pageable pageable);
+
+    @Query("select p from Payment p" +
+            " join fetch p.order o" +
+            " where p.id in :paymentIds" +
+            " order by p.id desc")
+    List<Payment> findWithOrderByIds(@Param("paymentIds") List<Long> paymentIds);
+
     @Transactional
     @Modifying
     @Query("update Payment p set p.paymentStatus=:paymentStatus where p.paymentKey=:paymentKey")

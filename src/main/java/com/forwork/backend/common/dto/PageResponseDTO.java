@@ -30,6 +30,16 @@ public class PageResponseDTO<T> {
                 .build();
     }
 
+    public static <T> PageResponseDTO<T> of(Page<?> page, List<T> content) {
+        return PageResponseDTO.<T>builder()
+                .content(content)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .build();
+    }
+
     public static <T> PageResponseDTO<T> of(List<T> content, int page, int size, long totalElements, int totalPages) {
         return PageResponseDTO.<T>builder()
                 .content(content)
