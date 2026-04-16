@@ -1,7 +1,7 @@
 package com.forwork.backend.api.order.service;
 
-import com.forwork.backend.api.order.entity.Item;
-import com.forwork.backend.api.order.repository.ItemRepository;
+import com.forwork.backend.api.item.entity.Item;
+import com.forwork.backend.api.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

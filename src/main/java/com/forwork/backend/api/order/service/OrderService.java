@@ -1,13 +1,13 @@
 package com.forwork.backend.api.order.service;
 
+import com.forwork.backend.api.item.entity.Item;
+import com.forwork.backend.api.item.repository.ItemRepository;
 import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.repository.MemberRepository;
 import com.forwork.backend.api.order.dto.request.OrderRequest;
 import com.forwork.backend.api.order.dto.response.OrderResponse;
-import com.forwork.backend.api.order.entity.Item;
 import com.forwork.backend.api.order.entity.Order;
 import com.forwork.backend.api.order.entity.OrderItem;
-import com.forwork.backend.api.order.repository.ItemRepository;
 import com.forwork.backend.api.order.repository.OrderItemRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.common.exception.BadRequestException;

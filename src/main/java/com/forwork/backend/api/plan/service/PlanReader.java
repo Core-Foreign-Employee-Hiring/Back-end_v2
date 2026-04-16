@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static com.forwork.backend.common.response.ErrorStatus.INTERNAL_SERVER_EXCEPTION;
 
 @Component
@@ -29,5 +31,9 @@ public class PlanReader {
                 });
 
         return planVersion;
+    }
+
+    public List<PlanVersion> getPlansByItemIds(List<Long> itemIds) {
+        return planVersionRepository.findByItemIdsWithPlan(itemIds);
     }
 }

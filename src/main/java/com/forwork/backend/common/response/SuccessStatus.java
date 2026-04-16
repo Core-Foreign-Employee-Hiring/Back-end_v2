@@ -120,6 +120,7 @@ public enum SuccessStatus {
     CASH_RECEIPT_GET_SUCCESS(HttpStatus.OK, "현금영수증 조회 성공"),
     ORDER_PREVIEW_SUCCESS(HttpStatus.OK, "주문 미리보기 조회 성공"),
     MY_PLAN_GET_SUCCESS(HttpStatus.OK, "내 플랜 조회 성공"),
+    ITEM_GET_SUCCESS(HttpStatus.OK, "상품 조회 성공"),
 
 
 

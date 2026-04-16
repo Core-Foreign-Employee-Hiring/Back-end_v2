@@ -1,4 +1,4 @@
-package com.forwork.backend.api.order.entity;
+package com.forwork.backend.api.item.entity;
 
 import com.forwork.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
