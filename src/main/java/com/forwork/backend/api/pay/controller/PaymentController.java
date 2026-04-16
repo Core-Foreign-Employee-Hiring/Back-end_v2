@@ -1,7 +1,7 @@
 package com.forwork.backend.api.pay.controller;
 
+import com.forwork.backend.api.item.enums.ItemType;
 import com.forwork.backend.api.order.dto.response.OrderResponseDTO;
-import com.forwork.backend.api.order.enums.ItemType;
 import com.forwork.backend.api.pay.dto.request.PaymentConfirmRequestDTO;
 import com.forwork.backend.api.pay.dto.response.ArchivePaymentHistoryResponse;
 import com.forwork.backend.api.pay.dto.response.PaymentHistoryResponse;

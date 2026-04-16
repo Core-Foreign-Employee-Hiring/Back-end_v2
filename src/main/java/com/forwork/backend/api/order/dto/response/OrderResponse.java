@@ -1,7 +1,7 @@
 package com.forwork.backend.api.order.dto.response;
 
+import com.forwork.backend.api.item.entity.Item;
 import com.forwork.backend.api.member.entity.Member;
-import com.forwork.backend.api.order.entity.Item;
 import com.forwork.backend.api.order.entity.Order;
 import io.swagger.v3.oas.annotations.media.Schema;
 

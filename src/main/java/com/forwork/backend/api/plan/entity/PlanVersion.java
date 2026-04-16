@@ -1,6 +1,6 @@
 package com.forwork.backend.api.plan.entity;
 
-import com.forwork.backend.api.order.entity.Item;
+import com.forwork.backend.api.item.entity.Item;
 import com.forwork.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

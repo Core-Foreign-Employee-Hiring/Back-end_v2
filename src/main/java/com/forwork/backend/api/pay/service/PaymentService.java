@@ -1,8 +1,8 @@
 package com.forwork.backend.api.pay.service;
 
+import com.forwork.backend.api.item.enums.ItemType;
 import com.forwork.backend.api.order.entity.Order;
 import com.forwork.backend.api.order.entity.OrderPassArchive;
-import com.forwork.backend.api.order.enums.ItemType;
 import com.forwork.backend.api.order.repository.OrderPassArchiveRepository;
 import com.forwork.backend.api.order.repository.OrderRepository;
 import com.forwork.backend.api.pass_archive.entity.PassArchive;

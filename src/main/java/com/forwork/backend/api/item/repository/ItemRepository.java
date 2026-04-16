@@ -1,6 +1,6 @@
-package com.forwork.backend.api.order.repository;
+package com.forwork.backend.api.item.repository;
 
-import com.forwork.backend.api.order.entity.Item;
+import com.forwork.backend.api.item.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

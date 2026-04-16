@@ -1,7 +1,7 @@
 package com.forwork.backend.api.order.event;
 
-import com.forwork.backend.api.order.entity.Item;
-import com.forwork.backend.api.order.enums.ItemType;
+import com.forwork.backend.api.item.entity.Item;
+import com.forwork.backend.api.item.enums.ItemType;
 import com.forwork.backend.api.order.service.OrderReader;
 import com.forwork.backend.api.pay.event.PaymentCompletedEvent;
 import com.forwork.backend.api.plan.service.SubscriptionService;
