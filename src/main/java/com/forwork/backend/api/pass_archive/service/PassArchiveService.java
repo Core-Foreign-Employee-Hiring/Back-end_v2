@@ -46,8 +46,8 @@ public class PassArchiveService {
     private final OrderRepository orderRepository;
     private final ArchiveDownloadHistoryRepository archiveDownloadHistoryRepository;
 
-    // 합격 아카이브 생성(파일 업로드 후 저장 메소드 전달)
-    public Long createArchive(PassArchiveCreateRequestDTO passArchiveCreateRequestDTO, MultipartFile thumbnail, List<MultipartFile> images, List<MultipartFile> products, Long memberId) {
+    // 합격 아카이브 생성
+    public Long createArchive(PassArchiveCreateRequestDTO passArchiveCreateRequestDTO, MultipartFile thumbnail, List<MultipartFile> images, Long memberId) {
 
         // 작성자 조회
         Member member = memberRepository.findById(memberId)
@@ -65,11 +65,12 @@ public class PassArchiveService {
                 .map(f -> fileService.uploadAndSave(f, FileDirAndName.File))
                 .collect(Collectors.toList());
 
-        // 상품 파일 저장
-        List<UploadFile> productFiles = Optional.ofNullable(products)
+        // 상품 URL 저장
+        List<UploadFile> productFiles = Optional.ofNullable(passArchiveCreateRequestDTO.getProducts())
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(f -> fileService.uploadAndSave(f, FileDirAndName.File))
+                .filter(url -> url != null && !url.trim().isEmpty())
+                .map(fileService::saveUrl)
                 .collect(Collectors.toList());
 
         return passArchiveSaveService.saveArchive(passArchiveCreateRequestDTO, member, thumbFile, imageFiles, productFiles);
