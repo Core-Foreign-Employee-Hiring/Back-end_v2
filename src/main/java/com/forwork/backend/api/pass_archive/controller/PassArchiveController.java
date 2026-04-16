@@ -33,7 +33,7 @@ public class PassArchiveController {
     private final ArchiveInquiryService archiveInquiryService;
     private final ArchiveTestService archiveTestService;
 
-    @Operation(summary = "합격아카이브 등록 (태근)", description = "무료일 경우 price를 0으로 넘겨주세요 / thumbnail : 썸네일 , images : 본문 이미지들, products : 판매할 상품들")
+    @Operation(summary = "합격아카이브 등록 (태근)", description = "무료일 경우 price를 0으로 넘겨주세요 / thumbnail : 썸네일 , images : 본문 이미지들, data.products : 판매할 상품 URL들")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "합격 아카이브 등록 성공"),
     })
@@ -45,10 +45,9 @@ public class PassArchiveController {
             @RequestPart("data") PassArchiveCreateRequestDTO passArchiveCreateRequestDTO,
             @RequestPart("thumbnail") MultipartFile thumbnail,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
-            @RequestPart(value = "products") List<MultipartFile> products,
             @AuthenticationPrincipal SecurityMember securityMember) {
 
-        Long id = passArchiveService.createArchive(passArchiveCreateRequestDTO, thumbnail, images, products, securityMember.getId());
+        Long id = passArchiveService.createArchive(passArchiveCreateRequestDTO, thumbnail, images, securityMember.getId());
 
         return ApiResponse.success(SuccessStatus.CREATE_PASS_ARCHIVE_SUCCESS, id);
     }

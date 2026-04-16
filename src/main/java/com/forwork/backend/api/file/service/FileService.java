@@ -61,4 +61,21 @@ public class FileService {
         }
     }
 
+    public UploadFile saveUrl(String fileUrl) {
+        String trimmedFileUrl = fileUrl.trim();
+        UploadFile uploadFile = new UploadFile(trimmedFileUrl, extractOriginalFileName(trimmedFileUrl));
+        return uploadFileRepository.save(uploadFile);
+    }
+
+    private String extractOriginalFileName(String fileUrl) {
+        String urlWithoutQuery = fileUrl.split("[?#]", 2)[0];
+        int lastSlashIndex = urlWithoutQuery.lastIndexOf('/');
+
+        if (lastSlashIndex < 0 || lastSlashIndex == urlWithoutQuery.length() - 1) {
+            return null;
+        }
+
+        return urlWithoutQuery.substring(lastSlashIndex + 1);
+    }
+
 }
