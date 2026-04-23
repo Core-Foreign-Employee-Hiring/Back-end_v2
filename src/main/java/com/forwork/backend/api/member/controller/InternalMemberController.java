@@ -30,7 +30,7 @@ public class InternalMemberController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "플랜 정보를 찾을 수 없습니다.")
     })
     @GetMapping("/{memberId}/plan")
-    public ResponseEntity<ApiResponse<PlanResponse>> getPlan(@PathVariable Long memberId) {
+    public ResponseEntity<ApiResponse<PlanResponse>> getPlan(@PathVariable("memberId") Long memberId) {
         PlanResponse response = subscriptionService.getPlan(memberId);
 
         return ApiResponse.success(SuccessStatus.PLAN_GET_SUCCESS, response);
