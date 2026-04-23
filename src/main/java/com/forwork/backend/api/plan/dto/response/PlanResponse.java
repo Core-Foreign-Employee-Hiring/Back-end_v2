@@ -6,17 +6,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
-public record MyPlanResponse(
+public record PlanResponse(
         @Schema(description = "plan 종료")
         PlanType planType,
         @Schema(description = "만료날짜")
         LocalDate endDate
 ) {
 
-    public static MyPlanResponse of(Subscription subscription) {
+    public static PlanResponse of(Subscription subscription) {
         String plan = subscription.getPlanVersion().getPlan().getPlanType();
 
-        return new MyPlanResponse(
+        return new PlanResponse(
                 PlanType.from(plan),
                 subscription.getEndDate()
         );

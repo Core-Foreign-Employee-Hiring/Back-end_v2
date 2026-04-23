@@ -2,7 +2,7 @@ package com.forwork.backend.api.plan.service;
 
 import com.forwork.backend.api.member.entity.Member;
 import com.forwork.backend.api.member.service.MemberReader;
-import com.forwork.backend.api.plan.dto.response.MyPlanResponse;
+import com.forwork.backend.api.plan.dto.response.PlanResponse;
 import com.forwork.backend.api.plan.entity.PlanVersion;
 import com.forwork.backend.api.plan.entity.Subscription;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +30,10 @@ public class SubscriptionService {
     /**
      * 유저의 plan 조회
      */
-    public MyPlanResponse getMyPlan(Long memberId) {
+    public PlanResponse getPlan(Long memberId) {
         Subscription subscription = subscriptionReader.getActiveSubscription(memberId);
 
-        MyPlanResponse response = MyPlanResponse.of(subscription);
+        PlanResponse response = PlanResponse.of(subscription);
 
         return response;
     }

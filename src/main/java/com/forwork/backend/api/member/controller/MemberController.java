@@ -5,7 +5,6 @@ import com.forwork.backend.api.member.jwt.service.JwtService;
 import com.forwork.backend.api.member.service.CompanyValidationService;
 import com.forwork.backend.api.member.service.EmailService;
 import com.forwork.backend.api.member.service.MemberService;
-import com.forwork.backend.api.plan.dto.response.MyPlanResponse;
 import com.forwork.backend.api.plan.service.SubscriptionService;
 import com.forwork.backend.common.config.security.SecurityMember;
 import com.forwork.backend.common.exception.BadRequestException;
@@ -361,21 +360,6 @@ public class MemberController {
 
         memberService.changePasswordByReset(passwordResetConfirmDTO);
         return ApiResponse.success_only(SuccessStatus.SEND_MODIFY_PASSWORD_SUCCESS);
-    }
-
-    @Operation(
-            summary = "현재 사용자 plan 정보 조회 API (용범)",
-            description = "응답: MyPlanResponse"
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "내 플랜 조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "플랜 정보를 찾을 수 없습니다.")
-    })
-    @GetMapping("/me/plan")
-    public ResponseEntity<ApiResponse<MyPlanResponse>> getMyPlan(@AuthenticationPrincipal SecurityMember securityMember) {
-        MyPlanResponse response = subscriptionService.getMyPlan(securityMember.getId());
-
-        return ApiResponse.success(SuccessStatus.MY_PLAN_GET_SUCCESS, response);
     }
 
 }
